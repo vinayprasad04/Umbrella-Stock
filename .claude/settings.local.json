@@ -3,7 +3,14 @@
     "allow": [
       "WebSearch",
       "Bash(npm run type-check:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npx:*)",
+      "Bash(npm install:*)",
+      "Bash(npm search:*)",
+      "WebFetch(domain:www.niftyindices.com)",
+      "Bash(curl:*)",
+      "Bash(npm run dev:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

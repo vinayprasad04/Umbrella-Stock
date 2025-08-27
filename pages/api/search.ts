@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { searchStocks, StockAPIError } from '@/lib/api-utils';
+import { searchStocks } from '@/lib/yahoo-finance-api';
+import { getNifty50StockBySymbol } from '@/lib/nifty50-symbols';
 import { APIResponse } from '@/types';
 
 export default async function handler(
@@ -26,8 +27,17 @@ export default async function handler(
     const searchResults = await searchStocks(q.trim());
     
     const filteredResults = searchResults
-      .filter((result: any) => result.type === 'Equity' && result.region === 'United States')
-      .slice(0, 10);
+      .slice(0, 10)
+      .map(stock => ({
+        symbol: stock.symbol.replace('.NS', ''),
+        name: stock.shortName || stock.longName || stock.symbol,
+        type: 'Equity',
+        region: 'India',
+        currency: stock.currency || 'INR',
+        price: stock.regularMarketPrice,
+        change: stock.regularMarketChange,
+        changePercent: stock.regularMarketChangePercent
+      }));
 
     res.status(200).json({
       success: true,
@@ -36,8 +46,8 @@ export default async function handler(
   } catch (error) {
     console.error('Error searching stocks:', error);
     
-    if (error instanceof StockAPIError) {
-      return res.status(error.statusCode).json({
+    if (error instanceof Error && error.message.includes('Yahoo Finance')) {
+      return res.status(503).json({
         success: false,
         error: error.message,
       });

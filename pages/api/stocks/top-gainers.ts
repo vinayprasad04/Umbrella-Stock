@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import connectDB from '@/lib/mongodb';
 import { APIResponse } from '@/types';
-import { fetchTopGainers } from '@/lib/nse-api';
-import { generateMockIndianStockData, getIndianStockSector } from '@/lib/indian-stocks-api';
+import { getTopGainers } from '@/lib/yahoo-finance-api';
+import { getNifty50StockBySymbol } from '@/lib/nifty50-symbols';
 
 export default async function handler(
   req: NextApiRequest,
@@ -23,25 +23,27 @@ export default async function handler(
     let topGainers;
     
     try {
-      // Fetch real NSE top gainers data
-      const nseGainers = await fetchTopGainers();
+      // Fetch real Yahoo Finance top gainers data
+      const yahooGainers = await getTopGainers(limit);
       
-      topGainers = nseGainers
-        .slice(0, limit)
-        .map(stock => ({
-          symbol: stock.symbol,
-          name: stock.meta?.companyName || stock.symbol,
-          sector: stock.meta?.sector || getIndianStockSector(stock.symbol),
-          price: stock.lastPrice,
-          change: stock.change,
-          changePercent: stock.pChange,
-          volume: stock.totalTradedVolume,
-          marketState: 'REGULAR',
-          lastUpdated: new Date(),
-        }));
+      topGainers = yahooGainers.map(stock => {
+        const niftyStock = getNifty50StockBySymbol(stock.symbol);
+        return {
+          symbol: stock.symbol.replace('.NS', ''),
+          name: stock.shortName || stock.longName || stock.symbol,
+          sector: niftyStock?.sector || 'Other',
+          price: stock.regularMarketPrice,
+          change: stock.regularMarketChange,
+          changePercent: stock.regularMarketChangePercent,
+          volume: stock.regularMarketVolume,
+          marketState: stock.marketState || 'REGULAR',
+          lastUpdated: new Date(stock.regularMarketTime ? stock.regularMarketTime * 1000 : Date.now()),
+          currency: stock.currency || 'INR'
+        };
+      });
     } catch (error) {
-      console.error('NSE API failed:', error);
-      throw new Error('Unable to fetch live market data from NSE. Please try again later.');
+      console.error('Yahoo Finance API failed:', error);
+      throw new Error('Unable to fetch live market data from Yahoo Finance. Please try again later.');
     }
 
     res.status(200).json({
@@ -51,7 +53,7 @@ export default async function handler(
   } catch (error) {
     console.error('Error in top gainers API:', error);
     
-    const errorMessage = error instanceof Error && error.message.includes('NSE') 
+    const errorMessage = error instanceof Error && error.message.includes('Yahoo Finance') 
       ? error.message 
       : 'Something went wrong while fetching market data. Please try again later.';
     

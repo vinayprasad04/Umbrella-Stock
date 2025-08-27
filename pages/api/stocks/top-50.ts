@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import connectDB from '@/lib/mongodb';
 import { APIResponse } from '@/types';
-import { fetchNifty50 } from '@/lib/nse-api';
-import { generateMockIndianStockData, getIndianStockSector, TOP_50_NIFTY_STOCKS } from '@/lib/indian-stocks-api';
+import { fetchNifty50Stocks } from '@/lib/yahoo-finance-api';
+import { getNifty50StockBySymbol } from '@/lib/nifty50-symbols';
 
 export default async function handler(
   req: NextApiRequest,
@@ -21,23 +21,27 @@ export default async function handler(
     let top50Stocks;
     
     try {
-      // Fetch real NSE Nifty 50 data
-      const nifty50Data = await fetchNifty50();
+      // Fetch real Yahoo Finance NIFTY 50 data
+      const yahooStocks = await fetchNifty50Stocks();
       
-      top50Stocks = nifty50Data.map(stock => ({
-        symbol: stock.symbol,
-        name: stock.companyName || stock.symbol,
-        sector: getIndianStockSector(stock.symbol),
-        price: stock.lastPrice,
-        change: stock.change,
-        changePercent: stock.pChange,
-        volume: stock.totalTradedVolume,
-        marketState: 'REGULAR',
-        lastUpdated: new Date(),
-      }));
+      top50Stocks = yahooStocks.map(stock => {
+        const niftyStock = getNifty50StockBySymbol(stock.symbol);
+        return {
+          symbol: stock.symbol.replace('.NS', ''), // Remove .NS suffix for display
+          name: stock.shortName || stock.longName || stock.symbol,
+          sector: niftyStock?.sector || 'Other',
+          price: stock.regularMarketPrice,
+          change: stock.regularMarketChange,
+          changePercent: stock.regularMarketChangePercent,
+          volume: stock.regularMarketVolume,
+          marketState: stock.marketState || 'REGULAR',
+          lastUpdated: new Date(stock.regularMarketTime ? stock.regularMarketTime * 1000 : Date.now()),
+          currency: stock.currency || 'INR'
+        };
+      });
     } catch (error) {
-      console.error('NSE API failed:', error);
-      throw new Error('Unable to fetch live NIFTY 50 data from NSE. Please try again later.');
+      console.error('Yahoo Finance API failed:', error);
+      throw new Error('Unable to fetch live NIFTY 50 data from Yahoo Finance. Please try again later.');
     }
 
     res.status(200).json({
@@ -47,7 +51,7 @@ export default async function handler(
   } catch (error) {
     console.error('Error in top 50 API:', error);
     
-    const errorMessage = error instanceof Error && error.message.includes('NSE') 
+    const errorMessage = error instanceof Error && error.message.includes('Yahoo Finance') 
       ? error.message 
       : 'Something went wrong while fetching NIFTY 50 data. Please try again later.';
     
