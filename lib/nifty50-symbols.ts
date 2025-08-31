@@ -80,5 +80,5 @@ export const getAllSectors = (): string[] => {
   const sectors = NIFTY_50_STOCKS
     .map(stock => stock.sector)
     .filter((sector): sector is string => sector !== undefined);
-  return [...new Set(sectors)];
+  return Array.from(new Set(sectors));
 };

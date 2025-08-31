@@ -24,6 +24,28 @@ interface StockData {
   price: string;
 }
 
+interface MutualFundData {
+  schemeCode: number;
+  schemeName: string;
+  fundHouse: string;
+  category: string;
+  nav?: number;
+  returns1Y?: number;
+  returns3Y?: number;
+  returns5Y?: number;
+  expenseRatio?: number;
+  aum?: number;
+}
+
+interface EquityStockData {
+  symbol: string;
+  companyName: string;
+  series: string;
+  isinNumber: string;
+  dateOfListing: string;
+  type: string;
+}
+
 const indianStocks: StockData[] = NIFTY_50_STOCKS.map(stock => ({
   symbol: stock.symbol,
   name: stock.name,
@@ -37,22 +59,59 @@ export default function SearchBar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchResults, setSearchResults] = useState<StockData[]>([]);
+  const [mutualFundResults, setMutualFundResults] = useState<MutualFundData[]>([]);
+  const [equityResults, setEquityResults] = useState<EquityStockData[]>([]);
+  const [searchType, setSearchType] = useState<'all' | 'stocks' | 'mutual-funds' | 'equity'>('all');
   const searchRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
+  // Mutual funds search query
+  const { data: mutualFundsData, isLoading: isMutualFundsLoading } = useQuery({
+    queryKey: ['mutual-funds-search', searchQuery],
+    queryFn: async () => {
+      if (searchQuery.length < 2) return [];
+      const response = await axios.get(`/api/mutual-funds/search?q=${encodeURIComponent(searchQuery)}&limit=8`);
+      return response.data.success ? response.data.data : [];
+    },
+    enabled: searchQuery.length >= 2,
+    staleTime: 30 * 1000, // 30 seconds
+  });
+
+  // Equity stocks search query
+  const { data: equityData, isLoading: isEquityLoading } = useQuery({
+    queryKey: ['equity-search', searchQuery],
+    queryFn: async () => {
+      if (searchQuery.length < 1) return [];
+      const response = await axios.get(`/api/equity/search?q=${encodeURIComponent(searchQuery)}&limit=8`);
+      return response.data.success ? response.data.data : [];
+    },
+    enabled: searchQuery.length >= 1,
+    staleTime: 30 * 1000, // 30 seconds
+  });
+
   // Search functionality
   useEffect(() => {
-    if (searchQuery.length >= 2) {
-      const filteredResults = indianStocks.filter(stock => 
+    if (searchQuery.length >= 1) {
+      const filteredStocks = indianStocks.filter(stock => 
         stock.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
         stock.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         stock.sector.toLowerCase().includes(searchQuery.toLowerCase())
-      ).slice(0, 8);
-      setSearchResults(filteredResults);
+      ).slice(0, searchType === 'all' ? 3 : 8);
+      setSearchResults(filteredStocks);
+
+      if (mutualFundsData) {
+        setMutualFundResults(mutualFundsData.slice(0, searchType === 'all' ? 3 : 8));
+      }
+
+      if (equityData) {
+        setEquityResults(equityData.slice(0, searchType === 'all' ? 3 : 8));
+      }
     } else {
       setSearchResults([]);
+      setMutualFundResults([]);
+      setEquityResults([]);
     }
-  }, [searchQuery]);
+  }, [searchQuery, mutualFundsData, equityData, searchType]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -60,6 +119,18 @@ export default function SearchBar() {
 
   const handleStockSelect = (stock: StockData) => {
     router.push(`/stocks/${stock.symbol}`);
+    setIsSearchFocused(false);
+    setSearchQuery('');
+  };
+
+  const handleMutualFundSelect = (fund: MutualFundData) => {
+    router.push(`/mutual-funds/${fund.schemeCode}`);
+    setIsSearchFocused(false);
+    setSearchQuery('');
+  };
+
+  const handleEquitySelect = (equity: EquityStockData) => {
+    router.push(`/stocks/${equity.symbol}`);
     setIsSearchFocused(false);
     setSearchQuery('');
   };
@@ -112,24 +183,90 @@ export default function SearchBar() {
       
       {/* Search Dropdown (appears when focused) */}
       {isSearchFocused && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-xl rounded-xl shadow-xl border border-white/50 overflow-hidden animate-in slide-in-from-top-2 duration-300 z-[100]">
+        <div className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden animate-in slide-in-from-top-2 duration-300 z-[100] w-[150%]">
           <div className="p-4">
-            {searchQuery && searchResults.length > 0 ? (
+            {searchQuery && (searchResults.length > 0 || mutualFundResults.length > 0 || equityResults.length > 0) ? (
               // Search Results Layout - Table Style
               <>
+                {/* Search Type Filter */}
                 <div className="flex items-center justify-between mb-4">
-                  <div className="text-sm font-bold text-gray-900">
-                    Search Results ({searchResults.length})
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setSearchType('all')}
+                      className={`text-xs px-3 py-1 rounded-full transition-colors ${
+                        searchType === 'all' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      All ({searchResults.length + mutualFundResults.length + equityResults.length})
+                    </button>
+                    <button
+                      onClick={() => setSearchType('stocks')}
+                      className={`text-xs px-3 py-1 rounded-full transition-colors ${
+                        searchType === 'stocks' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      Nifty 50 ({searchResults.length})
+                    </button>
+                    <button
+                      onClick={() => setSearchType('equity')}
+                      className={`text-xs px-3 py-1 rounded-full transition-colors ${
+                        searchType === 'equity' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      Equity Stocks ({equityResults.length})
+                    </button>
+                    <button
+                      onClick={() => setSearchType('mutual-funds')}
+                      className={`text-xs px-3 py-1 rounded-full transition-colors ${
+                        searchType === 'mutual-funds' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      Mutual Funds ({mutualFundResults.length})
+                    </button>
                   </div>
                   <div className="text-xs text-gray-500">
-                    Showing top {searchResults.length} matches
+                    {(isMutualFundsLoading || isEquityLoading) ? 'Loading...' : `Showing results for "${searchQuery}"`}
                   </div>
                 </div>
                 <div className="max-h-80 overflow-y-auto">
                   <div className="space-y-0 border border-gray-200 rounded-lg overflow-hidden">
-                    {searchResults.map((stock, index) => (
+                    {/* Show equity stocks if searchType is 'all' or 'equity' */}
+                    {(searchType === 'all' || searchType === 'equity') && equityResults.map((equity, index) => (
                       <div 
-                        key={index} 
+                        key={`equity-${index}`} 
+                        className="flex items-center justify-between p-4 border-b border-gray-100 last:border-b-0 hover:bg-orange-50 cursor-pointer transition-all duration-200"
+                        onMouseDown={() => handleEquitySelect(equity)}
+                      >
+                        <div className="flex items-center gap-4 flex-1">
+                          <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg flex items-center justify-center shadow-sm">
+                            <span className="text-white text-sm font-bold">
+                              {equity.symbol.substring(0, 2).toUpperCase()}
+                            </span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-3 mb-1">
+                              <span className="font-bold text-gray-900 text-base">{equity.symbol}</span>
+                              <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full font-medium">
+                                Equity
+                              </span>
+                              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                                {equity.series}
+                              </span>
+                            </div>
+                            <div className="text-sm text-gray-600 truncate text-left">{equity.companyName}</div>
+                          </div>
+                        </div>
+                        <div className="text-right ml-4">
+                          <div className="text-lg font-bold text-gray-900">NSE</div>
+                          <div className="text-xs text-gray-500">Exchange</div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Show stocks if searchType is 'all' or 'stocks' */}
+                    {(searchType === 'all' || searchType === 'stocks') && searchResults.map((stock, index) => (
+                      <div 
+                        key={`stock-${index}`} 
                         className="flex items-center justify-between p-4 border-b border-gray-100 last:border-b-0 hover:bg-blue-50 cursor-pointer transition-all duration-200"
                         onMouseDown={() => handleStockSelect(stock)}
                       >
@@ -143,7 +280,7 @@ export default function SearchBar() {
                             <div className="flex items-center gap-3 mb-1">
                               <span className="font-bold text-gray-900 text-base">{stock.symbol}</span>
                               <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">
-                                {stock.exchange}
+                                Stock
                               </span>
                               <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
                                 {stock.sector}
@@ -158,10 +295,45 @@ export default function SearchBar() {
                         </div>
                       </div>
                     ))}
+
+                    {/* Show mutual funds if searchType is 'all' or 'mutual-funds' */}
+                    {(searchType === 'all' || searchType === 'mutual-funds') && mutualFundResults.map((fund, index) => (
+                      <div 
+                        key={`fund-${index}`} 
+                        className="flex items-center justify-between p-4 border-b border-gray-100 last:border-b-0 hover:bg-green-50 cursor-pointer transition-all duration-200"
+                        onMouseDown={() => handleMutualFundSelect(fund)}
+                      >
+                        <div className="flex items-center gap-4 flex-1">
+                          <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg flex items-center justify-center shadow-sm">
+                            <span className="text-white text-xs font-bold">
+                              {fund.fundHouse.substring(0, 2).toUpperCase()}
+                            </span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-3 mb-1">
+                              <span className="font-bold text-gray-900 text-sm">{fund.schemeName.length > 50 ? fund.schemeName.substring(0, 50) + '...' : fund.schemeName}</span>
+                              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
+                                Mutual Fund
+                              </span>
+                              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                                {fund.category}
+                              </span>
+                            </div>
+                            <div className="text-sm text-gray-600 truncate text-left">{fund.fundHouse}</div>
+                          </div>
+                        </div>
+                        <div className="text-right ml-4">
+                          <div className="text-lg font-bold text-gray-900">
+                            {fund.nav ? `₹${fund.nav.toFixed(2)}` : 'N/A'}
+                          </div>
+                          <div className="text-xs text-gray-500">NAV</div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </>
-            ) : searchQuery && searchResults.length === 0 ? (
+            ) : searchQuery && searchResults.length === 0 && mutualFundResults.length === 0 && equityResults.length === 0 && !isMutualFundsLoading && !isEquityLoading ? (
               // No Results Layout
               <>
                 <div className="text-center py-12">
@@ -171,8 +343,8 @@ export default function SearchBar() {
                     </svg>
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">No Results Found</h3>
-                  <p className="text-gray-600 mb-1">No stocks found matching &quot;{searchQuery}&quot;</p>
-                  <p className="text-sm text-gray-500">Try searching for a stock symbol, company name, or sector</p>
+                  <p className="text-gray-600 mb-1">No results found matching &quot;{searchQuery}&quot;</p>
+                  <p className="text-sm text-gray-500">Try searching for a stock symbol, company name, mutual fund name, fund house, or equity stock</p>
                 </div>
               </>
             ) : (
@@ -185,11 +357,16 @@ export default function SearchBar() {
                 
                 {/* Popular Categories */}
                 <div className="mb-6">
+                  <div className="text-xs font-medium text-gray-700 mb-2">Popular Searches</div>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {['Banking', 'IT Services', 'Auto', 'Pharma', 'Oil & Gas'].map((category) => (
-                      <span key={category} className="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full hover:bg-gray-200 cursor-pointer transition-colors">
+                    {['RELIANCE', 'TCS', 'HDFC', 'ICICI', 'Banking', 'IT Services', 'Large Cap', 'SBI'].map((category) => (
+                      <button 
+                        key={category} 
+                        onClick={() => setSearchQuery(category)}
+                        className="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full hover:bg-gray-200 cursor-pointer transition-colors"
+                      >
                         {category}
-                      </span>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -221,14 +398,14 @@ export default function SearchBar() {
                 {/* Quick Links */}
                 <div className="mt-6 pt-4 border-t border-gray-200">
                   <div className="grid grid-cols-2 gap-2">
-                    <button className="text-left p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                    <Link href="/" className="text-left p-2 rounded-lg hover:bg-gray-50 transition-colors">
                       <div className="text-sm font-medium text-gray-900">📊 Market Overview</div>
                       <div className="text-xs text-gray-500">View all indices</div>
-                    </button>
-                    <button className="text-left p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                      <div className="text-sm font-medium text-gray-900">🔥 Trending Now</div>
-                      <div className="text-xs text-gray-500">Popular searches</div>
-                    </button>
+                    </Link>
+                    <Link href="/mutual-funds" className="text-left p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                      <div className="text-sm font-medium text-gray-900">📈 Mutual Funds</div>
+                      <div className="text-xs text-gray-500">Browse all funds</div>
+                    </Link>
                   </div>
                 </div>
               </>

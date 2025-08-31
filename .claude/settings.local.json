@@ -10,9 +10,15 @@
       "WebFetch(domain:www.niftyindices.com)",
       "Bash(curl:*)",
       "Bash(npm run dev:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "WebFetch(domain:www.mfapi.in)",
+      "WebFetch(domain:api.mfapi.in)",
+      "Read(c:\\Users\\QSS\\Downloads/**)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "c:\\Users\\QSS\\Downloads"
+    ]
   }
 }

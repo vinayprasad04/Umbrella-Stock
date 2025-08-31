@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 interface ETF {
   name: string;
   symbol: string;
@@ -11,6 +13,8 @@ interface ETF {
   expenseRatio: number;
   aum: number;
   trackingIndex: string;
+  schemeCode?: number;  // For linking to detail page
+  fundHouse?: string;
 }
 
 interface ETFCardProps {
@@ -30,14 +34,21 @@ export default function ETFCard({ etf }: ETFCardProps) {
     }
   };
 
-  return (
-    <div className="card hover:shadow-lg transition-shadow">
+  // Create the link URL - if we have schemeCode, go to mutual fund detail page, otherwise show ETF info
+  const linkUrl = etf.schemeCode ? `/mutual-funds/${etf.schemeCode}` : '#';
+  const isClickable = !!etf.schemeCode;
+
+  const cardContent = (
+    <div className={`card hover:shadow-lg transition-all duration-300 ${isClickable ? 'cursor-pointer hover:scale-105' : ''}`}>
       <div className="flex justify-between items-start mb-3">
         <div>
           <h3 className="font-semibold text-gray-900 text-sm leading-tight">
             {etf.name}
           </h3>
           <p className="text-xs text-gray-500 mt-1">{etf.symbol}</p>
+          {etf.fundHouse && (
+            <p className="text-xs text-blue-600 mt-1 font-medium">{etf.fundHouse}</p>
+          )}
         </div>
         <div className="text-right">
           <p className="text-lg font-bold text-gray-900">
@@ -97,6 +108,15 @@ export default function ETFCard({ etf }: ETFCardProps) {
           </div>
         </div>
       </div>
+      
     </div>
+  );
+
+  return isClickable ? (
+    <Link href={linkUrl} className="block">
+      {cardContent}
+    </Link>
+  ) : (
+    cardContent
   );
 }

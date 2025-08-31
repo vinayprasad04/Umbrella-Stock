@@ -15,17 +15,17 @@ export default async function handler(
     });
   }
 
+  const { symbol } = req.query;
+  
+  if (!symbol || typeof symbol !== 'string') {
+    return res.status(400).json({
+      success: false,
+      error: 'Stock symbol is required',
+    });
+  }
+
   try {
     await connectDB();
-    
-    const { symbol } = req.query;
-    
-    if (!symbol || typeof symbol !== 'string') {
-      return res.status(400).json({
-        success: false,
-        error: 'Stock symbol is required',
-      });
-    }
 
     const yahooSymbol = symbol.includes('.NS') ? symbol : `${symbol}.NS`;
     const stockData = await fetchSingleStock(yahooSymbol);
