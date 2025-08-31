@@ -13,7 +13,8 @@
       "Bash(find:*)",
       "WebFetch(domain:www.mfapi.in)",
       "WebFetch(domain:api.mfapi.in)",
-      "Read(c:\\Users\\QSS\\Downloads/**)"
+      "Read(c:\\Users\\QSS\\Downloads/**)",
+      "Bash(vercel env:*)"
     ],
     "deny": [],
     "ask": [],

@@ -6,7 +6,7 @@
     }
   },
   "env": {
-    "MONGODB_URI": "@mongodb_uri",
+    "MONGODB_CONNECTION_URI": "@mongodb_uri",
     "ALPHA_VANTAGE_API_KEY": "@alpha_vantage_api_key"
   }
 }
