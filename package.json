@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "sync-mutual-funds": "node scripts/sync-mutual-funds.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.0.0",

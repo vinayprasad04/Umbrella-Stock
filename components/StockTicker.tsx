@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { isIndianMarketOpen } from '@/lib/indian-stocks-api';
 import ErrorMessage from './ErrorMessage';
 
@@ -17,6 +17,10 @@ interface StockTickerData {
 
 export default function StockTicker() {
   const [marketOpen, setMarketOpen] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<number>();
 
   useEffect(() => {
     const checkMarketStatus = () => {
@@ -42,6 +46,39 @@ export default function StockTicker() {
     retry: 3,
     retryDelay: 5000,
   });
+
+  // Smooth scrolling animation
+  useEffect(() => {
+    if (!stocks || stocks.length === 0 || isPaused) return;
+
+    const animate = () => {
+      setScrollPosition(prev => {
+        const newPosition = prev + 1.5; // Speed: pixels per frame
+        const containerWidth = scrollRef.current?.scrollWidth || 0;
+        const viewportWidth = scrollRef.current?.clientWidth || 0;
+        
+        // Reset when content completely scrolls out
+        if (newPosition >= containerWidth / 2) {
+          return 0;
+        }
+        return newPosition;
+      });
+      
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [stocks, isPaused]);
+
+  // Handle mouse events for pause functionality
+  const handleMouseEnter = () => setIsPaused(true);
+  const handleMouseLeave = () => setIsPaused(false);
 
   if (error) {
     return (
@@ -82,52 +119,72 @@ export default function StockTicker() {
   }
 
   return (
-    <div className="bg-gray-900 text-white py-2 overflow-hidden">
-      <div className="whitespace-nowrap animate-marquee">
-        <div className="inline-flex items-center space-x-8">
+    <div 
+      className="bg-gray-900 text-white py-2 overflow-hidden"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <div 
+        ref={scrollRef}
+        className="whitespace-nowrap"
+        style={{ 
+          transform: `translateX(-${scrollPosition}px)`,
+          transition: isPaused ? 'none' : undefined
+        }}
+      >
+        <div className="inline-flex items-center space-x-6">
           <span className="text-sm font-medium px-4">
-            📈 NSE Top 50 - {marketOpen ? 'LIVE' : 'LAST PRICES'}
+            📈 NSE Top {stocks.length} - {marketOpen ? 'LIVE' : 'LAST PRICES'}
           </span>
-          {stocks.map((stock) => (
-            <div key={stock.symbol} className="inline-flex items-center space-x-2 px-2">
-              <span className="text-sm font-medium text-blue-300">
-                {stock.symbol}
-              </span>
-              <span className="text-sm">
-                ₹{stock.price.toFixed(2)}
-              </span>
-              <span
-                className={`text-sm font-medium ${
-                  stock.changePercent >= 0
-                    ? 'text-green-400'
-                    : 'text-red-400'
-                }`}
-              >
-                {stock.changePercent >= 0 ? '▲' : '▼'} {Math.abs(stock.changePercent).toFixed(2)}%
-              </span>
-              <span className="text-gray-400 text-xs">|</span>
-            </div>
+          {stocks.map((stock, index) => (
+            <>
+              <div key={stock.symbol} className="inline-flex items-center space-x-2 px-2">
+                <span className="text-sm font-medium text-blue-300">
+                  {stock.symbol}
+                </span>
+                <span className="text-sm">
+                  ₹{stock.price.toFixed(2)}
+                </span>
+                <span
+                  className={`text-sm font-medium ${
+                    stock.changePercent >= 0
+                      ? 'text-green-400'
+                      : 'text-red-400'
+                  }`}
+                >
+                  {stock.changePercent >= 0 ? '▲' : '▼'} {Math.abs(stock.changePercent).toFixed(2)}%
+                </span>
+              </div>
+              {index < stocks.length - 1 && (
+                <span className="text-gray-400 text-xs mx-3">|</span>
+              )}
+            </>
           ))}
+          
           {/* Duplicate for seamless scrolling */}
-          {stocks.map((stock) => (
-            <div key={`${stock.symbol}-dup`} className="inline-flex items-center space-x-2 px-2">
-              <span className="text-sm font-medium text-blue-300">
-                {stock.symbol}
-              </span>
-              <span className="text-sm">
-                ₹{stock.price.toFixed(2)}
-              </span>
-              <span
-                className={`text-sm font-medium ${
-                  stock.changePercent >= 0
-                    ? 'text-green-400'
-                    : 'text-red-400'
-                }`}
-              >
-                {stock.changePercent >= 0 ? '▲' : '▼'} {Math.abs(stock.changePercent).toFixed(2)}%
-              </span>
-              <span className="text-gray-400 text-xs">|</span>
-            </div>
+          {stocks.map((stock, index) => (
+            <>
+              <div key={`${stock.symbol}-dup`} className="inline-flex items-center space-x-2 px-2">
+                <span className="text-sm font-medium text-blue-300">
+                  {stock.symbol}
+                </span>
+                <span className="text-sm">
+                  ₹{stock.price.toFixed(2)}
+                </span>
+                <span
+                  className={`text-sm font-medium ${
+                    stock.changePercent >= 0
+                      ? 'text-green-400'
+                      : 'text-red-400'
+                  }`}
+                >
+                  {stock.changePercent >= 0 ? '▲' : '▼'} {Math.abs(stock.changePercent).toFixed(2)}%
+                </span>
+              </div>
+              {index < stocks.length - 1 && (
+                <span className="text-gray-400 text-xs mx-3">|</span>
+              )}
+            </>
           ))}
         </div>
       </div>

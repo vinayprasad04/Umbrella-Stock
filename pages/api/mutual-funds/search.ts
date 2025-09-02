@@ -79,6 +79,86 @@ export default async function handler(
       results.push(...additionalResults);
     }
     
+    // If still no results, provide intelligent suggestions
+    if (results.length === 0) {
+      // Extract potential fund house from search query
+      const searchWords = searchQuery.toLowerCase().split(' ');
+      const commonFundHouses = ['axis', 'sbi', 'hdfc', 'icici', 'aditya birla', 'reliance', 'kotak', 'franklin', 'dsp', 'nippon'];
+      
+      let detectedFundHouse = null;
+      for (const house of commonFundHouses) {
+        if (searchWords.some(word => house.includes(word) || word.includes(house.split(' ')[0]))) {
+          detectedFundHouse = house;
+          break;
+        }
+      }
+      
+      // First priority: Same fund house suggestions
+      if (detectedFundHouse) {
+        const sameFundHouseSuggestions = await MutualFund
+          .find({
+            isActive: true,
+            fundHouse: { $regex: detectedFundHouse, $options: 'i' }
+          })
+          .sort({ returns1Y: -1 })
+          .limit(5)
+          .select('schemeCode schemeName fundHouse category nav returns1Y returns3Y returns5Y expenseRatio aum')
+          .lean();
+        
+        if (sameFundHouseSuggestions.length > 0) {
+          results.push(...sameFundHouseSuggestions);
+        }
+      }
+      
+      // Second priority: Similar category suggestions if still no results
+      if (results.length === 0) {
+        const categoryKeywords = {
+          'equity': ['equity', 'stock', 'growth'],
+          'debt': ['debt', 'bond', 'income', 'fixed'],
+          'hybrid': ['hybrid', 'balanced', 'allocation'],
+          'elss': ['elss', 'tax', '80c']
+        };
+        
+        let detectedCategory = null;
+        for (const [category, keywords] of Object.entries(categoryKeywords)) {
+          if (keywords.some(keyword => searchQuery.toLowerCase().includes(keyword))) {
+            detectedCategory = category;
+            break;
+          }
+        }
+        
+        if (detectedCategory) {
+          const categoryFilter = detectedCategory === 'elss' 
+            ? { schemeName: { $regex: 'elss|tax', $options: 'i' } }
+            : { category: { $regex: detectedCategory, $options: 'i' } };
+            
+          const categorySuggestions = await MutualFund
+            .find({
+              isActive: true,
+              ...categoryFilter
+            })
+            .sort({ returns1Y: -1 })
+            .limit(limitNum)
+            .select('schemeCode schemeName fundHouse category nav returns1Y returns3Y returns5Y expenseRatio aum')
+            .lean();
+          
+          results.push(...categorySuggestions);
+        }
+      }
+      
+      // Third priority: Popular funds if still no results
+      if (results.length === 0) {
+        const popularFunds = await MutualFund
+          .find({ isActive: true })
+          .sort({ returns1Y: -1, aum: -1 })
+          .limit(limitNum)
+          .select('schemeCode schemeName fundHouse category nav returns1Y returns3Y returns5Y expenseRatio aum')
+          .lean();
+        
+        results.push(...popularFunds);
+      }
+    }
+    
     res.status(200).json({
       success: true,
       data: results.map(fund => ({

@@ -92,11 +92,49 @@ export default function SearchBar() {
   // Search functionality
   useEffect(() => {
     if (searchQuery.length >= 1) {
-      const filteredStocks = indianStocks.filter(stock => 
-        stock.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        stock.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        stock.sector.toLowerCase().includes(searchQuery.toLowerCase())
-      ).slice(0, searchType === 'all' ? 3 : 8);
+      // Filter out common generic terms that don't help with stock identification
+      const genericTerms = ['stock', 'stocks', 'share', 'shares', 'company', 'ltd', 'limited', 'corporation', 'corp'];
+      const searchTerms = searchQuery.toLowerCase().split(' ')
+        .filter(term => term.length > 0 && !genericTerms.includes(term));
+      
+      const filteredStocks = indianStocks.filter(stock => {
+        const symbolLower = stock.symbol.toLowerCase();
+        const nameLower = stock.name.toLowerCase();
+        const sectorLower = stock.sector.toLowerCase();
+        
+        // Check if all search terms are found in symbol, name, or sector
+        return searchTerms.every(term => 
+          symbolLower.includes(term) ||
+          nameLower.includes(term) ||
+          sectorLower.includes(term)
+        ) || 
+        // Or if any single term matches the symbol exactly (for cases like "hdfcbank" when searching "hdfc bank")
+        searchTerms.some(term => symbolLower.includes(term.replace(/\s/g, ''))) ||
+        // Or if the full search query (without spaces) matches symbol
+        symbolLower.includes(searchQuery.toLowerCase().replace(/\s/g, ''));
+      })
+      .sort((a, b) => {
+        // Prioritize exact symbol matches
+        const aSymbolMatch = a.symbol.toLowerCase() === searchQuery.toLowerCase().replace(/\s/g, '');
+        const bSymbolMatch = b.symbol.toLowerCase() === searchQuery.toLowerCase().replace(/\s/g, '');
+        if (aSymbolMatch && !bSymbolMatch) return -1;
+        if (!aSymbolMatch && bSymbolMatch) return 1;
+        
+        // Then prioritize symbol starts with
+        const aSymbolStarts = a.symbol.toLowerCase().startsWith(searchQuery.toLowerCase().replace(/\s/g, ''));
+        const bSymbolStarts = b.symbol.toLowerCase().startsWith(searchQuery.toLowerCase().replace(/\s/g, ''));
+        if (aSymbolStarts && !bSymbolStarts) return -1;
+        if (!aSymbolStarts && bSymbolStarts) return 1;
+        
+        // Then prioritize name starts with
+        const aNameStarts = a.name.toLowerCase().startsWith(searchQuery.toLowerCase());
+        const bNameStarts = b.name.toLowerCase().startsWith(searchQuery.toLowerCase());
+        if (aNameStarts && !bNameStarts) return -1;
+        if (!aNameStarts && bNameStarts) return 1;
+        
+        return 0;
+      })
+      .slice(0, searchType === 'all' ? 3 : 8);
       setSearchResults(filteredStocks);
 
       if (mutualFundsData) {
@@ -193,7 +231,7 @@ export default function SearchBar() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setSearchType('all')}
-                      className={`text-xs px-3 py-1 rounded-full transition-colors ${
+                      className={`text-xs px-3 py-1 rounded-full transition-colors whitespace-nowrap ${
                         searchType === 'all' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                     >
@@ -201,7 +239,7 @@ export default function SearchBar() {
                     </button>
                     <button
                       onClick={() => setSearchType('stocks')}
-                      className={`text-xs px-3 py-1 rounded-full transition-colors ${
+                      className={`text-xs px-3 py-1 rounded-full transition-colors whitespace-nowrap ${
                         searchType === 'stocks' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                     >
@@ -209,7 +247,7 @@ export default function SearchBar() {
                     </button>
                     <button
                       onClick={() => setSearchType('equity')}
-                      className={`text-xs px-3 py-1 rounded-full transition-colors ${
+                      className={`text-xs px-3 py-1 rounded-full transition-colors whitespace-nowrap ${
                         searchType === 'equity' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                     >
@@ -217,14 +255,14 @@ export default function SearchBar() {
                     </button>
                     <button
                       onClick={() => setSearchType('mutual-funds')}
-                      className={`text-xs px-3 py-1 rounded-full transition-colors ${
+                      className={`text-xs px-3 py-1 rounded-full transition-colors whitespace-nowrap ${
                         searchType === 'mutual-funds' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                     >
                       Mutual Funds ({mutualFundResults.length})
                     </button>
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-500 px-3 py-1">
                     {(isMutualFundsLoading || isEquityLoading) ? 'Loading...' : `Showing results for "${searchQuery}"`}
                   </div>
                 </div>
@@ -244,8 +282,16 @@ export default function SearchBar() {
                             </span>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-3 mb-1">
-                              <span className="font-bold text-gray-900 text-base">{equity.symbol}</span>
+                            {/* First line: Name and Price/Exchange */}
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-gray-900 text-base w-4/5 truncate">{equity.symbol}</span>
+                              <div className="text-right w-1/5 flex-shrink-0">
+                                <div className="text-lg font-bold text-gray-900">NSE</div>
+                              </div>
+                            </div>
+                            {/* Second line: Fund house, category, subcategory */}
+                            <div className="flex items-center gap-2 mt-1">
+                              <div className="text-sm text-gray-600 truncate">{equity.companyName}</div>
                               <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full font-medium">
                                 Equity
                               </span>
@@ -253,12 +299,7 @@ export default function SearchBar() {
                                 {equity.series}
                               </span>
                             </div>
-                            <div className="text-sm text-gray-600 truncate text-left">{equity.companyName}</div>
                           </div>
-                        </div>
-                        <div className="text-right ml-4">
-                          <div className="text-lg font-bold text-gray-900">NSE</div>
-                          <div className="text-xs text-gray-500">Exchange</div>
                         </div>
                       </div>
                     ))}
@@ -277,8 +318,18 @@ export default function SearchBar() {
                             </span>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-3 mb-1">
-                              <span className="font-bold text-gray-900 text-base">{stock.symbol}</span>
+                            {/* First line: Name and Price */}
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-gray-900 text-base w-4/5 truncate">{stock.symbol}</span>
+                              {stock.price && stock.price !== '₹0.00' && (
+                                <div className="text-right w-1/5 flex-shrink-0">
+                                  <div className="text-lg font-bold text-gray-900">{stock.price}</div>
+                                </div>
+                              )}
+                            </div>
+                            {/* Second line: Company name, category, sector */}
+                            <div className="flex items-center gap-2 mt-1">
+                              <div className="text-sm text-gray-600 truncate">{stock.name}</div>
                               <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">
                                 Stock
                               </span>
@@ -286,12 +337,7 @@ export default function SearchBar() {
                                 {stock.sector}
                               </span>
                             </div>
-                            <div className="text-sm text-gray-600 truncate text-left">{stock.name}</div>
                           </div>
-                        </div>
-                        <div className="text-right ml-4">
-                          <div className="text-lg font-bold text-gray-900">{stock.price}</div>
-                          <div className="text-xs text-gray-500">Current Price</div>
                         </div>
                       </div>
                     ))}
@@ -310,8 +356,22 @@ export default function SearchBar() {
                             </span>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-3 mb-1">
-                              <span className="font-bold text-gray-900 text-sm">{fund.schemeName.length > 50 ? fund.schemeName.substring(0, 50) + '...' : fund.schemeName}</span>
+                            {/* First line: Fund Name and NAV */}
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-gray-900 text-sm leading-tight w-4/5 truncate">
+                                {fund.schemeName}
+                              </span>
+                              {fund.nav && fund.nav > 0 && (
+                                <div className="text-right w-1/5 flex-shrink-0 ml-2">
+                                  <div className="text-lg font-bold text-gray-900">
+                                    ₹{fund.nav.toFixed(2)}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                            {/* Second line: Fund house, category, subcategory */}
+                            <div className="flex items-center gap-2 mt-1">
+                              <div className="text-sm text-gray-600 truncate">{fund.fundHouse}</div>
                               <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
                                 Mutual Fund
                               </span>
@@ -319,14 +379,7 @@ export default function SearchBar() {
                                 {fund.category}
                               </span>
                             </div>
-                            <div className="text-sm text-gray-600 truncate text-left">{fund.fundHouse}</div>
                           </div>
-                        </div>
-                        <div className="text-right ml-4">
-                          <div className="text-lg font-bold text-gray-900">
-                            {fund.nav ? `₹${fund.nav.toFixed(2)}` : 'N/A'}
-                          </div>
-                          <div className="text-xs text-gray-500">NAV</div>
                         </div>
                       </div>
                     ))}
