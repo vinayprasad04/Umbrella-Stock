@@ -20,8 +20,8 @@ export default function SectorsPage() {
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      <main className="w-full max-w-[1600px] mx-auto px-6 py-8">
-        <div className="mb-8">
+      <main className="w-full max-w-[1600px] mx-auto px-6 py-8 pt-[104px] md:pt-[123px] lg:pt-[67px]">
+        <div className="mb-12 pt-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Sector Performance
           </h1>

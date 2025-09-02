@@ -31,9 +31,9 @@ export default function TopLosersPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-red-50 to-rose-50">
       <Header />
       
-      <main className="w-full max-w-[1600px] mx-auto px-6 py-12">
+      <main className="w-full max-w-[1600px] mx-auto px-6 py-12 pt-[104px] md:pt-[123px] lg:pt-[67px]">
         {/* Header Section */}
-        <div className="mb-12">
+        <div className="mb-12 pt-8">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
               <Link 

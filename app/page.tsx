@@ -136,7 +136,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 overflow-x-hidden">
       <Header />
       {/* Content wrapper with top padding to account for fixed header */}
-      <div className="pt-[60px] md:pt-[70px]">
+      <div className="pt-[104px] md:pt-[123px] lg:pt-[67px]">
         <StockTicker />
 
       {/* Hero Section */}

@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import axios from 'axios';
 import Header from '@/components/Header';
-import StockChart from '@/components/StockChart';
+import AdvancedStockChart from '@/components/AdvancedStockChart';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { formatCurrency, formatPercentage, formatNumber } from '@/lib/api-utils';
 
@@ -72,8 +72,8 @@ export default function StockDetailPage() {
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      <main className="w-full max-w-[1600px] mx-auto px-6 py-8">
-        <div className="mb-8">
+      <main className="w-full max-w-[1600px] mx-auto px-6 py-8 pt-[104px] md:pt-[123px] lg:pt-[67px]">
+        <div className="mb-12 pt-8">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">{symbol}</h1>
@@ -99,7 +99,7 @@ export default function StockDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
             {history.length > 0 && (
-              <StockChart data={history} symbol={symbol} />
+              <AdvancedStockChart data={history} symbol={symbol} />
             )}
 
             {liveData && (

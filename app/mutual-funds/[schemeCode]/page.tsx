@@ -8,7 +8,7 @@ import { useParams } from 'next/navigation';
 import Header from '@/components/Header';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorMessage from '@/components/ErrorMessage';
-import { Line, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import AdvancedMutualFundChart from '@/components/AdvancedMutualFundChart';
 
 interface MutualFundDetail {
   schemeCode: number;
@@ -93,7 +93,7 @@ export default function MutualFundDetailPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
         <Header />
-        <main className="w-full max-w-[1600px] mx-auto px-6 py-12">
+        <main className="w-full max-w-[1600px] mx-auto px-6 py-12 pt-[104px] md:pt-[123px] lg:pt-[67px]">
           <ErrorMessage 
             title="Invalid Mutual Fund"
             message="Please provide a valid scheme code"
@@ -107,9 +107,9 @@ export default function MutualFundDetailPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
       <Header />
       
-      <main className="w-full max-w-[1600px] mx-auto px-6 py-12">
+      <main className="w-full max-w-[1600px] mx-auto px-6 py-12 pt-[104px] md:pt-[123px] lg:pt-[67px]">
         {/* Header Section */}
-        <div className="mb-12">
+        <div className="mb-12 pt-8">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
               <Link 
@@ -223,64 +223,13 @@ export default function MutualFundDetailPage() {
             </div>
 
             {/* NAV Chart */}
-            {chartData.length > 0 && (
-              <div className="bg-white/70 backdrop-blur-md rounded-3xl p-8 border border-white/50 shadow-xl mb-8">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">NAV Performance</h2>
-                  <div className="flex gap-2">
-                    {['1M', '3M', '6M', '1Y'].map((period) => (
-                      <button
-                        key={period}
-                        onClick={() => setSelectedPeriod(period)}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                          selectedPeriod === period
-                            ? 'bg-blue-600 text-white shadow-md'
-                            : 'bg-white/70 text-gray-700 hover:bg-blue-100'
-                        }`}
-                      >
-                        {period}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                      <XAxis 
-                        dataKey="date" 
-                        className="text-xs text-gray-600"
-                        axisLine={false}
-                        tickLine={false}
-                      />
-                      <YAxis 
-                        className="text-xs text-gray-600"
-                        axisLine={false}
-                        tickLine={false}
-                        domain={['dataMin - 5', 'dataMax + 5']}
-                      />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'rgba(255, 255, 255, 0.95)', 
-                          border: 'none', 
-                          borderRadius: '12px',
-                          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)'
-                        }}
-                        formatter={(value: any) => [`₹${value.toFixed(4)}`, 'NAV']}
-                        labelFormatter={(label: any) => `Date: ${label}`}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="nav" 
-                        stroke="#3B82F6" 
-                        strokeWidth={2}
-                        dot={false}
-                        activeDot={{ r: 4, fill: '#3B82F6' }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
+            {mutualFund.historicalData && mutualFund.historicalData.length > 0 && (
+              <div className="mb-12">
+                <AdvancedMutualFundChart 
+                  data={mutualFund.historicalData} 
+                  fundName={mutualFund.schemeName}
+                  currentNav={mutualFund.currentNav || mutualFund.nav}
+                />
               </div>
             )}
 
