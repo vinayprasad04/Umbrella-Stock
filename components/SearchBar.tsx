@@ -185,11 +185,11 @@ export default function SearchBar() {
   }, []);
 
   return (
-    <div ref={searchRef} className={`relative transition-all duration-500 ease-out`}>
-      <div className={`absolute inset-0 bg-gradient-to-r from-[#FF6B2C] to-blue-600 rounded-2xl blur transition-all duration-500 ${
+    <div ref={searchRef} className={`relative transition-all duration-500 ease-out w-full max-w-2xl mx-auto`}>
+      <div className={`absolute inset-0 bg-gradient-to-r from-[#FF6B2C] to-blue-600 rounded-xl md:rounded-2xl blur transition-all duration-500 ${
         isSearchFocused ? 'opacity-40' : 'opacity-20'
       }`}></div>
-      <div className={`relative bg-white/80 backdrop-blur-xl border border-white/50 rounded-2xl shadow-2xl transition-all duration-500 ${
+      <div className={`relative bg-white/80 backdrop-blur-xl border border-white/50 rounded-xl md:rounded-2xl shadow-2xl transition-all duration-500 ${
         isSearchFocused ? 'border-[#FF6B2C]/30 bg-white/90' : ''
       }`}>
         <div className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-all duration-300 ${
@@ -209,7 +209,7 @@ export default function SearchBar() {
             // Delay blur to allow clicking on suggestions
             setTimeout(() => setIsSearchFocused(false), 150);
           }}
-          className="w-full pl-12 pr-14 py-3 bg-transparent text-gray-700 placeholder-gray-400 focus:outline-none text-base font-medium transition-all duration-500"
+          className="w-full pl-10 md:pl-12 pr-12 md:pr-14 py-2 md:py-3 bg-transparent text-gray-700 placeholder-gray-400 focus:outline-none text-sm md:text-base font-medium transition-all duration-500"
         />
         <div className={`absolute inset-y-0 right-0 pr-4 flex items-center transition-all duration-300 ${
           isSearchFocused ? 'text-[#FF6B2C]' : 'text-gray-400'
@@ -221,14 +221,14 @@ export default function SearchBar() {
       
       {/* Search Dropdown (appears when focused) */}
       {isSearchFocused && (
-        <div className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden animate-in slide-in-from-top-2 duration-300 z-[100] w-[150%]">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg md:rounded-xl shadow-xl border border-gray-200 overflow-hidden animate-in slide-in-from-top-2 duration-300 z-[100] w-full md:w-[150%] max-h-[80vh]">
           <div className="p-4">
             {searchQuery && (searchResults.length > 0 || mutualFundResults.length > 0 || equityResults.length > 0) ? (
               // Search Results Layout - Table Style
               <>
                 {/* Search Type Filter */}
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 mb-4">
+                  <div className="flex items-center gap-1 md:gap-2 flex-wrap">
                     <button
                       onClick={() => setSearchType('all')}
                       className={`text-xs px-3 py-1 rounded-full transition-colors whitespace-nowrap ${
@@ -266,36 +266,36 @@ export default function SearchBar() {
                     {(isMutualFundsLoading || isEquityLoading) ? 'Loading...' : `Showing results for "${searchQuery}"`}
                   </div>
                 </div>
-                <div className="max-h-80 overflow-y-auto">
+                <div className="max-h-60 md:max-h-80 overflow-y-auto">
                   <div className="space-y-0 border border-gray-200 rounded-lg overflow-hidden">
                     {/* Show equity stocks if searchType is 'all' or 'equity' */}
                     {(searchType === 'all' || searchType === 'equity') && equityResults.map((equity, index) => (
                       <div 
                         key={`equity-${index}`} 
-                        className="flex items-center justify-between p-4 border-b border-gray-100 last:border-b-0 hover:bg-orange-50 cursor-pointer transition-all duration-200"
+                        className="flex items-center justify-between p-2 md:p-4 border-b border-gray-100 last:border-b-0 hover:bg-orange-50 cursor-pointer transition-all duration-200"
                         onMouseDown={() => handleEquitySelect(equity)}
                       >
-                        <div className="flex items-center gap-4 flex-1">
-                          <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg flex items-center justify-center shadow-sm">
-                            <span className="text-white text-sm font-bold">
+                        <div className="flex items-center gap-2 md:gap-4 flex-1">
+                          <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg flex items-center justify-center shadow-sm">
+                            <span className="text-white text-xs md:text-sm font-bold">
                               {equity.symbol.substring(0, 2).toUpperCase()}
                             </span>
                           </div>
                           <div className="flex-1 min-w-0">
                             {/* First line: Name and Price/Exchange */}
                             <div className="flex items-center justify-between">
-                              <span className="font-bold text-gray-900 text-base w-4/5 truncate">{equity.symbol}</span>
+                              <span className="font-bold text-gray-900 text-xs sm:text-sm md:text-base w-4/5 truncate">{equity.symbol}</span>
                               <div className="text-right w-1/5 flex-shrink-0">
-                                <div className="text-lg font-bold text-gray-900">NSE</div>
+                                <div className="text-xs sm:text-sm md:text-lg font-bold text-gray-900">NSE</div>
                               </div>
                             </div>
                             {/* Second line: Fund house, category, subcategory */}
-                            <div className="flex items-center gap-2 mt-1">
-                              <div className="text-sm text-gray-600 truncate">{equity.companyName}</div>
-                              <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full font-medium">
+                            <div className="flex items-center gap-1 md:gap-2 mt-1">
+                              <div className="text-xs text-gray-600 truncate">{equity.companyName}</div>
+                              <span className="text-xs bg-orange-100 text-orange-800 px-1 md:px-2 py-1 rounded-full font-medium">
                                 Equity
                               </span>
-                              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                              <span className="text-xs bg-gray-100 text-gray-600 px-1 md:px-2 py-1 rounded-full">
                                 {equity.series}
                               </span>
                             </div>

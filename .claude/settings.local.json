@@ -14,7 +14,8 @@
       "WebFetch(domain:www.mfapi.in)",
       "WebFetch(domain:api.mfapi.in)",
       "Read(c:\\Users\\QSS\\Downloads/**)",
-      "Bash(vercel env:*)"
+      "Bash(vercel env:*)",
+      "Bash(npm run lint)"
     ],
     "deny": [],
     "ask": [],

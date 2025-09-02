@@ -83,7 +83,7 @@ export default function StockTicker() {
   if (error) {
     return (
       <div className="bg-red-900 text-white py-2">
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="max-w-full mx-auto px-3 md:px-4 overflow-hidden">
           <div className="flex items-center justify-center">
             <span className="text-sm font-medium mr-2">⚠️</span>
             <span className="text-sm">
@@ -104,7 +104,7 @@ export default function StockTicker() {
   if (isLoading || !stocks) {
     return (
       <div className="bg-gray-900 text-white py-2">
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="max-w-full mx-auto px-3 md:px-4 overflow-hidden">
           <div className="flex items-center">
             <span className="text-sm font-medium mr-4">Loading NSE Top 50...</span>
             <div className="animate-pulse flex space-x-4">
@@ -120,7 +120,7 @@ export default function StockTicker() {
 
   return (
     <div 
-      className="bg-gray-900 text-white py-2 overflow-hidden"
+      className="bg-gray-900 text-white py-1 md:py-2 overflow-hidden"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -132,21 +132,21 @@ export default function StockTicker() {
           transition: isPaused ? 'none' : undefined
         }}
       >
-        <div className="inline-flex items-center space-x-6">
-          <span className="text-sm font-medium px-4">
-            📈 NSE Top {stocks.length} - {marketOpen ? 'LIVE' : 'LAST PRICES'}
+        <div className="inline-flex items-center space-x-3 md:space-x-6">
+          <span className="text-xs md:text-sm font-medium px-2 md:px-4">
+            📈 <span className="hidden sm:inline">NSE Top {stocks.length} - </span>{marketOpen ? 'LIVE' : 'LAST PRICES'}
           </span>
           {stocks.map((stock, index) => (
             <>
-              <div key={stock.symbol} className="inline-flex items-center space-x-2 px-2">
-                <span className="text-sm font-medium text-blue-300">
+              <div key={stock.symbol} className="inline-flex items-center space-x-1 md:space-x-2 px-1 md:px-2">
+                <span className="text-xs md:text-sm font-medium text-blue-300">
                   {stock.symbol}
                 </span>
-                <span className="text-sm">
+                <span className="text-xs md:text-sm">
                   ₹{stock.price.toFixed(2)}
                 </span>
                 <span
-                  className={`text-sm font-medium ${
+                  className={`text-xs md:text-sm font-medium ${
                     stock.changePercent >= 0
                       ? 'text-green-400'
                       : 'text-red-400'
@@ -156,7 +156,7 @@ export default function StockTicker() {
                 </span>
               </div>
               {index < stocks.length - 1 && (
-                <span className="text-gray-400 text-xs mx-3">|</span>
+                <span className="text-gray-400 text-xs mx-1 md:mx-3">|</span>
               )}
             </>
           ))}
@@ -164,15 +164,15 @@ export default function StockTicker() {
           {/* Duplicate for seamless scrolling */}
           {stocks.map((stock, index) => (
             <>
-              <div key={`${stock.symbol}-dup`} className="inline-flex items-center space-x-2 px-2">
-                <span className="text-sm font-medium text-blue-300">
+              <div key={`${stock.symbol}-dup`} className="inline-flex items-center space-x-1 md:space-x-2 px-1 md:px-2">
+                <span className="text-xs md:text-sm font-medium text-blue-300">
                   {stock.symbol}
                 </span>
-                <span className="text-sm">
+                <span className="text-xs md:text-sm">
                   ₹{stock.price.toFixed(2)}
                 </span>
                 <span
-                  className={`text-sm font-medium ${
+                  className={`text-xs md:text-sm font-medium ${
                     stock.changePercent >= 0
                       ? 'text-green-400'
                       : 'text-red-400'
@@ -182,7 +182,7 @@ export default function StockTicker() {
                 </span>
               </div>
               {index < stocks.length - 1 && (
-                <span className="text-gray-400 text-xs mx-3">|</span>
+                <span className="text-gray-400 text-xs mx-1 md:mx-3">|</span>
               )}
             </>
           ))}
