@@ -8,6 +8,7 @@ import Header from '@/components/Header';
 import ETFCard from '@/components/ETFCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorMessage from '@/components/ErrorMessage';
+import { FilterSelect } from '@/components/ui/custom-select';
 
 interface ETF {
   name: string;
@@ -130,53 +131,47 @@ export default function ETFsPage() {
             </div>
 
             {/* Category Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Category:</label>
-              <select
-                value={filterCategory}
-                onChange={(e) => setFilterCategory(e.target.value)}
-                className="w-full px-3 py-2 bg-white/70 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category === 'all' ? 'All Categories' : category}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <FilterSelect
+              label="Filter by Category:"
+              value={filterCategory}
+              onValueChange={(value) => setFilterCategory(value)}
+              placeholder="Select category"
+              variant="filter"
+              options={categories.map((category) => ({
+                value: category,
+                label: category === 'all' ? 'All Categories' : category,
+              }))}
+            />
 
             {/* Fund House Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Filter by Fund House:</label>
-              <select
-                value={filterFundHouse}
-                onChange={(e) => setFilterFundHouse(e.target.value)}
-                className="w-full px-3 py-2 bg-white/70 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                {fundHouses.map((fundHouse) => (
-                  <option key={fundHouse} value={fundHouse}>
-                    {fundHouse === 'all' ? 'All Fund Houses' : fundHouse}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <FilterSelect
+              label="Filter by Fund House:"
+              value={filterFundHouse}
+              onValueChange={(value) => setFilterFundHouse(value)}
+              placeholder="Select fund house"
+              variant="filter"
+              options={fundHouses.map((fundHouse) => ({
+                value: fundHouse,
+                label: fundHouse === 'all' ? 'All Fund Houses' : fundHouse,
+              }))}
+            />
 
             {/* Sort Control */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Sort by:</label>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="w-full px-3 py-2 bg-white/70 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="returns1Y">1 Year Returns</option>
-                <option value="returns3Y">3 Year Returns</option>
-                <option value="returns5Y">5 Year Returns</option>
-                <option value="nav">NAV (High to Low)</option>
-                <option value="aum">AUM (High to Low)</option>
-                <option value="expenseRatio">Expense Ratio (Low to High)</option>
-              </select>
-            </div>
+            <FilterSelect
+              label="Sort by:"
+              value={sortBy}
+              onValueChange={(value) => setSortBy(value)}
+              placeholder="Select sort option"
+              variant="filter"
+              options={[
+                { value: 'returns1Y', label: '1 Year Returns' },
+                { value: 'returns3Y', label: '3 Year Returns' },
+                { value: 'returns5Y', label: '5 Year Returns' },
+                { value: 'nav', label: 'NAV (High to Low)' },
+                { value: 'aum', label: 'AUM (High to Low)' },
+                { value: 'expenseRatio', label: 'Expense Ratio (Low to High)' },
+              ]}
+            />
           </div>
           
           {/* Filter Summary */}

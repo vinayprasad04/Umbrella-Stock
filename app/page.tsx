@@ -403,21 +403,41 @@ export default function HomePage() {
 
             {/* Right Column: Mutual Funds + Sectors */}
             <div className="space-y-4 md:space-y-8">
-              {/* Mutual Funds Section */}
-              <div className="bg-white/70 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-8 border border-white/50 shadow-xl">
-                <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-8">
-                  <div className="w-8 h-8 md:w-12 md:h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg md:rounded-2xl flex items-center justify-center shadow-lg">
-                    <span className="text-white text-sm md:text-xl">💎</span>
+              {/* Enhanced Mutual Funds Section */}
+              <div className="bg-gradient-to-br from-purple-50/80 to-pink-50/80 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-8 border border-purple-100/50 shadow-xl hover:shadow-2xl transition-all duration-500">
+                <div className="flex items-center justify-between mb-4 md:mb-8">
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <div className="w-10 h-10 md:w-14 md:h-14 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-400/20 to-pink-500/20 animate-pulse"></div>
+                      <span className="text-white text-lg md:text-2xl relative z-10">💎</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-pink-700">Mutual Funds</h3>
+                      <p className="text-xs md:text-sm text-gray-600 font-medium">Professional fund management</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg md:text-2xl font-bold text-gray-900">Mutual Funds</h3>
-                    <p className="text-xs md:text-sm text-gray-600">Professional fund management</p>
+                  <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full px-3 py-1 border border-purple-200">
+                    <span className="text-xs font-semibold text-purple-700">Top Picks</span>
                   </div>
                 </div>
 
                 {loadingMutualFunds ? (
-                  <div className="flex justify-center py-12">
-                    <LoadingSpinner />
+                  <div className="space-y-4">
+                    {Array.from({ length: 4 }).map((_, index) => (
+                      <div key={index} className="bg-white/60 rounded-xl md:rounded-2xl p-4 md:p-6 border border-white/50 animate-pulse">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-gradient-to-r from-purple-300 to-pink-300 rounded-full"></div>
+                          <div className="flex-1">
+                            <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                            <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                          </div>
+                          <div className="text-right">
+                            <div className="h-4 bg-gray-300 rounded mb-1 w-16"></div>
+                            <div className="h-3 bg-gray-200 rounded w-12"></div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 ) : mutualFundsError ? (
                   <ErrorMessage 
@@ -425,96 +445,249 @@ export default function HomePage() {
                     message={(mutualFundsError as Error)?.message || 'Failed to fetch mutual fund data. Please try again later.'}
                   />
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3 md:space-y-4">
                     {mutualFunds?.slice(0, 4).map((fund: any, index: number) => (
                       <Link 
                         key={fund.name || fund.schemeCode || index} 
                         href={fund.schemeCode ? `/mutual-funds/${fund.schemeCode}` : '/mutual-funds'}
-                        className="block"
+                        className="block group"
                       >
-                        <div className="bg-white/50 rounded-lg md:rounded-2xl border border-white/50 p-2 md:p-4 hover:bg-white/70 hover:scale-105 transition-all duration-300 cursor-pointer">
-                          <div className="flex justify-between items-start">
-                            <div className="flex-1">
-                              <h4 className="font-semibold text-gray-900 text-xs md:text-sm leading-tight mb-1">
+                        <div className="bg-white/70 backdrop-blur-sm rounded-xl md:rounded-2xl border border-white/60 p-4 md:p-6 hover:bg-white/90 hover:scale-[1.02] hover:shadow-lg transition-all duration-300 cursor-pointer relative overflow-hidden">
+                          {/* Gradient Background Effect */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          
+                          <div className="flex items-center gap-4 relative z-10">
+                            {/* Fund Icon */}
+                            <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                              <span className="text-white text-lg md:text-xl font-bold">
+                                {(fund.name || fund.schemeName)?.charAt(0) || 'F'}
+                              </span>
+                            </div>
+                            
+                            {/* Fund Info */}
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-bold text-gray-900 text-sm md:text-base leading-tight mb-1 group-hover:text-purple-700 transition-colors duration-300">
                                 {fund.name || fund.schemeName}
                               </h4>
-                              <p className="text-xs text-gray-500 hidden md:block">
-                                {fund.category} • {fund.fundHouse}
-                              </p>
-                              <p className="text-xs text-gray-500 md:hidden">
-                                {fund.fundHouse}
-                              </p>
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
+                                  {fund.category}
+                                </span>
+                                <span className="text-xs text-gray-500 font-medium">{fund.fundHouse}</span>
+                              </div>
                             </div>
-                            <div className="text-right ml-2 md:ml-4">
-                              <p className="text-xs md:text-sm font-bold text-gray-900">
-                                ₹{fund.nav ? fund.nav.toFixed(2) : 'N/A'}
-                              </p>
-                              <p className={`text-xs font-medium ${
-                                fund.returns1Y && fund.returns1Y >= 0 ? 'text-green-600' : 'text-red-600'
-                              }`}>
-                                {fund.returns1Y ? `${fund.returns1Y >= 0 ? '+' : ''}${fund.returns1Y.toFixed(1)}%` : 'N/A'} (1Y)
-                              </p>
+                            
+                            {/* Performance Metrics */}
+                            <div className="text-right flex-shrink-0">
+                              <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-2 md:p-3 border border-purple-100">
+                                <p className="text-sm md:text-base font-bold text-gray-900">
+                                  ₹{fund.nav ? fund.nav.toFixed(2) : 'N/A'}
+                                </p>
+                                <p className="text-xs text-gray-500 font-medium mb-1">NAV</p>
+                                <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-bold ${
+                                  fund.returns1Y && fund.returns1Y >= 0 
+                                    ? 'bg-green-100 text-green-700' 
+                                    : 'bg-red-100 text-red-700'
+                                }`}>
+                                  <span className="mr-1">
+                                    {fund.returns1Y && fund.returns1Y >= 0 ? '📈' : '📉'}
+                                  </span>
+                                  {fund.returns1Y ? `${fund.returns1Y >= 0 ? '+' : ''}${fund.returns1Y.toFixed(1)}%` : 'N/A'}
+                                </div>
+                              </div>
                             </div>
                           </div>
+                          
+                          {/* Performance Bar */}
+                          {fund.returns1Y && (
+                            <div className="mt-3 relative">
+                              <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                <div 
+                                  className={`h-1.5 rounded-full transition-all duration-500 ${
+                                    fund.returns1Y >= 0 ? 'bg-gradient-to-r from-green-400 to-green-500' : 'bg-gradient-to-r from-red-400 to-red-500'
+                                  }`}
+                                  style={{ width: `${Math.min(Math.abs(fund.returns1Y) * 5, 100)}%` }}
+                                ></div>
+                              </div>
+                              <p className="text-xs text-gray-500 mt-1">1Y Performance</p>
+                            </div>
+                          )}
                         </div>
                       </Link>
                     ))}
                   </div>
                 )}
 
-                <div className="mt-4 md:mt-8">
-                  <a
-                    href="/mutual-funds"
-                    className="block text-center bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-medium text-sm md:text-base hover:shadow-lg transition-all duration-300"
-                  >
-                    Discover Mutual Funds
-                  </a>
+                {/* Enhanced Call-to-Action */}
+                <div className="mt-6 md:mt-8">
+                  <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl md:rounded-2xl p-4 md:p-6 text-white relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-400/20 to-pink-500/20 animate-pulse"></div>
+                    <div className="relative z-10 text-center">
+                      <h4 className="font-bold text-lg md:text-xl mb-2">Explore 500+ Mutual Funds</h4>
+                      <p className="text-sm md:text-base text-purple-100 mb-4">
+                        Discover top-performing funds, compare returns, and build your portfolio
+                      </p>
+                      <a
+                        href="/mutual-funds"
+                        className="inline-flex items-center px-6 py-3 bg-white text-purple-600 rounded-xl font-bold text-sm md:text-base hover:bg-gray-50 hover:scale-105 transition-all duration-300 shadow-lg"
+                      >
+                        <span className="mr-2">🚀</span>
+                        Start Investing Today
+                        <span className="ml-2">→</span>
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Sector Performance Section */}
-              <div className="bg-white/70 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-8 border border-white/50 shadow-xl">
-                <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
-                  <div className="w-8 h-8 md:w-12 md:h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg md:rounded-2xl flex items-center justify-center shadow-lg">
-                    <span className="text-white text-sm md:text-xl">🏢</span>
+              {/* Enhanced Sector Performance Section */}
+              <div className="bg-gradient-to-br from-indigo-50/80 to-purple-50/80 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-8 border border-indigo-100/50 shadow-xl hover:shadow-2xl transition-all duration-500">
+                <div className="flex items-center justify-between mb-4 md:mb-8">
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <div className="w-10 h-10 md:w-14 md:h-14 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-r from-indigo-400/20 to-purple-500/20 animate-pulse"></div>
+                      <span className="text-white text-lg md:text-2xl relative z-10">🏢</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg md:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-purple-700">Market Sectors</h3>
+                      <p className="text-xs md:text-sm text-gray-600 font-medium">Industry performance tracker</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg md:text-2xl font-bold text-gray-900">Sectors</h3>
-                    <p className="text-xs md:text-sm text-gray-600">Performance by industry</p>
+                  <div className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-full px-3 py-1 border border-indigo-200">
+                    <span className="text-xs font-semibold text-indigo-700">Live Data</span>
                   </div>
                 </div>
                 
                 {loadingSectors ? (
-                  <div className="flex justify-center py-6 md:py-8">
-                    <LoadingSpinner />
-                  </div>
-                ) : (
-                  <div className="space-y-2 md:space-y-3">
-                    {sectors?.slice(0, 6).map((sector) => (
-                      <div key={sector.name} className="flex justify-between items-center p-2 md:p-3 rounded-lg md:rounded-2xl hover:bg-white/50 transition-all duration-300">
-                        <div>
-                          <h4 className="font-semibold text-gray-900 text-sm md:text-base">{sector.name}</h4>
-                          <p className="text-xs text-gray-500">{sector.stockCount} stocks</p>
-                        </div>
-                        <div className="text-right">
-                          <span className={`font-bold text-xs md:text-sm ${
-                            sector.performance >= 0 ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {sector.performance >= 0 ? '+' : ''}{sector.performance.toFixed(2)}%
-                          </span>
+                  <div className="space-y-3 md:space-y-4">
+                    {Array.from({ length: 6 }).map((_, index) => (
+                      <div key={index} className="bg-white/60 rounded-xl p-3 md:p-4 border border-white/50 animate-pulse">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 bg-gradient-to-r from-indigo-300 to-purple-300 rounded-full"></div>
+                          <div className="flex-1">
+                            <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                            <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                          </div>
+                          <div className="text-right">
+                            <div className="h-6 bg-gray-300 rounded w-16"></div>
+                          </div>
                         </div>
                       </div>
                     ))}
                   </div>
+                ) : (
+                  <div className="space-y-3 md:space-y-4">
+                    {sectors?.slice(0, 6).map((sector, index) => {
+                      const getSectorIcon = (name: string) => {
+                        const icons: Record<string, string> = {
+                          'Technology': '💻',
+                          'Healthcare': '🏥',
+                          'Financial Services': '💰',
+                          'Consumer Defensive': '🛒',
+                          'Consumer Cyclical': '🛍️',
+                          'Industrial': '🏭',
+                          'Communication Services': '📡',
+                          'Energy': '⚡',
+                          'Materials': '🏗️',
+                          'Utilities': '🔋',
+                          'Real Estate': '🏘️'
+                        };
+                        return icons[name] || '📊';
+                      };
+
+                      const getSectorColor = (performance: number) => {
+                        if (performance >= 2) return 'from-emerald-500 to-green-500';
+                        if (performance >= 1) return 'from-green-400 to-emerald-400';
+                        if (performance >= 0) return 'from-yellow-400 to-orange-400';
+                        if (performance >= -1) return 'from-orange-400 to-red-400';
+                        return 'from-red-500 to-red-600';
+                      };
+
+                      const getPerformanceWidth = (performance: number) => {
+                        const maxPerformance = Math.max(...(sectors?.map(s => Math.abs(s.performance)) || [0]));
+                        return Math.min((Math.abs(performance) / maxPerformance) * 100, 100);
+                      };
+
+                      return (
+                        <Link 
+                          key={sector.name}
+                          href="/sectors"
+                          className="block group"
+                        >
+                          <div className="bg-white/70 backdrop-blur-sm rounded-xl md:rounded-2xl border border-white/60 p-4 md:p-5 hover:bg-white/90 hover:scale-[1.02] hover:shadow-lg transition-all duration-300 cursor-pointer relative overflow-hidden">
+                            {/* Gradient Background Effect */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            
+                            <div className="flex items-center gap-4 relative z-10">
+                              {/* Sector Icon */}
+                              <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                <span className="text-lg md:text-xl">
+                                  {getSectorIcon(sector.name)}
+                                </span>
+                              </div>
+                              
+                              {/* Sector Info */}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h4 className="font-bold text-gray-900 text-sm md:text-base group-hover:text-indigo-700 transition-colors duration-300">
+                                    {sector.name}
+                                  </h4>
+                                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">
+                                    #{index + 1}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-gray-500 font-medium mb-2">{sector.stockCount} stocks</p>
+                                
+                                {/* Performance Bar */}
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                  <div 
+                                    className={`h-2 rounded-full bg-gradient-to-r ${getSectorColor(sector.performance)} transition-all duration-500`}
+                                    style={{ width: `${getPerformanceWidth(sector.performance)}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                              
+                              {/* Performance Metrics */}
+                              <div className="text-right flex-shrink-0">
+                                <div className={`inline-flex items-center px-3 py-2 rounded-full text-sm md:text-base font-bold shadow-sm ${
+                                  sector.performance >= 0 
+                                    ? 'bg-green-100 text-green-700 border border-green-200' 
+                                    : 'bg-red-100 text-red-700 border border-red-200'
+                                }`}>
+                                  <span className="mr-1 text-xs">
+                                    {sector.performance >= 0 ? '📈' : '📉'}
+                                  </span>
+                                  {sector.performance >= 0 ? '+' : ''}{sector.performance.toFixed(2)}%
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1 font-medium">Today</p>
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 )}
 
-                <div className="mt-4 md:mt-8">
-                  <a
-                    href="/sectors"
-                    className="block text-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 md:px-6 py-2 md:py-3 rounded-xl font-medium text-sm md:text-base hover:shadow-lg transition-all duration-300"
-                  >
-                    View All Sectors
-                  </a>
+                {/* Enhanced Call-to-Action */}
+                <div className="mt-6 md:mt-8">
+                  <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl md:rounded-2xl p-4 md:p-6 text-white relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-400/20 to-purple-500/20 animate-pulse"></div>
+                    <div className="relative z-10 text-center">
+                      <h4 className="font-bold text-lg md:text-xl mb-2">Track All Market Sectors</h4>
+                      <p className="text-sm md:text-base text-indigo-100 mb-4">
+                        Analyze performance across industries and discover trending sectors
+                      </p>
+                      <a
+                        href="/sectors"
+                        className="inline-flex items-center px-6 py-3 bg-white text-indigo-600 rounded-xl font-bold text-sm md:text-base hover:bg-gray-50 hover:scale-105 transition-all duration-300 shadow-lg"
+                      >
+                        <span className="mr-2">📊</span>
+                        Explore All Sectors
+                        <span className="ml-2">→</span>
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

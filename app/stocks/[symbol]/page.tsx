@@ -98,8 +98,23 @@ export default function StockDetailPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            {history.length > 0 && (
+            {loadingDetails ? (
+              <div className="card">
+                <div className="flex items-center justify-center py-12">
+                  <LoadingSpinner size="lg" />
+                </div>
+                <p className="text-center text-gray-600 mt-4">Loading chart data...</p>
+              </div>
+            ) : history.length > 0 ? (
               <AdvancedStockChart data={history} symbol={symbol} />
+            ) : (
+              <div className="card">
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4">📊</div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Chart Not Available</h3>
+                  <p className="text-gray-600">Historical data is not available for this stock at the moment.</p>
+                </div>
+              </div>
             )}
 
             {liveData && (
@@ -139,28 +154,30 @@ export default function StockDetailPage() {
               <div className="card">
                 <h3 className="text-lg font-semibold mb-4">Key Metrics</h3>
                 <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Sector</span>
-                    <span className="font-medium">{overview.sector}</span>
-                  </div>
-                  {overview.marketCap && (
+                  {overview.sector && typeof overview.sector === 'string' && overview.sector !== '000' && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Sector</span>
+                      <span className="font-medium">{overview.sector}</span>
+                    </div>
+                  )}
+                  {overview.marketCap ? (
                     <div className="flex justify-between">
                       <span className="text-gray-600">Market Cap</span>
                       <span className="font-medium">{formatNumber(overview.marketCap)}</span>
                     </div>
-                  )}
-                  {overview.pe && (
+                  ):""}
+                  {overview.pe ? (
                     <div className="flex justify-between">
                       <span className="text-gray-600">P/E Ratio</span>
                       <span className="font-medium">{overview.pe.toFixed(2)}</span>
                     </div>
-                  )}
-                  {overview.eps && (
+                  ):""}
+                  {overview.eps ? (
                     <div className="flex justify-between">
                       <span className="text-gray-600">EPS</span>
                       <span className="font-medium">{formatCurrency(overview.eps)}</span>
                     </div>
-                  )}
+                  ):""}
                   {overview.dividend > 0 && (
                     <div className="flex justify-between">
                       <span className="text-gray-600">Dividend Yield</span>
@@ -198,17 +215,6 @@ export default function StockDetailPage() {
               </div>
             </div>
 
-            <div className="card">
-              <h3 className="text-lg font-semibold mb-4">Related</h3>
-              <div className="text-sm">
-                <p className="text-gray-600 mb-2">Similar stocks in {overview?.sector}:</p>
-                <div className="space-y-1">
-                  <a href="/stocks/AAPL" className="block text-primary-600 hover:text-primary-700">AAPL - Apple Inc.</a>
-                  <a href="/stocks/MSFT" className="block text-primary-600 hover:text-primary-700">MSFT - Microsoft</a>
-                  <a href="/stocks/GOOGL" className="block text-primary-600 hover:text-primary-700">GOOGL - Alphabet</a>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </main>
