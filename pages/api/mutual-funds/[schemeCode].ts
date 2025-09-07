@@ -120,7 +120,7 @@ export default async function handler(
       const fundDetails = await MutualFundDetails.findOne({ 
         schemeCode: parseInt(schemeCode as string),
         isActive: true 
-      }).lean();
+      }).lean() as any;
 
       if (fundDetails) {
         scrapedData = {
