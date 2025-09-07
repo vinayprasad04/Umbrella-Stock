@@ -3,7 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from 'next/navigation';
 import SearchBar from './SearchBar';
+
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+}
 
 const sharesTradingMenu = [
   { label: 'Home', href: '/' },
@@ -15,11 +23,25 @@ const sharesTradingMenu = [
 export default function Header() {
   const [pathname, setPathname] = useState('/');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     // Get current pathname from window location
     if (typeof window !== 'undefined') {
       setPathname(window.location.pathname);
+      
+      // Check if user is logged in
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        try {
+          setUser(JSON.parse(userStr));
+        } catch (error) {
+          localStorage.removeItem('user');
+          localStorage.removeItem('authToken');
+        }
+      }
     }
   }, []);
 
@@ -29,6 +51,19 @@ export default function Header() {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
+    setUser(null);
+    setShowUserMenu(false);
+    router.push('/');
+  };
+
+  const getDashboardLink = () => {
+    if (!user) return '/login';
+    return ['ADMIN', 'DATA_ENTRY'].includes(user.role) ? '/admin/dashboard' : '/dashboard';
   };
 
   // Close menu when clicking outside
@@ -137,6 +172,92 @@ export default function Header() {
               <span className="hidden lg:inline ml-1">{item.label}</span>
             </Link>
           ))}
+
+          {/* Authentication Section */}
+          <div className="ml-2 lg:ml-4 flex items-center gap-2">
+            {user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center gap-2 px-3 lg:px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  <div className="w-6 h-6 lg:w-8 lg:h-8 bg-white/20 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs lg:text-sm font-semibold">
+                      {user.name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <span className="text-white font-medium text-sm lg:text-base hidden lg:block">
+                    {user.name}
+                  </span>
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {/* User Dropdown Menu */}
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 z-50">
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                      <p className="text-xs text-gray-500">{user.email}</p>
+                      <p className="text-xs text-blue-600 font-medium mt-1">{user.role}</p>
+                    </div>
+                    
+                    <Link
+                      href={getDashboardLink()}
+                      onClick={() => setShowUserMenu(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5a2 2 0 012-2h2a2 2 0 012 2v1H8V5z" />
+                      </svg>
+                      Dashboard
+                    </Link>
+
+                    {['ADMIN', 'DATA_ENTRY'].includes(user.role) && (
+                      <Link
+                        href="/admin/dashboard"
+                        onClick={() => setShowUserMenu(false)}
+                        className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Admin Panel
+                      </Link>
+                    )}
+
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors w-full text-left"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/login"
+                  className="px-3 lg:px-4 py-2 text-sm lg:text-base text-gray-300 hover:text-white border border-gray-600 hover:border-gray-400 rounded-lg transition-all duration-200 font-medium"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/signup"
+                  className="px-3 lg:px-4 py-2 text-sm lg:text-base bg-gradient-to-r from-[#FF6B2C] to-[#FF8A50] text-white rounded-lg hover:shadow-lg transition-all duration-200 font-medium"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -246,10 +367,90 @@ export default function Header() {
             
             {/* Bottom Section */}
             <div className="border-t border-gray-200 p-6 bg-gray-100 flex-shrink-0">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Market Status</span>
-                <span className="text-green-600 font-medium">● Live</span>
-              </div>
+              {user ? (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm">
+                    <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                      <span className="text-white font-semibold">
+                        {user.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
+                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                      <p className="text-xs text-blue-600 font-medium">{user.role}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Link
+                      href={getDashboardLink()}
+                      onClick={closeMobileMenu}
+                      className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 bg-white rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5a2 2 0 012-2h2a2 2 0 012 2v1H8V5z" />
+                      </svg>
+                      Dashboard
+                    </Link>
+
+                    {['ADMIN', 'DATA_ENTRY'].includes(user.role) && (
+                      <Link
+                        href="/admin/dashboard"
+                        onClick={closeMobileMenu}
+                        className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 bg-white rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Admin Panel
+                      </Link>
+                    )}
+
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-3 px-3 py-2 text-sm text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors shadow-sm w-full text-left"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-sm mb-4">
+                    <span className="text-gray-600">Market Status</span>
+                    <span className="text-green-600 font-medium">● Live</span>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Link
+                      href="/login"
+                      onClick={closeMobileMenu}
+                      className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                      </svg>
+                      Sign In
+                    </Link>
+                    <Link
+                      href="/signup"
+                      onClick={closeMobileMenu}
+                      className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-[#FF6B2C] to-[#FF8A50] rounded-lg hover:shadow-lg transition-all duration-200"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                      </svg>
+                      Sign Up
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

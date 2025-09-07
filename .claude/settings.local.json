@@ -20,7 +20,8 @@
       "Bash(npm run sync-mf-daily:*)",
       "Bash(node:*)",
       "Bash(timeout:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "WebFetch(domain:mf.captnemo.in)"
     ],
     "deny": [],
     "ask": [],
