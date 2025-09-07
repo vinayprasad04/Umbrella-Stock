@@ -16,7 +16,11 @@
       "Read(c:\\Users\\QSS\\Downloads/**)",
       "Bash(vercel env:*)",
       "Bash(npm run lint)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(npm run sync-mf-daily:*)",
+      "Bash(node:*)",
+      "Bash(timeout:*)",
+      "Bash(taskkill:*)"
     ],
     "deny": [],
     "ask": [],

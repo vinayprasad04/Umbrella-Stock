@@ -29,6 +29,7 @@ export default function MutualFundsPage() {
   const [limit, setLimit] = useState(20);
   const [sortBy, setSortBy] = useState('returns1Y');
 
+  // Fetch funds data
   const { data: fundsData, isLoading, error, refetch } = useQuery({
     queryKey: ['mutualFunds', searchQuery, selectedCategory, selectedFundHouse, limit],
     queryFn: async () => {
@@ -47,6 +48,26 @@ export default function MutualFundsPage() {
     retryDelay: 5000,
   });
 
+  // Fetch categories data
+  const { data: categoriesData } = useQuery({
+    queryKey: ['mutualFundCategories'],
+    queryFn: async () => {
+      const response = await axios.get('/api/mutual-funds/categories');
+      return response.data.success ? response.data.data : [];
+    },
+    staleTime: 30 * 60 * 1000, // 30 minutes
+  });
+
+  // Fetch fund houses data
+  const { data: fundHousesData } = useQuery({
+    queryKey: ['mutualFundHouses'],
+    queryFn: async () => {
+      const response = await axios.get('/api/mutual-funds/fund-houses');
+      return response.data.success ? response.data.data : [];
+    },
+    staleTime: 30 * 60 * 1000, // 30 minutes
+  });
+
   const funds: MutualFundData[] = (fundsData as MutualFundData[]) || [];
   
   // Process and sort funds
@@ -61,9 +82,24 @@ export default function MutualFundsPage() {
       return 0;
     });
 
-  // Get unique categories and fund houses for filters
-  const categories: string[] = ['all', ...Array.from(new Set(funds.map(fund => fund.category)))];
-  const fundHouses: string[] = ['all', ...Array.from(new Set(funds.map(fund => fund.fundHouse)))];
+  // Prepare filter options
+  const categoryOptions = [
+    { value: 'all', label: 'All Categories', count: null },
+    ...(categoriesData || []).map((cat: any) => ({
+      value: cat.value,
+      label: `${cat.label} (${cat.count})`,
+      count: cat.count
+    }))
+  ];
+
+  const fundHouseOptions = [
+    { value: 'all', label: 'All Fund Houses', count: null },
+    ...(fundHousesData || []).map((house: any) => ({
+      value: house.value,
+      label: `${house.label} (${house.count})`,
+      count: house.count
+    }))
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 relative overflow-hidden">
@@ -284,10 +320,7 @@ export default function MutualFundsPage() {
                     onValueChange={(value) => setSelectedCategory(value)}
                     placeholder="All Categories"
                     variant="form"
-                    options={categories.map((category) => ({
-                      value: category,
-                      label: category === 'all' ? 'All Categories' : category,
-                    }))}
+                    options={categoryOptions}
                   />
                 </div>
 
@@ -302,10 +335,7 @@ export default function MutualFundsPage() {
                     onValueChange={(value) => setSelectedFundHouse(value)}
                     placeholder="All Fund Houses"
                     variant="form"
-                    options={fundHouses.map((fundHouse) => ({
-                      value: fundHouse,
-                      label: fundHouse === 'all' ? 'All Fund Houses' : fundHouse,
-                    }))}
+                    options={fundHouseOptions}
                   />
                 </div>
 

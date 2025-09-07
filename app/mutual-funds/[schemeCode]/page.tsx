@@ -9,6 +9,32 @@ import Header from '@/components/Header';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorMessage from '@/components/ErrorMessage';
 import AdvancedMutualFundChart from '@/components/AdvancedMutualFundChart';
+import TopHoldings3DChart from '@/components/TopHoldings3DChart';
+
+interface Holding {
+  company: string;
+  allocation: number;
+}
+
+interface SectorAllocation {
+  sector: string;
+  allocation: number;
+}
+
+interface FundManager {
+  name: string;
+  experience?: string;
+  qualification?: string;
+}
+
+interface FundDetails {
+  minimumInvestment?: number;
+  minimumSIP?: number;
+  exitLoad?: string;
+  fundManager?: FundManager[];
+  sectors?: SectorAllocation[];
+  launchDate?: string;
+}
 
 interface MutualFundDetail {
   schemeCode: number;
@@ -33,6 +59,21 @@ interface MutualFundDetail {
   schemeType?: string;
   schemeCategory?: string;
   schemeNameFull?: string;
+  // New enhanced features
+  scrapedAUM?: number;
+  scrapedExpenseRatio?: number;
+  isPlaceholderData?: boolean;
+  topHoldings?: Holding[];
+  fundDetails?: FundDetails;
+  additionalDataAvailable?: boolean;
+  scrapedAt?: string;
+  lastFetched?: string;
+  dataSources?: {
+    basic: string;
+    nav: string;
+    additional: string;
+    scrapingSources?: string[];
+  };
 }
 
 export default function MutualFundDetailPage() {
@@ -60,7 +101,6 @@ export default function MutualFundDetailPage() {
   const chartData = mutualFund?.historicalData 
     ? mutualFund.historicalData
         .slice(0, selectedPeriod === '1Y' ? 365 : selectedPeriod === '6M' ? 180 : selectedPeriod === '3M' ? 90 : 30)
-        .reverse()
         .map(item => ({
           date: new Date(item.date.split('-').reverse().join('-')).toLocaleDateString('en-US', { 
             month: 'short', 
@@ -73,12 +113,18 @@ export default function MutualFundDetailPage() {
 
   const formatCurrency = (amount?: number): string => {
     if (!amount) return 'N/A';
-    if (amount >= 10000000000) {
-      return `₹${(amount / 10000000000).toFixed(1)}k Cr`;
-    } else if (amount >= 1000000000) {
-      return `₹${(amount / 10000000000).toFixed(2)}k Cr`;
-    } else if (amount >= 10000000) {
-      return `₹${(amount / 10000000).toFixed(0)} Cr`;
+    
+    // Convert to crores and show full values (no "k" abbreviations)
+    const crores = amount / 10000000; // 1 crore = 10,000,000
+    
+    if (crores >= 1000) {
+      return `₹${crores.toFixed(0)} Cr`;
+    } else if (crores >= 100) {
+      return `₹${crores.toFixed(0)} Cr`;
+    } else if (crores >= 10) {
+      return `₹${crores.toFixed(1)} Cr`;
+    } else if (crores >= 1) {
+      return `₹${crores.toFixed(2)} Cr`;
     } else {
       return `₹${amount.toLocaleString('en-IN')}`;
     }
@@ -192,33 +238,49 @@ export default function MutualFundDetailPage() {
             </div>
 
             {/* Performance Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
               <div className="bg-white/70 backdrop-blur-md rounded-2xl p-6 border border-white/50 shadow-lg text-center">
                 <div className={`text-2xl font-bold mb-2 ${getReturnColor(mutualFund.returns1Y)}`}>
                   {mutualFund.returns1Y ? `${mutualFund.returns1Y >= 0 ? '+' : ''}${mutualFund.returns1Y.toFixed(2)}%` : 'N/A'}
                 </div>
-                <div className="text-sm text-gray-600">1 Year Return</div>
+                <div className="text-sm text-gray-600">1 Year CAGR</div>
               </div>
               
               <div className="bg-white/70 backdrop-blur-md rounded-2xl p-6 border border-white/50 shadow-lg text-center">
                 <div className={`text-2xl font-bold mb-2 ${getReturnColor(mutualFund.returns3Y)}`}>
                   {mutualFund.returns3Y ? `${mutualFund.returns3Y >= 0 ? '+' : ''}${mutualFund.returns3Y.toFixed(2)}%` : 'N/A'}
                 </div>
-                <div className="text-sm text-gray-600">3 Year Return</div>
+                <div className="text-sm text-gray-600">3 Year CAGR</div>
               </div>
               
               <div className="bg-white/70 backdrop-blur-md rounded-2xl p-6 border border-white/50 shadow-lg text-center">
                 <div className={`text-2xl font-bold mb-2 ${getReturnColor(mutualFund.returns5Y)}`}>
                   {mutualFund.returns5Y ? `${mutualFund.returns5Y >= 0 ? '+' : ''}${mutualFund.returns5Y.toFixed(2)}%` : 'N/A'}
                 </div>
-                <div className="text-sm text-gray-600">5 Year Return</div>
+                <div className="text-sm text-gray-600">5 Year CAGR</div>
               </div>
               
               <div className="bg-white/70 backdrop-blur-md rounded-2xl p-6 border border-white/50 shadow-lg text-center">
-                <div className="text-2xl font-bold text-blue-600 mb-2">
-                  {mutualFund.expenseRatio ? `${mutualFund.expenseRatio.toFixed(2)}%` : 'N/A'}
+                <div className="text-2xl font-bold text-purple-600 mb-2">
+                  {formatCurrency(mutualFund.scrapedAUM || mutualFund.aum)}
                 </div>
-                <div className="text-sm text-gray-600">Expense Ratio</div>
+                <div className="text-sm text-gray-600">
+                  AUM {mutualFund.scrapedAUM ? '(Live)' : '(Est.)'}
+                </div>
+              </div>
+              
+              <div className="bg-white/70 backdrop-blur-md rounded-2xl p-6 border border-white/50 shadow-lg text-center">
+                <div className="text-2xl font-bold text-orange-600 mb-2">
+                  {mutualFund.scrapedExpenseRatio 
+                    ? `${mutualFund.scrapedExpenseRatio.toFixed(2)}%`
+                    : mutualFund.expenseRatio
+                    ? `${mutualFund.expenseRatio.toFixed(2)}%`
+                    : 'N/A'
+                  }
+                </div>
+                <div className="text-sm text-gray-600">
+                  Expense Ratio {mutualFund.scrapedExpenseRatio ? '(Live)' : '(Est.)'}
+                </div>
               </div>
             </div>
 
@@ -256,7 +318,19 @@ export default function MutualFundDetailPage() {
                   
                   <div className="flex justify-between items-center py-3 border-b border-gray-100">
                     <span className="text-gray-600">AUM</span>
-                    <span className="font-medium text-gray-900">{formatCurrency(mutualFund.aum)}</span>
+                    <span className="font-medium text-gray-900">{formatCurrency(mutualFund.scrapedAUM || mutualFund.aum)}</span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                    <span className="text-gray-600">Expense Ratio</span>
+                    <span className="font-medium text-gray-900">
+                      {mutualFund.scrapedExpenseRatio 
+                        ? `${mutualFund.scrapedExpenseRatio.toFixed(2)}%`
+                        : mutualFund.expenseRatio
+                        ? `${mutualFund.expenseRatio.toFixed(2)}%`
+                        : 'N/A'
+                      }
+                    </span>
                   </div>
                   
                   <div className="flex justify-between items-center py-3 border-b border-gray-100">
@@ -313,6 +387,44 @@ export default function MutualFundDetailPage() {
                 </div>
               </div>
             </div>
+
+            {/* Top Holdings 3D Chart */}
+            <div className="mt-8">
+              <TopHoldings3DChart 
+                holdings={mutualFund.topHoldings || []}
+                fundDetails={mutualFund.fundDetails}
+                isPlaceholder={mutualFund.isPlaceholderData || false}
+              />
+            </div>
+
+            {/* Data Sources Footer */}
+            {mutualFund.dataSources && (
+              <div className="mt-8 bg-gradient-to-r from-gray-50 to-blue-50/30 rounded-2xl p-6 border border-gray-200/50">
+                <h4 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+                  <span>🔗</span>
+                  Data Sources
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Basic Info:</span>
+                    <span className="font-medium text-gray-800">{mutualFund.dataSources.basic}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">NAV & Returns:</span>
+                    <span className="font-medium text-gray-800">{mutualFund.dataSources.nav}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">AUM & Holdings:</span>
+                    <span className="font-medium text-gray-800">{mutualFund.dataSources.additional}</span>
+                  </div>
+                </div>
+                {mutualFund.lastFetched && (
+                  <div className="text-xs text-gray-500 mt-4 text-center">
+                    Last comprehensive update: {new Date(mutualFund.lastFetched).toLocaleString('en-IN')}
+                  </div>
+                )}
+              </div>
+            )}
           </>
         ) : (
           <div className="text-center py-12">

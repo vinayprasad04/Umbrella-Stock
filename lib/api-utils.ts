@@ -162,3 +162,20 @@ export function formatNumber(num: number): string {
 export function formatPercentage(percent: number): string {
   return `${percent >= 0 ? '+' : ''}${percent.toFixed(2)}%`;
 }
+
+export function formatAUM(amount: number): string {
+  if (!amount || amount === 0) return '₹0 Cr';
+  
+  // Convert to crores and format
+  const crores = amount / 10000000; // 1 crore = 10,000,000
+  
+  if (crores >= 1000) {
+    return `₹${crores.toFixed(0)} Cr`;
+  } else if (crores >= 100) {
+    return `₹${crores.toFixed(0)} Cr`;
+  } else if (crores >= 10) {
+    return `₹${crores.toFixed(1)} Cr`;
+  } else {
+    return `₹${crores.toFixed(2)} Cr`;
+  }
+}

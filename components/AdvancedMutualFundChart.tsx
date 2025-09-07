@@ -75,23 +75,37 @@ export default function AdvancedMutualFundChart({ data, fundName, currentNav }: 
     if (!data || data.length === 0) return [];
 
     const filteredData = filterDataByPeriod(data, timePeriod);
-    const sortedData = [...filteredData].sort((a, b) => 
-      new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
+    // Filter out invalid dates and ensure data is sorted chronologically (oldest to newest)
+    const validData = filteredData.filter(item => {
+      if (!item.date || typeof item.date !== 'string') return false;
+      const parts = item.date.split('-');
+      if (parts.length !== 3) return false;
+      const dateObj = new Date(parts.reverse().join('-'));
+      return !isNaN(dateObj.getTime());
+    });
+
+    const sortedData = [...validData].sort((a, b) => {
+      const dateA = new Date(a.date.split('-').reverse().join('-'));
+      const dateB = new Date(b.date.split('-').reverse().join('-'));
+      return dateA.getTime() - dateB.getTime();
+    });
 
     const navValues = sortedData.map(item => parseFloat(item.nav));
     const smaValues = showSMA ? calculateSMA(navValues, 30) : [];
 
-    return sortedData.map((item, index) => ({
-      date: new Date(item.date).toLocaleDateString('en-IN', { 
-        day: '2-digit', 
-        month: 'short',
-        year: timePeriod === '1Y' || timePeriod === 'ALL' ? '2-digit' : undefined 
-      }),
-      fullDate: new Date(item.date),
-      nav: parseFloat(item.nav),
-      sma: showSMA ? smaValues[index] : null,
-    }));
+    return sortedData.map((item, index) => {
+      const dateObj = new Date(item.date.split('-').reverse().join('-'));
+      return {
+        date: dateObj.toLocaleDateString('en-IN', { 
+          day: '2-digit', 
+          month: 'short',
+          year: timePeriod === '1Y' || timePeriod === 'ALL' ? '2-digit' : undefined 
+        }),
+        fullDate: dateObj,
+        nav: parseFloat(item.nav),
+        sma: showSMA ? smaValues[index] : null,
+      };
+    });
   }, [data, timePeriod, showSMA]);
 
   const CustomTooltip = ({ active, payload, label }: any) => {
