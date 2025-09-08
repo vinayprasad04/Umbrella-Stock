@@ -21,7 +21,8 @@
       "Bash(node:*)",
       "Bash(timeout:*)",
       "Bash(taskkill:*)",
-      "WebFetch(domain:mf.captnemo.in)"
+      "WebFetch(domain:mf.captnemo.in)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": [],

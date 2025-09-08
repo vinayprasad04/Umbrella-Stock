@@ -1,10 +1,31 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import UserDashboardLayout from '@/components/layouts/UserDashboardLayout';
 import Link from 'next/link';
 
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  permissions: string[];
+}
+
 export default function UserDashboard() {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const userData = JSON.parse(userStr);
+        setUser(userData);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  }, []);
   return (
     <UserDashboardLayout currentPage="dashboard">
       <div className="p-8 space-y-8">
