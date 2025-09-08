@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import AdminDashboardLayout from '@/components/layouts/AdminDashboardLayout';
 import Link from 'next/link';
+import { CustomSelect } from '@/components/ui/custom-select';
 
 interface User {
   id: string;
@@ -196,18 +197,19 @@ export default function AdminDashboard() {
                 />
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Data Status</label>
-                <select
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  value={dataFilter}
-                  onChange={(e) => setDataFilter(e.target.value)}
-                >
-                  <option value="">All Funds</option>
-                  <option value="false">Missing Actual Data</option>
-                  <option value="true">Has Actual Data</option>
-                </select>
-              </div>
+              <CustomSelect
+                label="Data Status"
+                value={dataFilter}
+                onValueChange={setDataFilter}
+                options={[
+                  { value: '', label: 'All Funds' },
+                  { value: 'false', label: 'Missing Actual Data' },
+                  { value: 'true', label: 'Has Actual Data' }
+                ]}
+                placeholder="All Funds"
+                triggerClassName="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
+              />
               
               <div className="flex items-end">
                 <button

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import AdminDashboardLayout from '@/components/layouts/AdminDashboardLayout';
+import { CustomSelect } from '@/components/ui/custom-select';
 
 interface User {
   id: string;
@@ -291,7 +292,6 @@ export default function FundDataEntry() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log("SAdaddsad vinay",)
     e.preventDefault();
     setSaving(true);
     setError('');
@@ -300,12 +300,46 @@ export default function FundDataEntry() {
     try {
       const token = localStorage.getItem('authToken');
       
-      // Filter out empty holdings and sectors
+      // Transform frontend data to match API expectations
+      const actualTopHoldings = [
+        ...formData.topEquityHoldings.filter(h => h.companyName.trim() && h.assetsPercentage > 0).map(h => ({
+          name: h.companyName,
+          percentage: h.assetsPercentage,
+          sector: h.sector
+        })),
+        ...formData.topDebtHoldings.filter(h => h.companyName.trim() && h.assetsPercentage > 0).map(h => ({
+          name: h.companyName,
+          percentage: h.assetsPercentage,
+          sector: h.instrument
+        }))
+      ];
+
+      const actualSectorAllocation = formData.sectorWiseHoldings
+        .filter(s => s.sector.trim() && s.fundPercentage > 0)
+        .map(s => ({
+          sector: s.sector,
+          percentage: s.fundPercentage
+        }));
+
+      // Filter out empty fund managers
+      const actualFundManagers = formData.actualFundManagers
+        .filter(m => m.name.trim())
+        .map(m => ({
+          name: m.name,
+          experience: m.experience,
+          background: m.education
+        }));
+
       const cleanedData = {
-        ...formData,
-        actualTopHoldings: formData.actualTopHoldings.filter(h => h.name.trim() && h.percentage > 0),
-        actualSectorAllocation: formData.actualSectorAllocation.filter(s => s.sector.trim() && s.percentage > 0),
-        actualFundManagers: formData.actualFundManagers.filter(m => m.name.trim())
+        schemeCode: formData.schemeCode,
+        schemeName: formData.schemeName,
+        fundHouse: formData.fundHouse,
+        actualTopHoldings,
+        actualSectorAllocation,
+        actualFundManagers,
+        dataSource: formData.dataSource,
+        dataQuality: formData.dataQuality,
+        notes: formData.notes
       };
 
       const response = await fetch(`/api/admin/fund-details/${schemeCode}`, {
@@ -338,7 +372,7 @@ export default function FundDataEntry() {
   const addFundManager = () => {
     setFormData(prev => ({
       ...prev,
-      actualFundManagers: [...prev.actualFundManagers, { name: '', experience: 0, background: '' }]
+      actualFundManagers: [...prev.actualFundManagers, { name: '', since: '', experience: '', education: '', fundsManaged: [''] }]
     }));
   };
 
@@ -979,22 +1013,23 @@ export default function FundDataEntry() {
                   placeholder="e.g., January 15, 2020 or 15-01-2020"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Riskometer</label>
-                <select
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                  value={formData.riskometer}
-                  onChange={(e) => setFormData(prev => ({ ...prev, riskometer: e.target.value }))}
-                >
-                  <option value="">Select Risk Level</option>
-                  <option value="Low">Low</option>
-                  <option value="Low to Moderate">Low to Moderate</option>
-                  <option value="Moderate">Moderate</option>
-                  <option value="Moderately High">Moderately High</option>
-                  <option value="High">High</option>
-                  <option value="Very High">Very High</option>
-                </select>
-              </div>
+              <CustomSelect
+                label="Riskometer"
+                value={formData.riskometer}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, riskometer: value }))}
+                options={[
+                  { value: '', label: 'Select Risk Level' },
+                  { value: 'Low', label: 'Low' },
+                  { value: 'Low to Moderate', label: 'Low to Moderate' },
+                  { value: 'Moderate', label: 'Moderate' },
+                  { value: 'Moderately High', label: 'Moderately High' },
+                  { value: 'High', label: 'High' },
+                  { value: 'Very High', label: 'Very High' }
+                ]}
+                placeholder="Select Risk Level"
+                triggerClassName="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
+              />
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Expense (%)</label>
                 <input
@@ -1016,17 +1051,18 @@ export default function FundDataEntry() {
                   placeholder="e.g., 1% if redeemed before 365 days"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Open-ended</label>
-                <select
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                  value={formData.openEnded ? 'true' : 'false'}
-                  onChange={(e) => setFormData(prev => ({ ...prev, openEnded: e.target.value === 'true' }))}
-                >
-                  <option value="true">Yes (Open-ended)</option>
-                  <option value="false">No (Close-ended)</option>
-                </select>
-              </div>
+              <CustomSelect
+                label="Open-ended"
+                value={formData.openEnded ? 'true' : 'false'}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, openEnded: value === 'true' }))}
+                options={[
+                  { value: 'true', label: 'Yes (Open-ended)' },
+                  { value: 'false', label: 'No (Close-ended)' }
+                ]}
+                placeholder="Select fund type"
+                triggerClassName="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
+              />
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Lock-in Period</label>
                 <input
@@ -1243,19 +1279,20 @@ export default function FundDataEntry() {
                   onChange={(e) => setFormData(prev => ({ ...prev, dataSource: e.target.value }))}
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Data Quality</label>
-                <select
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                  value={formData.dataQuality}
-                  onChange={(e) => setFormData(prev => ({ ...prev, dataQuality: e.target.value as any }))}
-                >
-                  <option value="PENDING_VERIFICATION">Pending Verification</option>
-                  <option value="GOOD">Good</option>
-                  <option value="EXCELLENT">Excellent</option>
-                  <option value="VERIFIED">Verified</option>
-                </select>
-              </div>
+              <CustomSelect
+                label="Data Quality"
+                value={formData.dataQuality}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, dataQuality: value as any }))}
+                options={[
+                  { value: 'PENDING_VERIFICATION', label: 'Pending Verification' },
+                  { value: 'GOOD', label: 'Good' },
+                  { value: 'EXCELLENT', label: 'Excellent' },
+                  { value: 'VERIFIED', label: 'Verified' }
+                ]}
+                placeholder="Select data quality"
+                triggerClassName="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
+              />
             </div>
             <div className="mt-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>

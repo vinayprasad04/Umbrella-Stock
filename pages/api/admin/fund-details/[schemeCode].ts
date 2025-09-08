@@ -7,14 +7,14 @@ import jwt from 'jsonwebtoken';
 
 interface ActualFundManager {
   name: string;
-  experience: number;
-  background: string;
+  experience?: string;
+  background?: string;
 }
 
 interface ActualHolding {
   name: string;
   percentage: number;
-  sector: string;
+  sector?: string;
 }
 
 interface ActualSectorAllocation {
@@ -136,6 +136,33 @@ export default async function handler(
         isActive: true
       });
 
+      // Transform data to match database model
+      const transformedData = {
+        schemeCode: parseInt(schemeCode as string),
+        schemeName: fundData.schemeName,
+        fundHouse: fundData.fundHouse,
+        actualFundManagers: fundData.actualFundManagers.map(manager => ({
+          name: manager.name,
+          experience: manager.experience,
+          background: manager.background
+        })),
+        actualTopHoldings: fundData.actualTopHoldings.map(holding => ({
+          company: holding.name,
+          allocation: holding.percentage,
+          rank: null,
+          isin: null
+        })),
+        actualSectorAllocation: fundData.actualSectorAllocation.map(sector => ({
+          sector: sector.sector,
+          allocation: sector.percentage
+        })),
+        dataSource: fundData.dataSource,
+        dataQuality: fundData.dataQuality,
+        dataEntryNotes: fundData.notes,
+        lastUpdated: new Date(),
+        enteredBy: userName
+      };
+
       let result;
       
       if (existingDetails) {
@@ -143,10 +170,7 @@ export default async function handler(
         result = await ActualMutualFundDetails.findByIdAndUpdate(
           existingDetails._id,
           {
-            ...fundData,
-            schemeCode: parseInt(schemeCode as string),
-            lastUpdated: new Date(),
-            enteredBy: userName,
+            ...transformedData,
             updatedBy: userName
           },
           { new: true, runValidators: true }
@@ -154,9 +178,7 @@ export default async function handler(
       } else {
         // Create new
         result = await ActualMutualFundDetails.create({
-          ...fundData,
-          schemeCode: parseInt(schemeCode as string),
-          enteredBy: userName,
+          ...transformedData,
           isActive: true,
           enteredAt: new Date()
         });
