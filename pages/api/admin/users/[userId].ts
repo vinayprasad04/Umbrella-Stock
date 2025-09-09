@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import connectDB from '@/lib/mongodb';
 import User from '@/lib/models/User';
 import { APIResponse } from '@/types';
-import jwt from 'jsonwebtoken';
+import { AuthUtils } from '@/lib/auth';
 
 interface UpdateUserRequest {
   role?: 'ADMIN' | 'DATA_ENTRY' | 'SUBSCRIBER' | 'USER';
@@ -29,7 +29,7 @@ export default async function handler(
       });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
+    const decoded = AuthUtils.verifyAccessToken(token);
     
     if (!decoded || decoded.role !== 'ADMIN') {
       return res.status(403).json({

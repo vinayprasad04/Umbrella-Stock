@@ -3,7 +3,7 @@ import connectDB from '@/lib/mongodb';
 import User from '@/lib/models/User';
 import { APIResponse } from '@/types';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import { AuthUtils, AuthTokens } from '@/lib/auth';
 
 interface LoginRequest {
   email: string;
@@ -18,7 +18,10 @@ interface LoginResponse {
     role: string;
     permissions: string[];
   };
-  token: string;
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  refreshExpiresIn: number;
 }
 
 export default async function handler(
@@ -80,16 +83,12 @@ export default async function handler(
     user.lastActivity = new Date();
     await user.save();
 
-    // Generate JWT token
-    const token = jwt.sign(
-      { 
-        userId: user._id,
-        email: user.email,
-        role: user.role 
-      },
-      process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '24h' }
-    );
+    // Generate access and refresh tokens
+    const tokens = AuthUtils.generateTokens({
+      userId: user._id.toString(),
+      email: user.email,
+      role: user.role
+    });
 
     res.status(200).json({
       success: true,
@@ -101,7 +100,10 @@ export default async function handler(
           role: user.role,
           permissions: user.permissions
         },
-        token
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        expiresIn: tokens.expiresIn,
+        refreshExpiresIn: tokens.refreshExpiresIn
       },
       message: 'Login successful'
     });

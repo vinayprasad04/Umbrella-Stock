@@ -122,7 +122,7 @@ export default function FundDataEntry() {
     topEquityHoldings: [{ companyName: '', sector: '', peRatio: 0, assetsPercentage: 0 }],
     topDebtHoldings: [{ companyName: '', instrument: '', creditRating: '', assetsPercentage: 0 }],
     launchDate: '',
-    riskometer: '',
+    riskometer: 'Not Selected',
     expense: 0,
     exitLoad: '',
     openEnded: true,
@@ -177,7 +177,7 @@ export default function FundDataEntry() {
       topEquityHoldings: [{ companyName: '', sector: '', peRatio: 0, assetsPercentage: 0 }],
       topDebtHoldings: [{ companyName: '', instrument: '', creditRating: '', assetsPercentage: 0 }],
       launchDate: '',
-      riskometer: '',
+      riskometer: 'Not Selected',
       expense: 0,
       exitLoad: '',
       openEnded: true,
@@ -280,7 +280,27 @@ export default function FundDataEntry() {
       if (actualResponse.ok) {
         const actualResult = await actualResponse.json();
         if (actualResult.success && actualResult.data) {
-          setFormData(actualResult.data);
+          // Direct mapping from new schema - no transformation needed
+          const loadedData = {
+            ...actualResult.data,
+            assetAllocation: actualResult.data.assetAllocation || { equity: 0, debt: 0, cashAndCashEq: 0 },
+            portfolioAggregates: actualResult.data.portfolioAggregates || { giant: 0, large: 0, mid: 0, small: 0, tiny: 0, avgMarketCap: 0 },
+            creditRating: actualResult.data.creditRating || { aaa: 0, sov: 0, cashEquivalent: 0, aa: 0 },
+            sectorWiseHoldings: actualResult.data.sectorWiseHoldings?.length > 0 
+              ? actualResult.data.sectorWiseHoldings 
+              : [{ sector: '', fundPercentage: 0, categoryPercentage: 0 }],
+            topEquityHoldings: actualResult.data.topEquityHoldings?.length > 0 
+              ? actualResult.data.topEquityHoldings 
+              : [{ companyName: '', sector: '', peRatio: 0, assetsPercentage: 0 }],
+            topDebtHoldings: actualResult.data.topDebtHoldings?.length > 0 
+              ? actualResult.data.topDebtHoldings 
+              : [{ companyName: '', instrument: '', creditRating: '', assetsPercentage: 0 }],
+            fundInfo: actualResult.data.fundInfo || { nameOfAMC: '', address: '', phone: '', fax: '', email: '', website: '' },
+            actualFundManagers: actualResult.data.actualFundManagers?.length > 0 
+              ? actualResult.data.actualFundManagers 
+              : [{ name: '', since: '', experience: '', education: '', fundsManaged: [''] }]
+          };
+          setFormData(loadedData);
         }
       }
     } catch (error) {
@@ -300,47 +320,38 @@ export default function FundDataEntry() {
     try {
       const token = localStorage.getItem('authToken');
       
-      // Transform frontend data to match API expectations
-      const actualTopHoldings = [
-        ...formData.topEquityHoldings.filter(h => h.companyName.trim() && h.assetsPercentage > 0).map(h => ({
-          name: h.companyName,
-          percentage: h.assetsPercentage,
-          sector: h.sector
-        })),
-        ...formData.topDebtHoldings.filter(h => h.companyName.trim() && h.assetsPercentage > 0).map(h => ({
-          name: h.companyName,
-          percentage: h.assetsPercentage,
-          sector: h.instrument
-        }))
-      ];
-
-      const actualSectorAllocation = formData.sectorWiseHoldings
-        .filter(s => s.sector.trim() && s.fundPercentage > 0)
-        .map(s => ({
-          sector: s.sector,
-          percentage: s.fundPercentage
-        }));
-
-      // Filter out empty fund managers
-      const actualFundManagers = formData.actualFundManagers
-        .filter(m => m.name.trim())
-        .map(m => ({
-          name: m.name,
-          experience: m.experience,
-          background: m.education
-        }));
-
+      // Filter and clean data for API
       const cleanedData = {
         schemeCode: formData.schemeCode,
         schemeName: formData.schemeName,
         fundHouse: formData.fundHouse,
-        actualTopHoldings,
-        actualSectorAllocation,
-        actualFundManagers,
+        assetAllocation: formData.assetAllocation,
+        portfolioAggregates: formData.portfolioAggregates,
+        creditRating: formData.creditRating,
+        sectorWiseHoldings: formData.sectorWiseHoldings.filter(s => s.sector.trim() && s.fundPercentage > 0),
+        topEquityHoldings: formData.topEquityHoldings.filter(h => h.companyName.trim() && h.assetsPercentage > 0),
+        topDebtHoldings: formData.topDebtHoldings.filter(h => h.companyName.trim() && h.assetsPercentage > 0),
+        launchDate: formData.launchDate,
+        riskometer: formData.riskometer,
+        expense: formData.expense,
+        exitLoad: formData.exitLoad,
+        openEnded: formData.openEnded,
+        lockInPeriod: formData.lockInPeriod,
+        fundInfo: formData.fundInfo,
+        actualFundManagers: formData.actualFundManagers.filter(m => m.name.trim()),
         dataSource: formData.dataSource,
         dataQuality: formData.dataQuality,
         notes: formData.notes
       };
+
+      console.log('🚀 Sending form data to API:', {
+        hasAssetAllocation: !!cleanedData.assetAllocation,
+        hasPortfolioAggregates: !!cleanedData.portfolioAggregates,
+        hasCreditRating: !!cleanedData.creditRating,
+        hasFundInfo: !!cleanedData.fundInfo,
+        assetAllocation: cleanedData.assetAllocation,
+        portfolioAggregates: cleanedData.portfolioAggregates
+      });
 
       const response = await fetch(`/api/admin/fund-details/${schemeCode}`, {
         method: 'POST',
@@ -356,9 +367,7 @@ export default function FundDataEntry() {
       if (result.success) {
         setSuccess('Fund data saved successfully!');
         setHasUnsavedChanges(false); // Reset unsaved changes flag
-        setTimeout(() => {
-          router.push('/admin/dashboard');
-        }, 2000);
+        // Removed automatic redirect - stay on the form page
       } else {
         setError(result.error || 'Failed to save data');
       }
@@ -532,6 +541,29 @@ export default function FundDataEntry() {
   return (
     <AdminDashboardLayout currentPage="funds">
       <div className="p-6">
+        {/* Back Button */}
+        <div className="mb-6">
+          <button
+            onClick={() => router.back()}
+            className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+          >
+            <svg 
+              className="w-4 h-4 mr-2" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M15 19l-7-7 7-7" 
+              />
+            </svg>
+            Back to Dashboard
+          </button>
+        </div>
+
         {/* Header */}
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-gray-900">Fund Data Entry</h2>
@@ -594,10 +626,10 @@ export default function FundDataEntry() {
                   min="0"
                   max="100"
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                  value={formData.assetAllocation.equity}
+                  value={formData.assetAllocation?.equity || 0}
                   onChange={(e) => setFormData(prev => ({ 
                     ...prev, 
-                    assetAllocation: { ...prev.assetAllocation, equity: parseFloat(e.target.value) || 0 }
+                    assetAllocation: { ...(prev.assetAllocation || {}), equity: parseFloat(e.target.value) || 0 }
                   }))}
                 />
               </div>
@@ -609,10 +641,10 @@ export default function FundDataEntry() {
                   min="0"
                   max="100"
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                  value={formData.assetAllocation.debt}
+                  value={formData.assetAllocation?.debt || 0}
                   onChange={(e) => setFormData(prev => ({ 
                     ...prev, 
-                    assetAllocation: { ...prev.assetAllocation, debt: parseFloat(e.target.value) || 0 }
+                    assetAllocation: { ...(prev.assetAllocation || {}), debt: parseFloat(e.target.value) || 0 }
                   }))}
                 />
               </div>
@@ -624,10 +656,10 @@ export default function FundDataEntry() {
                   min="0"
                   max="100"
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                  value={formData.assetAllocation.cashAndCashEq}
+                  value={formData.assetAllocation?.cashAndCashEq || 0}
                   onChange={(e) => setFormData(prev => ({ 
                     ...prev, 
-                    assetAllocation: { ...prev.assetAllocation, cashAndCashEq: parseFloat(e.target.value) || 0 }
+                    assetAllocation: { ...(prev.assetAllocation || {}), cashAndCashEq: parseFloat(e.target.value) || 0 }
                   }))}
                 />
               </div>
@@ -646,10 +678,10 @@ export default function FundDataEntry() {
                   min="0"
                   max="100"
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                  value={formData.portfolioAggregates.giant}
+                  value={formData.portfolioAggregates?.giant || 0}
                   onChange={(e) => setFormData(prev => ({ 
                     ...prev, 
-                    portfolioAggregates: { ...prev.portfolioAggregates, giant: parseFloat(e.target.value) || 0 }
+                    portfolioAggregates: { ...(prev.portfolioAggregates || {}), giant: parseFloat(e.target.value) || 0 }
                   }))}
                 />
               </div>
@@ -661,10 +693,10 @@ export default function FundDataEntry() {
                   min="0"
                   max="100"
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                  value={formData.portfolioAggregates.large}
+                  value={formData.portfolioAggregates?.large || 0}
                   onChange={(e) => setFormData(prev => ({ 
                     ...prev, 
-                    portfolioAggregates: { ...prev.portfolioAggregates, large: parseFloat(e.target.value) || 0 }
+                    portfolioAggregates: { ...(prev.portfolioAggregates || {}), large: parseFloat(e.target.value) || 0 }
                   }))}
                 />
               </div>
@@ -676,10 +708,10 @@ export default function FundDataEntry() {
                   min="0"
                   max="100"
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                  value={formData.portfolioAggregates.mid}
+                  value={formData.portfolioAggregates?.mid || 0}
                   onChange={(e) => setFormData(prev => ({ 
                     ...prev, 
-                    portfolioAggregates: { ...prev.portfolioAggregates, mid: parseFloat(e.target.value) || 0 }
+                    portfolioAggregates: { ...(prev.portfolioAggregates || {}), mid: parseFloat(e.target.value) || 0 }
                   }))}
                 />
               </div>
@@ -691,10 +723,10 @@ export default function FundDataEntry() {
                   min="0"
                   max="100"
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                  value={formData.portfolioAggregates.small}
+                  value={formData.portfolioAggregates?.small || 0}
                   onChange={(e) => setFormData(prev => ({ 
                     ...prev, 
-                    portfolioAggregates: { ...prev.portfolioAggregates, small: parseFloat(e.target.value) || 0 }
+                    portfolioAggregates: { ...(prev.portfolioAggregates || {}), small: parseFloat(e.target.value) || 0 }
                   }))}
                 />
               </div>
@@ -706,10 +738,10 @@ export default function FundDataEntry() {
                   min="0"
                   max="100"
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                  value={formData.portfolioAggregates.tiny}
+                  value={formData.portfolioAggregates?.tiny || 0}
                   onChange={(e) => setFormData(prev => ({ 
                     ...prev, 
-                    portfolioAggregates: { ...prev.portfolioAggregates, tiny: parseFloat(e.target.value) || 0 }
+                    portfolioAggregates: { ...(prev.portfolioAggregates || {}), tiny: parseFloat(e.target.value) || 0 }
                   }))}
                 />
               </div>
@@ -720,10 +752,10 @@ export default function FundDataEntry() {
                   step="0.01"
                   min="0"
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                  value={formData.portfolioAggregates.avgMarketCap}
+                  value={formData.portfolioAggregates?.avgMarketCap || 0}
                   onChange={(e) => setFormData(prev => ({ 
                     ...prev, 
-                    portfolioAggregates: { ...prev.portfolioAggregates, avgMarketCap: parseFloat(e.target.value) || 0 }
+                    portfolioAggregates: { ...(prev.portfolioAggregates || {}), avgMarketCap: parseFloat(e.target.value) || 0 }
                   }))}
                 />
               </div>
@@ -742,10 +774,10 @@ export default function FundDataEntry() {
                   min="0"
                   max="100"
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                  value={formData.creditRating.aaa}
+                  value={formData.creditRating?.aaa || 0}
                   onChange={(e) => setFormData(prev => ({ 
                     ...prev, 
-                    creditRating: { ...prev.creditRating, aaa: parseFloat(e.target.value) || 0 }
+                    creditRating: { ...(prev.creditRating || {}), aaa: parseFloat(e.target.value) || 0 }
                   }))}
                 />
               </div>
@@ -757,10 +789,10 @@ export default function FundDataEntry() {
                   min="0"
                   max="100"
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                  value={formData.creditRating.sov}
+                  value={formData.creditRating?.sov || 0}
                   onChange={(e) => setFormData(prev => ({ 
                     ...prev, 
-                    creditRating: { ...prev.creditRating, sov: parseFloat(e.target.value) || 0 }
+                    creditRating: { ...(prev.creditRating || {}), sov: parseFloat(e.target.value) || 0 }
                   }))}
                 />
               </div>
@@ -772,10 +804,10 @@ export default function FundDataEntry() {
                   min="0"
                   max="100"
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                  value={formData.creditRating.cashEquivalent}
+                  value={formData.creditRating?.cashEquivalent || 0}
                   onChange={(e) => setFormData(prev => ({ 
                     ...prev, 
-                    creditRating: { ...prev.creditRating, cashEquivalent: parseFloat(e.target.value) || 0 }
+                    creditRating: { ...(prev.creditRating || {}), cashEquivalent: parseFloat(e.target.value) || 0 }
                   }))}
                 />
               </div>
@@ -787,10 +819,10 @@ export default function FundDataEntry() {
                   min="0"
                   max="100"
                   className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                  value={formData.creditRating.aa}
+                  value={formData.creditRating?.aa || 0}
                   onChange={(e) => setFormData(prev => ({ 
                     ...prev, 
-                    creditRating: { ...prev.creditRating, aa: parseFloat(e.target.value) || 0 }
+                    creditRating: { ...(prev.creditRating || {}), aa: parseFloat(e.target.value) || 0 }
                   }))}
                 />
               </div>
@@ -1018,7 +1050,7 @@ export default function FundDataEntry() {
                 value={formData.riskometer}
                 onValueChange={(value) => setFormData(prev => ({ ...prev, riskometer: value }))}
                 options={[
-                  { value: '', label: 'Select Risk Level' },
+                  { value: 'Not Selected', label: 'Select Risk Level' },
                   { value: 'Low', label: 'Low' },
                   { value: 'Low to Moderate', label: 'Low to Moderate' },
                   { value: 'Moderate', label: 'Moderate' },
@@ -1268,17 +1300,27 @@ export default function FundDataEntry() {
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Data Quality & Source</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Data Source *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g., Official Fund Factsheet, Value Research, etc."
-                  className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                  value={formData.dataSource}
-                  onChange={(e) => setFormData(prev => ({ ...prev, dataSource: e.target.value }))}
-                />
-              </div>
+              <CustomSelect
+                label="Data Source *"
+                value={formData.dataSource}
+                onValueChange={(value) => setFormData(prev => ({ ...prev, dataSource: value }))}
+                options={[
+                  { value: 'Official Fund Factsheet', label: 'Official Fund Factsheet' },
+                  { value: 'Value Research', label: 'Value Research' },
+                  { value: 'Morningstar', label: 'Morningstar' },
+                  { value: 'AMC Website', label: 'AMC Website' },
+                  { value: 'Moneycontrol', label: 'Moneycontrol' },
+                  { value: 'Economic Times', label: 'Economic Times' },
+                  { value: 'FUND_HOUSE_OFFICIAL', label: 'Fund House Official' },
+                  { value: 'VERIFIED_API', label: 'Verified API' },
+                  { value: 'MANUAL_ENTRY', label: 'Manual Entry' },
+                  { value: 'Other', label: 'Other' }
+                ]}
+                placeholder="Select data source"
+                triggerClassName="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
+                required
+              />
               <CustomSelect
                 label="Data Quality"
                 value={formData.dataQuality}

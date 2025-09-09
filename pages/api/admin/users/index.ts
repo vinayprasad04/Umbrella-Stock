@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import connectDB from '@/lib/mongodb';
 import User from '@/lib/models/User';
 import { APIResponse } from '@/types';
-import jwt from 'jsonwebtoken';
+import { AuthUtils } from '@/lib/auth';
 import bcrypt from 'bcryptjs';
 
 interface CreateUserRequest {
@@ -44,7 +44,7 @@ export default async function handler(
       });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
+    const decoded = AuthUtils.verifyAccessToken(token);
     
     if (!decoded || decoded.role !== 'ADMIN') {
       return res.status(403).json({

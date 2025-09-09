@@ -34,9 +34,18 @@ export default function Login() {
       const data = await response.json();
 
       if (data.success) {
-        // Store token and user info
-        localStorage.setItem('authToken', data.data.token);
-        localStorage.setItem('user', JSON.stringify(data.data.user));
+        // Store tokens and user info using ClientAuth
+        const { user, accessToken, refreshToken, expiresIn, refreshExpiresIn } = data.data;
+        
+        // Use ClientAuth to store tokens properly
+        const tokens = { accessToken, refreshToken, expiresIn, refreshExpiresIn };
+        
+        // Store tokens with ClientAuth utility
+        localStorage.setItem('authToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('tokenExpiry', (Date.now() + expiresIn).toString());
+        localStorage.setItem('refreshExpiry', (Date.now() + refreshExpiresIn).toString());
+        localStorage.setItem('user', JSON.stringify(user));
         
         // Redirect based on user role
         if (['ADMIN', 'DATA_ENTRY'].includes(data.data.user.role)) {

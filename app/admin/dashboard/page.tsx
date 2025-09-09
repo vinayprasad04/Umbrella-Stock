@@ -42,7 +42,8 @@ export default function AdminDashboard() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [fundHouseFilter, setFundHouseFilter] = useState('');
-  const [dataFilter, setDataFilter] = useState('');
+  const [dataFilter, setDataFilter] = useState('all');
+  const [dataQualityFilter, setDataQualityFilter] = useState('all');
 
   const fetchData = useCallback(async () => {
     try {
@@ -52,12 +53,17 @@ export default function AdminDashboard() {
         limit: '50',
         ...(search && { search }),
         ...(fundHouseFilter && { fundHouse: fundHouseFilter }),
-        ...(dataFilter && { hasActualData: dataFilter }),
+        ...(dataFilter && dataFilter !== 'all' && { hasActualData: dataFilter }),
+        ...(dataQualityFilter && dataQualityFilter !== 'all' && { dataQuality: dataQualityFilter }),
         sortBy: 'schemeName',
         sortOrder: 'asc'
       });
 
-      const response = await fetch(`/api/admin/mutual-funds?${params}`, {
+      const url = `/api/admin/mutual-funds?${params}`;
+      console.log('🔗 API URL:', url);
+      console.log('📋 URL Params:', Object.fromEntries(params.entries()));
+      
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -65,15 +71,22 @@ export default function AdminDashboard() {
 
       const result = await response.json();
       
+      console.log('🔍 API Response:', result);
+      console.log('📊 Funds received:', result?.data?.funds?.length || 0);
+      console.log('📋 First fund sample:', result?.data?.funds?.[0]);
+      
       if (result.success) {
         setData(result.data);
+        console.log('✅ Data set to state:', result.data?.funds?.length, 'funds');
+      } else {
+        console.error('❌ API Error:', result.error);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
-  }, [page, search, fundHouseFilter, dataFilter]);
+  }, [page, search, fundHouseFilter, dataFilter, dataQualityFilter]);
 
   useEffect(() => {
     fetchData();
@@ -173,8 +186,25 @@ export default function AdminDashboard() {
 
           {/* Filters */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Filters</h3>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-medium text-gray-900">Filters</h3>
+              <button
+                onClick={() => {
+                  setSearch('');
+                  setFundHouseFilter('');
+                  setDataFilter('all');
+                  setDataQualityFilter('PENDING_VERIFICATION');
+                  setPage(1);
+                }}
+                className="bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-yellow-700 transition duration-200 flex items-center space-x-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Show Pending Verification</span>
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
                 <input
@@ -202,11 +232,27 @@ export default function AdminDashboard() {
                 value={dataFilter}
                 onValueChange={setDataFilter}
                 options={[
-                  { value: '', label: 'All Funds' },
+                  { value: 'all', label: 'All Funds' },
                   { value: 'false', label: 'Missing Actual Data' },
                   { value: 'true', label: 'Has Actual Data' }
                 ]}
                 placeholder="All Funds"
+                triggerClassName="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
+              />
+
+              <CustomSelect
+                label="Data Quality"
+                value={dataQualityFilter}
+                onValueChange={setDataQualityFilter}
+                options={[
+                  { value: 'all', label: 'All Quality' },
+                  { value: 'PENDING_VERIFICATION', label: 'Pending Verification' },
+                  { value: 'VERIFIED', label: 'Verified' },
+                  { value: 'EXCELLENT', label: 'Excellent' },
+                  { value: 'GOOD', label: 'Good' }
+                ]}
+                placeholder="All Quality"
                 triggerClassName="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
               />
@@ -216,7 +262,8 @@ export default function AdminDashboard() {
                   onClick={() => {
                     setSearch('');
                     setFundHouseFilter('');
-                    setDataFilter('');
+                    setDataFilter('all');
+                    setDataQualityFilter('all');
                     setPage(1);
                   }}
                   className="w-full bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-200"
@@ -260,7 +307,8 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {data?.funds.map((fund) => (
+                  {console.log('🎨 Rendering table with funds:', data?.funds?.length || 0)}
+                  {data?.funds && data.funds.length > 0 ? data.funds.map((fund) => (
                     <tr key={fund.schemeCode} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {fund.schemeCode}
@@ -299,7 +347,22 @@ export default function AdminDashboard() {
                         </Link>
                       </td>
                     </tr>
-                  ))}
+                  )) : (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-8 text-center text-sm text-gray-500">
+                        {console.log('⚠️ No funds to display. Data state:', { 
+                          hasData: !!data, 
+                          hasFunds: !!data?.funds, 
+                          fundsLength: data?.funds?.length,
+                          dataQualityFilter: dataQualityFilter
+                        })}
+                        {dataQualityFilter === 'PENDING_VERIFICATION' ? 
+                          'No funds found with Pending Verification status.' : 
+                          'No funds found matching your filters.'
+                        }
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
