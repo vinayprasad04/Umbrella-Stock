@@ -112,8 +112,8 @@ export default async function handler(
     }
     
     // Handle dataQuality filtering differently - need to get matching ActualData first
-    let funds;
-    let actualData;
+    let funds: MutualFundListItem[];
+    let actualData: any[];
     
     if (dataQuality) {
       // When filtering by dataQuality, start with ActualMutualFundDetails

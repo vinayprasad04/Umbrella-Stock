@@ -301,7 +301,6 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {console.log('🎨 Rendering table with funds:', data?.funds?.length || 0)}
                   {data?.funds && data.funds.length > 0 ? data.funds.map((fund) => (
                     <tr key={fund.schemeCode} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -344,12 +343,6 @@ export default function AdminDashboard() {
                   )) : (
                     <tr>
                       <td colSpan={6} className="px-6 py-8 text-center text-sm text-gray-500">
-                        {console.log('⚠️ No funds to display. Data state:', { 
-                          hasData: !!data, 
-                          hasFunds: !!data?.funds, 
-                          fundsLength: data?.funds?.length,
-                          dataQualityFilter: dataQualityFilter
-                        })}
                         {dataQualityFilter === 'PENDING_VERIFICATION' ? 
                           'No funds found with Pending Verification status.' : 
                           'No funds found matching your filters.'

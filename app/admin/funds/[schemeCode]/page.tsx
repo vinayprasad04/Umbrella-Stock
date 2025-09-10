@@ -451,6 +451,27 @@ export default function FundDataEntry() {
     }));
   };
 
+  const selectFundManager = (managerIndex: number, selectedManagerId: string) => {
+    const selectedManager = availableFundManagers.find(manager => manager._id === selectedManagerId);
+    
+    if (selectedManager) {
+      setFormData(prev => ({
+        ...prev,
+        actualFundManagers: prev.actualFundManagers.map((manager, i) => 
+          i === managerIndex 
+            ? { 
+                name: selectedManager.name,
+                since: manager.since, // Keep existing since value
+                experience: selectedManager.experience,
+                education: selectedManager.education,
+                fundsManaged: selectedManager.fundsManaged || ['']
+              }
+            : manager
+        )
+      }));
+    }
+  };
+
   const addSectorWiseHolding = () => {
     setFormData(prev => ({
       ...prev,
@@ -1221,6 +1242,36 @@ export default function FundDataEntry() {
             
             {formData.actualFundManagers.map((manager, index) => (
               <div key={index} className="p-4 border border-gray-200 rounded-lg mb-4">
+                {/* Fund Manager Selection Dropdown */}
+                {availableFundManagers.length > 0 && (
+                  <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <label className="block text-sm font-medium text-blue-800 mb-2">
+                      🔽 Quick Select from Existing Fund Managers
+                    </label>
+                    <CustomSelect
+                      value="placeholder"
+                      onValueChange={(value) => {
+                        if (value !== 'placeholder') {
+                          selectFundManager(index, value);
+                        }
+                      }}
+                      options={[
+                        { value: 'placeholder', label: 'Choose a fund manager to auto-fill details...' },
+                        ...availableFundManagers.map(manager => ({
+                          value: manager._id,
+                          label: `${manager.name} (${manager.experience ? manager.experience.substring(0, 50) + '...' : 'No experience listed'})`
+                        }))
+                      ]}
+                      placeholder="Select fund manager"
+                      triggerClassName="w-full px-3 py-2 border border-blue-300 rounded focus:ring-2 focus:ring-blue-500 bg-white"
+                      contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+                    />
+                    <p className="text-xs text-blue-600 mt-1">
+                      ✨ Selecting a fund manager will auto-fill name, experience, education, and managed funds below
+                    </p>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
@@ -1230,6 +1281,7 @@ export default function FundDataEntry() {
                       className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
                       value={manager.name}
                       onChange={(e) => updateFundManager(index, 'name', e.target.value)}
+                      placeholder="Enter fund manager name or select from above"
                     />
                   </div>
                   <div>

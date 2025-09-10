@@ -353,7 +353,7 @@ export default function FundManagersManagement() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {data?.fundManagers.map((fundManager) => (
                   <tr key={fundManager._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{fundManager.name}</div>
                       <div className="text-sm text-gray-500">Added {formatDate(fundManager.createdAt)}</div>
                     </td>
@@ -555,56 +555,93 @@ export default function FundManagersManagement() {
                   </div>
                 </div>
 
-                {/* Funds Managed */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Funds Managed</label>
-                  <div className="flex gap-2 mb-2">
-                    <input
-                      type="text"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                      placeholder="Add fund name..."
-                      value={currentFundManaged}
-                      onChange={(e) => setCurrentFundManaged(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addFundManaged())}
-                    />
-                    <button
-                      type="button"
-                      onClick={addFundManaged}
-                      className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    >
-                      Add
-                    </button>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {createForm.fundsManaged.map((fund, index) => (
-                      <span key={index} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {fund}
-                        <button
-                          type="button"
-                          onClick={() => removeFundManaged(index)}
-                          className="ml-1 text-blue-600 hover:text-blue-800"
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
+                {/* Funds Managed Section */}
+                <div className="bg-gray-50 p-6 rounded-xl">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                      <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                    </div>
+                    Funds Managed
+                  </h4>
+                  
+                  <div className="space-y-4">
+                    <div className="flex gap-3">
+                      <input
+                        type="text"
+                        className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm"
+                        placeholder="Enter fund name or code..."
+                        value={currentFundManaged}
+                        onChange={(e) => setCurrentFundManaged(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addFundManaged())}
+                      />
+                      <button
+                        type="button"
+                        onClick={addFundManaged}
+                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+                      >
+                        Add Fund
+                      </button>
+                    </div>
+                    
+                    {createForm.fundsManaged.length > 0 && (
+                      <div>
+                        <p className="text-sm font-medium text-gray-700 mb-3">Currently Managing ({createForm.fundsManaged.length} funds)</p>
+                        <div className="flex flex-wrap gap-2">
+                          {createForm.fundsManaged.map((fund, index) => (
+                            <span key={index} className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                              {fund}
+                              <button
+                                type="button"
+                                onClick={() => removeFundManaged(index)}
+                                className="ml-2 text-blue-600 hover:text-blue-800 transition-colors"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {createForm.fundsManaged.length === 0 && (
+                      <div className="text-center py-8 text-gray-500 bg-white rounded-lg border-2 border-dashed border-gray-200">
+                        <svg className="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        <p className="text-sm">No funds added yet. Add funds using the input field above.</p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                <div className="flex justify-end space-x-3 pt-4">
+                <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                   <button
                     type="button"
                     onClick={() => { setShowCreateModal(false); resetCreateForm(); }}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200"
+                    className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={createLoading}
-                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-6 py-3 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
                   >
-                    {createLoading ? 'Creating...' : 'Create Fund Manager'}
+                    {createLoading ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Creating...
+                      </>
+                    ) : (
+                      'Create Fund Manager'
+                    )}
                   </button>
                 </div>
               </form>
@@ -615,103 +652,196 @@ export default function FundManagersManagement() {
 
       {/* Edit Fund Manager Modal */}
       {showEditModal && editingFundManager && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
-            <div className="mt-3">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Edit Fund Manager</h3>
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+          <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-8 py-6 rounded-t-2xl">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900">Edit Fund Manager</h3>
+                  <p className="text-sm text-gray-600 mt-1">Update fund manager profile information</p>
+                </div>
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <div className="px-8 py-6">
               
               {editError && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-                  {editError}
+                <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded-r-lg">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-red-700">{editError}</p>
+                    </div>
+                  </div>
                 </div>
               )}
 
-              <form onSubmit={handleUpdateFundManager} className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-                  <input
-                    type="text"
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                    value={editForm.name}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Experience *</label>
-                  <textarea
-                    rows={3}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                    placeholder="Describe the fund manager's experience in detail..."
-                    value={editForm.experience}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, experience: e.target.value }))}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Education *</label>
-                  <textarea
-                    rows={2}
-                    required
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                    placeholder="Educational qualifications, degrees, certifications..."
-                    value={editForm.education}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, education: e.target.value }))}
-                  />
-                </div>
-
-                {/* Edit Funds Managed */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Funds Managed</label>
-                  <div className="flex gap-2 mb-2">
-                    <input
-                      type="text"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                      placeholder="Add fund name..."
-                      value={editCurrentFundManaged}
-                      onChange={(e) => setEditCurrentFundManaged(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addEditFundManaged())}
-                    />
-                    <button
-                      type="button"
-                      onClick={addEditFundManaged}
-                      className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    >
-                      Add
-                    </button>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {editForm.fundsManaged.map((fund, index) => (
-                      <span key={index} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {fund}
-                        <button
-                          type="button"
-                          onClick={() => removeEditFundManaged(index)}
-                          className="ml-1 text-blue-600 hover:text-blue-800"
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
+              <form onSubmit={handleUpdateFundManager} className="space-y-8">
+                {/* Basic Information Section */}
+                <div className="bg-gray-50 p-6 rounded-xl">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                      <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    Personal Information
+                  </h4>
+                  
+                  <div className="grid grid-cols-1 gap-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
+                      <input
+                        type="text"
+                        required
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm"
+                        placeholder="Enter fund manager's full name"
+                        value={editForm.name}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex justify-end space-x-3 pt-4">
+                {/* Professional Background Section */}
+                <div className="bg-gray-50 p-6 rounded-xl">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                      <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6" />
+                      </svg>
+                    </div>
+                    Professional Background
+                  </h4>
+                  
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Professional Experience *</label>
+                      <textarea
+                        rows={4}
+                        required
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm resize-none"
+                        placeholder="Describe the fund manager's professional experience, previous roles, achievements, and career highlights..."
+                        value={editForm.experience}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, experience: e.target.value }))}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Include previous companies, years of experience, and key accomplishments</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Education & Qualifications *</label>
+                      <textarea
+                        rows={3}
+                        required
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm resize-none"
+                        placeholder="Educational qualifications, degrees, certifications, professional designations..."
+                        value={editForm.education}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, education: e.target.value }))}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Include degrees, certifications, and relevant educational background</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Funds Managed Section */}
+                <div className="bg-gray-50 p-6 rounded-xl">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                      <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                    </div>
+                    Funds Managed
+                  </h4>
+                  
+                  <div className="space-y-4">
+                    <div className="flex gap-3">
+                      <input
+                        type="text"
+                        className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm"
+                        placeholder="Enter fund name or code..."
+                        value={editCurrentFundManaged}
+                        onChange={(e) => setEditCurrentFundManaged(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addEditFundManaged())}
+                      />
+                      <button
+                        type="button"
+                        onClick={addEditFundManaged}
+                        className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+                      >
+                        Add Fund
+                      </button>
+                    </div>
+                    
+                    {editForm.fundsManaged.length > 0 && (
+                      <div>
+                        <p className="text-sm font-medium text-gray-700 mb-3">Currently Managing ({editForm.fundsManaged.length} funds)</p>
+                        <div className="flex flex-wrap gap-2">
+                          {editForm.fundsManaged.map((fund, index) => (
+                            <span key={index} className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                              {fund}
+                              <button
+                                type="button"
+                                onClick={() => removeEditFundManaged(index)}
+                                className="ml-2 text-blue-600 hover:text-blue-800 transition-colors"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {editForm.fundsManaged.length === 0 && (
+                      <div className="text-center py-8 text-gray-500 bg-white rounded-lg border-2 border-dashed border-gray-200">
+                        <svg className="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        <p className="text-sm">No funds added yet. Add funds using the input field above.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                   <button
                     type="button"
                     onClick={() => setShowEditModal(false)}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200"
+                    className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={editLoading}
-                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-6 py-3 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
                   >
-                    {editLoading ? 'Updating...' : 'Update Fund Manager'}
+                    {editLoading ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Updating...
+                      </>
+                    ) : (
+                      'Update Fund Manager'
+                    )}
                   </button>
                 </div>
               </form>
