@@ -165,6 +165,31 @@ export default function AdminDashboardLayout({ children, currentPage }: AdminDas
               </div>
             </Link>
 
+            <Link
+              href="/admin/fund-managers"
+              className={`group relative flex items-center px-6 py-4 text-sm font-medium rounded-2xl transition-all duration-300 border border-transparent hover:border-green-200/50 hover:shadow-sm ${
+                currentPage === 'fund-managers'
+                  ? 'text-green-700 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200/50'
+                  : 'text-gray-700 hover:text-green-600 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50'
+              }`}
+            >
+              <div className={`flex items-center justify-center w-10 h-10 rounded-xl mr-4 transition-all duration-300 shadow-sm ${
+                currentPage === 'fund-managers'
+                  ? 'bg-gradient-to-br from-green-500 to-emerald-500'
+                  : 'bg-gray-200 group-hover:bg-gradient-to-br group-hover:from-green-500 group-hover:to-emerald-500'
+              }`}>
+                <svg className={`w-5 h-5 ${currentPage === 'fund-managers' ? 'text-white' : 'text-gray-600 group-hover:text-white'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <span>Fund Managers</span>
+              <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                  Manage
+                </div>
+              </div>
+            </Link>
+
             <div className="relative">
               <div className="flex items-center px-6 py-4 text-sm font-medium text-gray-700 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/50 shadow-sm">
                 <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl mr-4 shadow-md">
@@ -172,7 +197,7 @@ export default function AdminDashboardLayout({ children, currentPage }: AdminDas
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                   </svg>
                 </div>
-                <span>Fund Management</span>
+                <span>Fund Data Entry</span>
               </div>
             </div>
 

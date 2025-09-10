@@ -98,8 +98,16 @@ export interface IActualMutualFundDetails extends Document {
   // Fund Information
   fundInfo: IFundInfo;
   
-  // Fund Managers
+  // Fund Managers (legacy format - for backward compatibility)
   actualFundManagers: IActualFundManager[];
+  
+  // Fund Manager References (new format - references to FundManager collection)
+  fundManagerIds?: string[];
+  fundManagerDetails?: {
+    managerId: string;
+    since?: string;
+    fundsManaged?: string[];
+  }[];
   
   // Data Quality & Source
   dataSource: string;
@@ -251,12 +259,23 @@ const ActualMutualFundDetailsSchema: Schema = new Schema({
     default: () => ({ nameOfAMC: '', address: '', phone: '', fax: '', email: '', website: '' })
   },
   
-  // Fund Managers
+  // Fund Managers (legacy format - for backward compatibility)
   actualFundManagers: {
     type: [ActualFundManagerSchema],
     required: true,
     default: []
   },
+  
+  // Fund Manager References (new format)
+  fundManagerIds: [{
+    type: String,
+    ref: 'FundManager'
+  }],
+  fundManagerDetails: [{
+    managerId: { type: String, ref: 'FundManager', required: true },
+    since: String,
+    fundsManaged: [String]
+  }],
   
   // Data Quality & Source
   dataSource: {

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import AdminDashboardLayout from '@/components/layouts/AdminDashboardLayout';
 import Link from 'next/link';
 import { CustomSelect } from '@/components/ui/custom-select';
+import { ApiClient } from '@/lib/apiClient';
 
 interface User {
   id: string;
@@ -47,7 +48,6 @@ export default function AdminDashboard() {
 
   const fetchData = useCallback(async () => {
     try {
-      const token = localStorage.getItem('authToken');
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '50',
@@ -59,17 +59,11 @@ export default function AdminDashboard() {
         sortOrder: 'asc'
       });
 
-      const url = `/api/admin/mutual-funds?${params}`;
+      const url = `/admin/mutual-funds?${params}`;
       console.log('🔗 API URL:', url);
       console.log('📋 URL Params:', Object.fromEntries(params.entries()));
       
-      const response = await fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      const result = await response.json();
+      const result = await ApiClient.get(url);
       
       console.log('🔍 API Response:', result);
       console.log('📊 Funds received:', result?.data?.funds?.length || 0);

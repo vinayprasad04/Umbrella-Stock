@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import connectDB from '@/lib/mongodb';
 import MutualFund from '@/lib/models/MutualFund';
 import { APIResponse } from '@/types';
+import { AuthUtils } from '@/lib/auth';
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,6 +12,25 @@ export default async function handler(
     return res.status(405).json({
       success: false,
       error: 'Method not allowed',
+    });
+  }
+
+  // Verify authentication
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      error: 'Authentication required',
+    });
+  }
+
+  const decoded = AuthUtils.verifyAccessToken(token);
+  
+  if (!decoded || decoded.role !== 'ADMIN') {
+    return res.status(403).json({
+      success: false,
+      error: 'Admin access required',
     });
   }
 

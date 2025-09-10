@@ -22,7 +22,8 @@
       "Bash(timeout:*)",
       "Bash(taskkill:*)",
       "WebFetch(domain:mf.captnemo.in)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(del create-sample-managers.js)"
     ],
     "deny": [],
     "ask": [],

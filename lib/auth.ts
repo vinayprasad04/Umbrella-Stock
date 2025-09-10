@@ -22,8 +22,8 @@ export class AuthUtils {
   
   // Access token expires in 15 minutes (more secure)
   private static readonly ACCESS_TOKEN_EXPIRY = '15m';
-  // Refresh token expires in 7 days
-  private static readonly REFRESH_TOKEN_EXPIRY = '7d';
+  // Refresh token expires in 4 hours
+  private static readonly REFRESH_TOKEN_EXPIRY = '4h';
 
   /**
    * Generate access and refresh tokens
@@ -44,7 +44,7 @@ export class AuthUtils {
       accessToken,
       refreshToken,
       expiresIn: 15 * 60 * 1000, // 15 minutes in milliseconds
-      refreshExpiresIn: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+      refreshExpiresIn: 4 * 60 * 60 * 1000, // 4 hours in milliseconds
     };
   }
 

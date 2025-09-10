@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import AdminDashboardLayout from '@/components/layouts/AdminDashboardLayout';
 import { CustomSelect } from '@/components/ui/custom-select';
+import { ApiClient } from '@/lib/apiClient';
 
 interface User {
   id: string;
@@ -27,6 +28,21 @@ interface ActualFundManager {
   experience: string;
   education: string;
   fundsManaged: string[];
+}
+
+interface FundManager {
+  _id: string;
+  name: string;
+  experience: string;
+  education: string;
+  fundsManaged: string[];
+  isActive: boolean;
+}
+
+interface FundManagerSelection {
+  managerId: string;
+  since?: string;
+  fundsManaged?: string[];
 }
 
 
@@ -99,6 +115,8 @@ interface ActualMutualFundDetails {
   lockInPeriod: string;
   fundInfo: FundInfo;
   actualFundManagers: ActualFundManager[];
+  // New fund manager selection fields
+  fundManagerSelections: FundManagerSelection[];
   dataSource: string;
   dataQuality: 'VERIFIED' | 'PENDING_VERIFICATION' | 'EXCELLENT' | 'GOOD';
   notes?: string;
@@ -111,6 +129,7 @@ export default function FundDataEntry() {
 
   const [user, setUser] = useState<User | null>(null);
   const [fundBasic, setFundBasic] = useState<MutualFundBasic | null>(null);
+  const [availableFundManagers, setAvailableFundManagers] = useState<FundManager[]>([]);
   const [formData, setFormData] = useState<ActualMutualFundDetails>({
     schemeCode: parseInt(schemeCode),
     schemeName: '',
@@ -129,6 +148,7 @@ export default function FundDataEntry() {
     lockInPeriod: 'N/A',
     fundInfo: { nameOfAMC: '', address: '', phone: '', fax: '', email: '', website: '' },
     actualFundManagers: [{ name: '', since: '', experience: '', education: '', fundsManaged: [''] }],
+    fundManagerSelections: [{ managerId: '', since: '', fundsManaged: [''] }],
     dataSource: 'Value Research',
     dataQuality: 'PENDING_VERIFICATION',
     notes: ''
@@ -165,6 +185,7 @@ export default function FundDataEntry() {
     }
 
     fetchFundData();
+    fetchAvailableFundManagers();
   }, [schemeCode]);
 
   // Track form changes to detect unsaved changes
@@ -248,9 +269,7 @@ export default function FundDataEntry() {
 
   const fetchFundData = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-
-      // Fetch basic fund info
+      // Fetch basic fund info (public endpoint)
       const basicResponse = await fetch(`/api/mutual-funds/${schemeCode}`);
       const basicResult = await basicResponse.json();
       
@@ -270,15 +289,10 @@ export default function FundDataEntry() {
         }));
       }
 
-      // Try to fetch existing actual data
-      const actualResponse = await fetch(`/api/admin/fund-details/${schemeCode}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (actualResponse.ok) {
-        const actualResult = await actualResponse.json();
+      // Try to fetch existing actual data using ApiClient
+      try {
+        const actualResult = await ApiClient.get(`/admin/fund-details/${schemeCode}`);
+        
         if (actualResult.success && actualResult.data) {
           // Direct mapping from new schema - no transformation needed
           const loadedData = {
@@ -302,12 +316,28 @@ export default function FundDataEntry() {
           };
           setFormData(loadedData);
         }
+      } catch (authError) {
+        // Handle authentication errors gracefully
+        console.warn('Could not fetch existing fund details (may not exist or auth required):', authError);
       }
     } catch (error) {
       console.error('Error fetching fund data:', error);
       setError('Failed to load fund data');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAvailableFundManagers = async () => {
+    try {
+      const result = await ApiClient.get('/admin/fund-managers?isActive=true&limit=100');
+      
+      if (result.success) {
+        setAvailableFundManagers(result.data.fundManagers || []);
+      }
+    } catch (error) {
+      console.error('Error fetching fund managers:', error);
+      // Don't show error for this as it's not critical
     }
   };
 
@@ -318,8 +348,6 @@ export default function FundDataEntry() {
     setSuccess('');
 
     try {
-      const token = localStorage.getItem('authToken');
-      
       // Filter and clean data for API
       const cleanedData = {
         schemeCode: formData.schemeCode,
@@ -353,16 +381,7 @@ export default function FundDataEntry() {
         portfolioAggregates: cleanedData.portfolioAggregates
       });
 
-      const response = await fetch(`/api/admin/fund-details/${schemeCode}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(cleanedData),
-      });
-
-      const result = await response.json();
+      const result = await ApiClient.post(`/admin/fund-details/${schemeCode}`, cleanedData);
       
       if (result.success) {
         setSuccess('Fund data saved successfully!');
@@ -371,8 +390,8 @@ export default function FundDataEntry() {
       } else {
         setError(result.error || 'Failed to save data');
       }
-    } catch (error) {
-      setError('Failed to save data. Please try again.');
+    } catch (error: any) {
+      setError(error.message || 'Failed to save data. Please try again.');
     } finally {
       setSaving(false);
     }

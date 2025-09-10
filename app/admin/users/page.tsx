@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminDashboardLayout from '@/components/layouts/AdminDashboardLayout';
 import { CustomSelect } from '@/components/ui/custom-select';
+import { ApiClient } from '@/lib/apiClient';
 
 interface User {
   id: string;
@@ -104,7 +105,6 @@ export default function UsersManagement() {
 
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem('authToken');
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '20',
@@ -113,23 +113,16 @@ export default function UsersManagement() {
         ...(statusFilter && { status: statusFilter }),
       });
 
-      const response = await fetch(`/api/admin/users?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      const result = await response.json();
+      const result = await ApiClient.get(`/admin/users?${params}`);
       
       if (result.success) {
         setData(result.data);
-      } else {
-        if (response.status === 401) {
-          router.push('/login');
-        }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching users:', error);
+      if (error.message?.includes('Session expired')) {
+        router.push('/login');
+      }
     } finally {
       setLoading(false);
     }
@@ -141,17 +134,7 @@ export default function UsersManagement() {
     setCreateError('');
 
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch('/api/admin/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(createForm),
-      });
-
-      const result = await response.json();
+      const result = await ApiClient.post('/admin/users', createForm);
       
       if (result.success) {
         setShowCreateModal(false);
@@ -167,8 +150,8 @@ export default function UsersManagement() {
       } else {
         setCreateError(result.error || 'Failed to create user');
       }
-    } catch (error) {
-      setCreateError('Failed to create user. Please try again.');
+    } catch (error: any) {
+      setCreateError(error.message || 'Failed to create user. Please try again.');
     } finally {
       setCreateLoading(false);
     }
@@ -176,17 +159,9 @@ export default function UsersManagement() {
 
   const handleToggleUserStatus = async (userId: string, currentStatus: boolean) => {
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch(`/api/admin/users/${userId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ isActive: !currentStatus }),
-      });
+      const result = await ApiClient.patch(`/admin/users/${userId}`, { isActive: !currentStatus });
 
-      if (response.ok) {
+      if (result.success) {
         fetchUsers(); // Refresh the list
       }
     } catch (error) {
@@ -196,17 +171,9 @@ export default function UsersManagement() {
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch(`/api/admin/users/${userId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ role: newRole }),
-      });
+      const result = await ApiClient.patch(`/admin/users/${userId}`, { role: newRole });
 
-      if (response.ok) {
+      if (result.success) {
         fetchUsers(); // Refresh the list
       }
     } catch (error) {
@@ -233,17 +200,7 @@ export default function UsersManagement() {
     setEditError('');
 
     try {
-      const token = localStorage.getItem('authToken');
-      const response = await fetch(`/api/admin/users/${editingUser?.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(editForm),
-      });
-
-      const result = await response.json();
+      const result = await ApiClient.patch(`/admin/users/${editingUser?.id}`, editForm);
       
       if (result.success) {
         setShowEditModal(false);
@@ -252,8 +209,8 @@ export default function UsersManagement() {
       } else {
         setEditError(result.error || 'Failed to update user');
       }
-    } catch (error) {
-      setEditError('Failed to update user. Please try again.');
+    } catch (error: any) {
+      setEditError(error.message || 'Failed to update user. Please try again.');
     } finally {
       setEditLoading(false);
     }
