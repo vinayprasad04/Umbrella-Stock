@@ -68,7 +68,7 @@ export default function AdminDashboardLayout({ children, currentPage }: AdminDas
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-100/30 rounded-full blur-3xl animate-pulse delay-1000 pointer-events-none"></div>
       
       {/* Left Sidebar */}
-      <div className="relative w-80 bg-white/95 backdrop-blur-2xl shadow-xl border-r border-gray-200/50 flex flex-col">
+      <div className="relative w-90 bg-white/95 backdrop-blur-2xl shadow-xl border-r border-gray-200/50 flex flex-col" style={{width: '360px'}}>
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 via-transparent to-indigo-50/20 pointer-events-none"></div>
         
@@ -133,7 +133,7 @@ export default function AdminDashboardLayout({ children, currentPage }: AdminDas
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m8 5a2 2 0 012-2h2a2 2 0 012 2v0a2 2 0 002 2H9a2 2 0 01-2-2z" />
                   </svg>
                 </div>
-                <span>Dashboard</span>
+                <span>Mutual Funds</span>
                 <div className="ml-auto">
                   <div className={`w-2 h-2 rounded-full ${currentPage === 'dashboard' ? 'bg-blue-500 opacity-75' : ''}`}></div>
                 </div>
@@ -190,16 +190,30 @@ export default function AdminDashboardLayout({ children, currentPage }: AdminDas
               </div>
             </Link>
 
-            <div className="relative">
-              <div className="flex items-center px-6 py-4 text-sm font-medium text-gray-700 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/50 shadow-sm">
-                <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl mr-4 shadow-md">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                </div>
-                <span>Fund Data Entry</span>
+            <Link
+              href="/admin/stocks"
+              className={`group relative flex items-center px-6 py-4 text-sm font-medium rounded-2xl transition-all duration-300 border border-transparent hover:border-purple-200/50 hover:shadow-sm ${
+                currentPage === 'stocks'
+                  ? 'text-purple-700 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200/50'
+                  : 'text-gray-700 hover:text-purple-600 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50'
+              }`}
+            >
+              <div className={`flex items-center justify-center w-10 h-10 rounded-xl mr-4 transition-all duration-300 shadow-sm ${
+                currentPage === 'stocks'
+                  ? 'bg-gradient-to-br from-purple-500 to-pink-500'
+                  : 'bg-gray-200 group-hover:bg-gradient-to-br group-hover:from-purple-500 group-hover:to-pink-500'
+              }`}>
+                <svg className={`w-5 h-5 ${currentPage === 'stocks' ? 'text-white' : 'text-gray-600 group-hover:text-white'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
               </div>
-            </div>
+              <span>Stock Details</span>
+              <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">
+                  Manage
+                </div>
+              </div>
+            </Link>
 
             <div className="pt-6">
               <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent mb-6"></div>
@@ -286,8 +300,16 @@ export default function AdminDashboardLayout({ children, currentPage }: AdminDas
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 capitalize">{currentPage || 'Admin'} Dashboard</h1>
-                <p className="text-sm text-gray-500">System Management & Data Control</p>
+                <h1 className="text-2xl font-bold text-gray-900 capitalize">
+                  {currentPage === 'dashboard' ? 'Mutual Funds' :
+                   currentPage === 'stocks' ? 'Stock Details' :
+                   currentPage || 'Admin'} Dashboard
+                </h1>
+                <p className="text-sm text-gray-500">
+                  {currentPage === 'dashboard' ? 'Mutual Funds Management & Data Control' :
+                   currentPage === 'stocks' ? 'Equity Stocks Management & Data Control' :
+                   'System Management & Data Control'}
+                </p>
               </div>
               <div className="flex items-center space-x-3">
                 {/* Manage Users button removed */}

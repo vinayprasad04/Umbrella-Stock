@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import AdminDashboardLayout from '@/components/layouts/AdminDashboardLayout';
@@ -160,6 +160,17 @@ export default function FundDataEntry() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showExitModal, setShowExitModal] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
+  
+  // Collapsible sections state - all expanded by default
+  const [collapsedSections, setCollapsedSections] = useState({
+    sectorWiseHoldings: false,
+    topEquityHoldings: false, 
+    topDebtHoldings: false,
+    fundDetails: false,
+    fundInfo: false,
+    fundManagers: false,
+    dataQualitySource: false
+  });
 
   useEffect(() => {
     // Check authentication
@@ -570,6 +581,56 @@ export default function FundDataEntry() {
     setPendingNavigation(null);
   };
 
+  const toggleSection = (sectionKey: keyof typeof collapsedSections) => {
+    setCollapsedSections(prev => ({
+      ...prev,
+      [sectionKey]: !prev[sectionKey]
+    }));
+  };
+
+  // Collapsible Section Component - Memoized to prevent unnecessary re-renders
+  const CollapsibleSection = React.memo<{
+    title: string;
+    sectionKey: keyof typeof collapsedSections;
+    children: React.ReactNode;
+    className?: string;
+  }>(({ title, sectionKey, children, className = "" }) => {
+    const isCollapsed = collapsedSections[sectionKey];
+    
+    return (
+      <div className={`bg-white rounded-lg shadow ${className}`}>
+        <div className="flex justify-between items-center p-6">
+          <h3 className="text-lg font-medium text-gray-900">{title}</h3>
+          <button
+            type="button"
+            onClick={() => toggleSection(sectionKey)}
+            className="p-1 rounded-md hover:bg-gray-100 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            aria-label={isCollapsed ? `Expand ${title}` : `Collapse ${title}`}
+          >
+            <svg
+              className={`w-5 h-5 text-gray-500 transition-transform duration-200 ${
+                isCollapsed ? '-rotate-90' : 'rotate-0'
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+        </div>
+        <div className={`px-6 pb-6 ${isCollapsed ? 'hidden' : ''}`}>
+          {children}
+        </div>
+      </div>
+    );
+  });
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -870,9 +931,9 @@ export default function FundDataEntry() {
           </div>
 
           {/* Sector Wise Holdings Section */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <CollapsibleSection title="Sector Wise Holdings" sectionKey="sectorWiseHoldings">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium text-gray-900">Sector Wise Holdings</h3>
+              <div></div>
               <button
                 type="button"
                 onClick={addSectorWiseHolding}
@@ -930,12 +991,12 @@ export default function FundDataEntry() {
                 </div>
               </div>
             ))}
-          </div>
+          </CollapsibleSection>
 
           {/* Top Equity Holdings Section */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <CollapsibleSection title="Top Equity Holdings" sectionKey="topEquityHoldings">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium text-gray-900">Top Equity Holdings</h3>
+              <div></div>
               <button
                 type="button"
                 onClick={addTopEquityHolding}
@@ -1000,12 +1061,12 @@ export default function FundDataEntry() {
                 </div>
               </div>
             ))}
-          </div>
+          </CollapsibleSection>
 
           {/* Top Debt Holdings Section */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <CollapsibleSection title="Top Debt Holdings" sectionKey="topDebtHoldings">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium text-gray-900">Top Debt Holdings</h3>
+              <div></div>
               <button
                 type="button"
                 onClick={addTopDebtHolding}
@@ -1069,11 +1130,10 @@ export default function FundDataEntry() {
                 </div>
               </div>
             ))}
-          </div>
+          </CollapsibleSection>
 
           {/* Fund Details Section */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Fund Details</h3>
+          <CollapsibleSection title="Fund Details" sectionKey="fundDetails">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Launch Date</label>
@@ -1146,11 +1206,10 @@ export default function FundDataEntry() {
                 />
               </div>
             </div>
-          </div>
+          </CollapsibleSection>
 
           {/* Fund Info Section */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Fund Info</h3>
+          <CollapsibleSection title="Fund Info" sectionKey="fundInfo">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name of AMC</label>
@@ -1225,12 +1284,12 @@ export default function FundDataEntry() {
                 />
               </div>
             </div>
-          </div>
+          </CollapsibleSection>
 
           {/* Fund Managers Section */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <CollapsibleSection title="Fund Managers" sectionKey="fundManagers">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium text-gray-900">Fund Managers</h3>
+              <div></div>
               <button
                 type="button"
                 onClick={addFundManager}
@@ -1364,12 +1423,11 @@ export default function FundDataEntry() {
                 </div>
               </div>
             ))}
-          </div>
+          </CollapsibleSection>
 
 
           {/* Metadata Section */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Data Quality & Source</h3>
+          <CollapsibleSection title="Data Quality & Source" sectionKey="dataQualitySource">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <CustomSelect
                 label="Data Source *"
@@ -1417,7 +1475,7 @@ export default function FundDataEntry() {
                 onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               />
             </div>
-          </div>
+          </CollapsibleSection>
 
           {/* Submit Button */}
           <div className="flex justify-end space-x-4">

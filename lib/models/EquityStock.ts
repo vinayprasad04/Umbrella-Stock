@@ -10,6 +10,7 @@ export interface IEquityStock extends Document {
   isinNumber: string;
   faceValue: number;
   isActive: boolean;
+  hasActualData: boolean;
   lastUpdated: Date;
 }
 
@@ -56,6 +57,10 @@ const EquityStockSchema: Schema = new Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  hasActualData: {
+    type: Boolean,
+    default: false
   },
   lastUpdated: {
     type: Date,
