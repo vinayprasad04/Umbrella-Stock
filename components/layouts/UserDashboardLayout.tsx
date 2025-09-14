@@ -3,6 +3,24 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faBell,
+  faCog,
+  faUser,
+  faChartBar,
+  faChartLine,
+  faTh,
+  faUsers,
+  faArrowTrendUp,
+  faArrowTrendDown,
+  faHeart,
+  faSearch,
+  faSignOutAlt,
+  faArrowRightFromBracket,
+  faArrowUp,
+  faArrowDown
+} from '@fortawesome/free-solid-svg-icons';
 
 interface User {
   id: string;
@@ -66,7 +84,7 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
   return (
     <div className="h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50/30 flex overflow-hidden">
       {/* Left Sidebar */}
-      <div className="w-72 bg-white/95 backdrop-blur-xl shadow-xl border-r border-gray-200/50 flex flex-col relative">
+      <div className="bg-white/95 backdrop-blur-xl shadow-xl border-r border-gray-200/50 flex flex-col relative" style={{width: '360px'}}>
         {/* Subtle gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 via-transparent to-indigo-50/20 pointer-events-none"></div>
         
@@ -100,9 +118,9 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
           <Link
             href="/dashboard"
             className={`group relative flex items-center px-4 py-3 text-sm font-semibold rounded-xl border shadow-sm hover:shadow-md transition-all duration-200 ${
-              currentPage === 'dashboard' 
-                ? 'text-blue-700 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200/50'
-                : 'text-gray-700 hover:text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 border-transparent hover:border-blue-200/50'
+              currentPage === 'dashboard'
+                ? 'text-blue-700 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200/50 bg-white'
+                : 'text-gray-700 hover:text-blue-600 hover:bg-white hover:border-blue-200 border-transparent'
             }`}
           >
             <div className={`flex items-center justify-center w-8 h-8 rounded-lg mr-4 shadow-sm ${
@@ -121,10 +139,10 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
           
           <Link
             href="/mutual-funds"
-            className={`group relative flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:shadow-sm ${
+            className={`group relative flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:shadow-sm border ${
               currentPage === 'mutual-funds'
-                ? 'text-blue-700 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/50'
-                : 'text-gray-700 hover:text-blue-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:border hover:border-blue-200/50'
+                ? 'text-blue-700 bg-white border-blue-200'
+                : 'text-gray-700 hover:text-blue-600 hover:bg-white hover:border-blue-200 border-transparent'
             }`}
           >
             <div className={`flex items-center justify-center w-8 h-8 rounded-lg mr-4 transition-all duration-200 shadow-sm ${
@@ -142,10 +160,10 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
 
           <Link
             href="/etfs"
-            className={`group relative flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:shadow-sm ${
+            className={`group relative flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:shadow-sm border ${
               currentPage === 'etfs'
-                ? 'text-emerald-700 bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200/50'
-                : 'text-gray-700 hover:text-emerald-600 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-green-50 hover:border hover:border-emerald-200/50'
+                ? 'text-emerald-700 bg-white border-emerald-200'
+                : 'text-gray-700 hover:text-emerald-600 hover:bg-white hover:border-emerald-200 border-transparent'
             }`}
           >
             <div className={`flex items-center justify-center w-8 h-8 rounded-lg mr-4 transition-all duration-200 shadow-sm ${
@@ -163,10 +181,10 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
 
           <Link
             href="/sectors"
-            className={`group relative flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:shadow-sm ${
+            className={`group relative flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:shadow-sm border ${
               currentPage === 'sectors'
-                ? 'text-purple-700 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200/50'
-                : 'text-gray-700 hover:text-purple-600 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 hover:border hover:border-purple-200/50'
+                ? 'text-purple-700 bg-white border-purple-200'
+                : 'text-gray-700 hover:text-purple-600 hover:bg-white hover:border-purple-200 border-transparent'
             }`}
           >
             <div className={`flex items-center justify-center w-8 h-8 rounded-lg mr-4 transition-all duration-200 shadow-sm ${
@@ -188,12 +206,10 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
 
           <Link
             href="/stocks/gainers"
-            className="group relative flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-green-600 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 rounded-xl transition-all duration-200 hover:shadow-sm hover:border hover:border-green-200/50"
+            className="group relative flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-green-600 hover:bg-white rounded-xl transition-all duration-200 hover:shadow-sm border border-transparent hover:border-green-200"
           >
             <div className="flex items-center justify-center w-8 h-8 bg-gray-200 group-hover:bg-gradient-to-br group-hover:from-green-500 group-hover:to-emerald-500 rounded-lg mr-4 transition-all duration-200 shadow-sm">
-              <svg className="w-4 h-4 text-gray-600 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
-              </svg>
+              <FontAwesomeIcon icon={faArrowUp} className="w-4 h-4 text-gray-600 group-hover:text-white" />
             </div>
             Top Gainers
             <div className="ml-auto flex items-center space-x-1">
@@ -204,17 +220,36 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
 
           <Link
             href="/stocks/losers"
-            className="group relative flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-pink-50 rounded-xl transition-all duration-200 hover:shadow-sm hover:border hover:border-red-200/50"
+            className="group relative flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-white rounded-xl transition-all duration-200 hover:shadow-sm border border-transparent hover:border-red-200"
           >
             <div className="flex items-center justify-center w-8 h-8 bg-gray-200 group-hover:bg-gradient-to-br group-hover:from-red-500 group-hover:to-pink-500 rounded-lg mr-4 transition-all duration-200 shadow-sm">
-              <svg className="w-4 h-4 text-gray-600 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 13l-5 5m0 0l-5-5m5 5V6" />
-              </svg>
+              <FontAwesomeIcon icon={faArrowDown} className="w-4 h-4 text-gray-600 group-hover:text-white" />
             </div>
             Top Losers
             <div className="ml-auto flex items-center space-x-1">
               <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
               <span className="text-xs text-red-600 font-medium">-1.8%</span>
+            </div>
+          </Link>
+
+          <Link
+            href="/dashboard/watchlist"
+            className={`group relative flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:shadow-sm border ${
+              currentPage === 'watchlist'
+                ? 'text-orange-700 bg-white border-orange-200'
+                : 'text-gray-700 hover:text-orange-600 hover:bg-white hover:border-orange-200 border-transparent'
+            }`}
+          >
+            <div className={`flex items-center justify-center w-8 h-8 rounded-lg mr-4 transition-all duration-200 shadow-sm ${
+              currentPage === 'watchlist'
+                ? 'bg-gradient-to-br from-orange-500 to-amber-500'
+                : 'bg-gray-200 group-hover:bg-gradient-to-br group-hover:from-orange-500 group-hover:to-amber-500'
+            }`}>
+              <FontAwesomeIcon icon={faHeart} className={`w-4 h-4 ${currentPage === 'watchlist' ? 'text-white' : 'text-gray-600 group-hover:text-white'}`} />
+            </div>
+            My Watchlist
+            <div className="ml-auto flex items-center space-x-1">
+              <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse"></div>
             </div>
           </Link>
 
@@ -227,25 +262,20 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
             
             <Link
               href="/profile"
-              className="group relative flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-indigo-600 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-blue-50 rounded-xl transition-all duration-200 hover:shadow-sm hover:border hover:border-indigo-200/50"
+              className="group relative flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-indigo-600 hover:bg-white rounded-xl transition-all duration-200 hover:shadow-sm border border-transparent hover:border-indigo-200"
             >
               <div className="flex items-center justify-center w-8 h-8 bg-gray-200 group-hover:bg-gradient-to-br group-hover:from-indigo-500 group-hover:to-blue-500 rounded-lg mr-4 transition-all duration-200 shadow-sm">
-                <svg className="w-4 h-4 text-gray-600 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
+                <FontAwesomeIcon icon={faUser} className="w-4 h-4 text-gray-600 group-hover:text-white" />
               </div>
               Profile
             </Link>
             
             <Link
               href="/settings"
-              className="group relative flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-slate-600 hover:bg-gradient-to-r hover:from-slate-50 hover:to-gray-100 rounded-xl transition-all duration-200 hover:shadow-sm hover:border hover:border-slate-200/50"
+              className="group relative flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-slate-600 hover:bg-white rounded-xl transition-all duration-200 hover:shadow-sm border border-transparent hover:border-slate-200"
             >
               <div className="flex items-center justify-center w-8 h-8 bg-gray-200 group-hover:bg-gradient-to-br group-hover:from-slate-500 group-hover:to-gray-500 rounded-lg mr-4 transition-all duration-200 shadow-sm">
-                <svg className="w-4 h-4 text-gray-600 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+                <FontAwesomeIcon icon={faCog} className="w-4 h-4 text-gray-600 group-hover:text-white" />
               </div>
               Settings
             </Link>
@@ -282,18 +312,14 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
               </div>
               <div className="flex items-center space-x-2">
                 <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 shadow-sm hover:shadow">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5-5-5h5v-5a3 3 0 00-3-3H9m0 18v-5a3 3 0 013-3h5" />
-                  </svg>
+                  <FontAwesomeIcon icon={faCog} className="w-4 h-4" />
                 </button>
                 <button
                   onClick={handleLogout}
                   className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 shadow-sm hover:shadow"
                   title="Logout"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
+                  <FontAwesomeIcon icon={faArrowRightFromBracket} className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -342,9 +368,7 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
                 
                 {/* Notifications */}
                 <button className="relative p-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5-5-5h5v-5a3 3 0 00-3-3H9m0 18v-5a3 3 0 013-3h5" />
-                  </svg>
+                  <FontAwesomeIcon icon={faBell} className="w-6 h-6" />
                   <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
                     <span className="text-xs font-bold text-white">3</span>
                   </div>

@@ -3,14 +3,22 @@
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import axios from 'axios';
+import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import AdvancedStockChart from '@/components/AdvancedStockChart';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { formatCurrency, formatPercentage, formatNumber } from '@/lib/api-utils';
+import { useAuth } from '@/lib/AuthContext';
+import { ClientAuth } from '@/lib/auth';
 
 export default function StockDetailPage() {
   const params = useParams();
   const symbol = params?.symbol as string;
+  const { user, isAuthenticated } = useAuth();
+  const [watchlistStatus, setWatchlistStatus] = useState({
+    inWatchlist: false,
+    loading: false
+  });
 
   const { data: liveData, isLoading: loadingLive, error: liveError } = useQuery({
     queryKey: ['stockLive', symbol],
@@ -31,6 +39,34 @@ export default function StockDetailPage() {
     enabled: !!symbol,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  // Check watchlist status
+  const { data: watchlistData } = useQuery({
+    queryKey: ['watchlistCheck', symbol],
+    queryFn: async () => {
+      try {
+        const token = ClientAuth.getAccessToken();
+        const response = await axios.get(`/api/user/watchlist/check/${symbol}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+        return response.data.data;
+      } catch (error) {
+        return { inWatchlist: false };
+      }
+    },
+    enabled: !!symbol && isAuthenticated,
+    staleTime: 30 * 1000, // 30 seconds
+  });
+
+  // Update watchlist status when data changes
+  useEffect(() => {
+    if (watchlistData) {
+      setWatchlistStatus(prev => ({
+        ...prev,
+        inWatchlist: watchlistData.inWatchlist
+      }));
+    }
+  }, [watchlistData]);
 
   if (loadingLive && loadingDetails) {
     return (
@@ -67,6 +103,42 @@ export default function StockDetailPage() {
   const overview = detailData?.overview;
   const history = detailData?.history || [];
   const isPositive = liveData?.change >= 0;
+
+  const handleWatchlistToggle = async () => {
+    if (!isAuthenticated) {
+      // Redirect to login page
+      window.location.href = '/login';
+      return;
+    }
+
+    setWatchlistStatus(prev => ({ ...prev, loading: true }));
+
+    try {
+      const token = ClientAuth.getAccessToken();
+
+      if (watchlistStatus.inWatchlist) {
+        // Remove from watchlist
+        await axios.delete(`/api/user/watchlist?symbol=${symbol}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setWatchlistStatus({ inWatchlist: false, loading: false });
+      } else {
+        // Add to watchlist
+        await axios.post('/api/user/watchlist',
+          { symbol },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setWatchlistStatus({ inWatchlist: true, loading: false });
+      }
+    } catch (error: any) {
+      console.error('Watchlist error:', error);
+      setWatchlistStatus(prev => ({ ...prev, loading: false }));
+
+      if (error.response?.status === 401) {
+        window.location.href = '/login';
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -203,8 +275,24 @@ export default function StockDetailPage() {
             <div className="card">
               <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
               <div className="space-y-2">
-                <button className="w-full btn-primary">
-                  Add to Watchlist
+                <button
+                  onClick={handleWatchlistToggle}
+                  disabled={watchlistStatus.loading}
+                  className={`w-full ${watchlistStatus.inWatchlist ? 'btn-secondary bg-green-600 text-white hover:bg-green-700' : 'btn-primary'} disabled:opacity-50`}
+                >
+                  {watchlistStatus.loading ? (
+                    <div className="flex items-center justify-center">
+                      <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Processing...
+                    </div>
+                  ) : watchlistStatus.inWatchlist ? (
+                    '✓ In Watchlist'
+                  ) : (
+                    '+ Add to Watchlist'
+                  )}
                 </button>
                 <button className="w-full btn-secondary">
                   Set Price Alert
