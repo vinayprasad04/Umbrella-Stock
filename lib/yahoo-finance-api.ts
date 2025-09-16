@@ -126,8 +126,11 @@ const fetchSingleStockFromChart = async (symbol: string): Promise<YahooStock | n
     }
 
     return null;
-  } catch (error) {
-    console.warn(`Failed to fetch ${symbol} from chart API:`, error);
+  } catch (error: any) {
+    // Only log non-404 errors to reduce console noise
+    if (error?.response?.status !== 404) {
+      console.warn(`Failed to fetch ${symbol} from chart API:`, error?.message || error);
+    }
     return null;
   }
 };
@@ -194,11 +197,17 @@ export const fetchSingleStock = async (symbol: string): Promise<YahooStock | nul
     }
     
     // No fallback to mock data - return null if API fails
-    console.warn(`Yahoo Finance API unavailable for ${symbol}`);
+    // Only warn for stock symbols (not mutual funds) to reduce console noise
+    if (!symbol.match(/^\d+$/)) {
+      console.warn(`Yahoo Finance API unavailable for ${symbol}`);
+    }
     return null;
     
-  } catch (error) {
-    console.error(`Error fetching single stock ${symbol}:`, error);
+  } catch (error: any) {
+    // Only log detailed errors for actual stock symbols, not mutual fund codes
+    if (!symbol.match(/^\d+$/)) {
+      console.error(`Error fetching single stock ${symbol}:`, error?.message || error);
+    }
     return null;
   }
 };

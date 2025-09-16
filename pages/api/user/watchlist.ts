@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import connectDB from '@/lib/mongodb';
 import Watchlist from '@/lib/models/Watchlist';
 import EquityStock from '@/lib/models/EquityStock';
+import UserPreferences from '@/lib/models/UserPreferences';
 import { APIResponse } from '@/types';
 import { AuthUtils } from '@/lib/auth';
 
@@ -58,18 +59,83 @@ async function handleGetWatchlist(
   decoded: any
 ) {
   try {
+    const { watchlistId = 1 } = req.query;
+    const tabId = parseInt(watchlistId.toString()) || 1;
+
+    // Get watchlist items for specific tab
     const watchlistItems = await Watchlist.find({
-      email: decoded.email,
+      userId: decoded.userId,
+      isActive: true,
+      watchlistId: tabId
+    }).lean();
+
+    console.log('🔍 Found watchlist items:', watchlistItems.map(item => item.symbol));
+
+    // Sort by the order field for this specific tab
+    const sortedItems = [...watchlistItems].sort((a: any, b: any) => {
+      // Sort by order field, then by addedAt for items without order
+      const aOrder = a.order || 999999;
+      const bOrder = b.order || 999999;
+      
+      if (aOrder !== bOrder) {
+        return aOrder - bOrder;
+      }
+      
+      // If same order or both don't have order, sort by date (newest first)
+      return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
+    });
+
+    console.log('✅ Final sorted items:', sortedItems.map(item => item.symbol));
+
+    // Get all watchlists count for limits
+    const allWatchlistItems = await Watchlist.find({
+      userId: decoded.userId,
       isActive: true
-    })
-    .sort({ addedAt: -1 })
-    .lean();
+    }).lean();
+
+    // Get tab counts
+    const tabCounts: { [key: number]: number } = {};
+    for (let i = 1; i <= 5; i++) {
+      tabCounts[i] = allWatchlistItems.filter((item: any) => item.watchlistId === i).length;
+    }
+
+    // Get user preferences for watchlist names
+    const userPreferences: any = await UserPreferences.findOne({
+      userId: decoded.userId
+    }).lean();
+
+    // Get watchlist names - convert Map to object
+    const watchlistNamesMap = userPreferences?.watchlistNames;
+    const watchlistNames: { [key: number]: string } = {};
+    
+    if (watchlistNamesMap instanceof Map) {
+      // Convert Map to object
+      watchlistNamesMap.forEach((value, key) => {
+        watchlistNames[parseInt(key)] = value;
+      });
+    } else if (watchlistNamesMap && typeof watchlistNamesMap === 'object') {
+      // Handle case where it's already an object
+      Object.keys(watchlistNamesMap).forEach(key => {
+        watchlistNames[parseInt(key)] = (watchlistNamesMap as any)[key];
+      });
+    }
+    
+    // Fill in defaults for missing entries
+    for (let i = 1; i <= 5; i++) {
+      if (!watchlistNames[i]) {
+        watchlistNames[i] = `Watchlist ${i}`;
+      }
+    }
 
     return res.status(200).json({
       success: true,
       data: {
-        watchlist: watchlistItems,
-        total: watchlistItems.length
+        watchlist: sortedItems,
+        total: sortedItems.length,
+        currentTab: tabId,
+        tabCounts,
+        totalItems: allWatchlistItems.length,
+        watchlistNames
       },
       message: 'Watchlist retrieved successfully'
     });
@@ -87,7 +153,7 @@ async function handleAddToWatchlist(
   res: NextApiResponse<APIResponse<any>>,
   decoded: any
 ) {
-  const { symbol, companyName, type = 'STOCK' } = req.body;
+  const { symbol, companyName, type = 'STOCK', watchlistId } = req.body;
 
   if (!symbol) {
     return res.status(400).json({
@@ -97,6 +163,68 @@ async function handleAddToWatchlist(
   }
 
   try {
+    // Check total items limit (100 max)
+    const totalItems = await Watchlist.countDocuments({
+      userId: decoded.userId,
+      isActive: true
+    });
+
+    if (totalItems >= 100) {
+      return res.status(400).json({
+        success: false,
+        error: 'Maximum number of watchlist items reached (100). Please remove some items first.',
+      });
+    }
+
+    // Determine which tab to use
+    let targetWatchlistId = watchlistId || 1;
+    
+    // If no specific tab provided, find the first available tab with space
+    if (!watchlistId) {
+      for (let i = 1; i <= 5; i++) {
+        const tabCount = await Watchlist.countDocuments({
+          userId: decoded.userId,
+          isActive: true,
+          watchlistId: i
+        });
+        
+        if (tabCount < 20) {
+          targetWatchlistId = i;
+          break;
+        }
+      }
+      
+      // If all tabs are full, return error
+      if (targetWatchlistId === 1) {
+        const firstTabCount = await Watchlist.countDocuments({
+          userId: decoded.userId,
+          isActive: true,
+          watchlistId: 1
+        });
+        
+        if (firstTabCount >= 20) {
+          return res.status(400).json({
+            success: false,
+            error: 'All watchlist tabs are full (20 items each). Please remove some items first.',
+          });
+        }
+      }
+    } else {
+      // Check if specified tab has space
+      const tabCount = await Watchlist.countDocuments({
+        userId: decoded.userId,
+        isActive: true,
+        watchlistId: targetWatchlistId
+      });
+      
+      if (tabCount >= 20) {
+        return res.status(400).json({
+          success: false,
+          error: `Watchlist tab ${targetWatchlistId} is full (20 items max). Choose another tab or remove some items.`,
+        });
+      }
+    }
+
     let finalCompanyName = companyName;
 
     // For stocks, validate they exist and get company name
@@ -121,11 +249,12 @@ async function handleAddToWatchlist(
       });
     }
 
-    // Check if already in watchlist
+    // Check if already in this specific watchlist tab
     const existingWatchlist = await Watchlist.findOne({
-      email: decoded.email,
+      userId: decoded.userId,
       symbol: symbol.toUpperCase(),
-      isActive: true
+      isActive: true,
+      watchlistId: targetWatchlistId
     });
 
     if (existingWatchlist) {
@@ -135,21 +264,34 @@ async function handleAddToWatchlist(
       });
     }
 
+    // Get the current maximum order for this specific tab
+    const maxOrderItem: any = await Watchlist.findOne({
+      userId: decoded.userId,
+      isActive: true,
+      watchlistId: targetWatchlistId
+    }).sort({ order: -1 }).lean();
+
+    const nextOrder = (maxOrderItem?.order || 0) + 1;
+
     // Add to watchlist
     const watchlistItem = await Watchlist.create({
       userId: decoded.userId,
-      email: decoded.email,
       symbol: symbol.toUpperCase(),
       companyName: finalCompanyName,
       type: type,
       addedAt: new Date(),
-      isActive: true
+      isActive: true,
+      order: nextOrder,
+      watchlistId: targetWatchlistId
     });
 
     return res.status(201).json({
       success: true,
-      data: watchlistItem,
-      message: `${type === 'STOCK' ? 'Stock' : 'Mutual fund'} added to watchlist successfully`
+      data: {
+        ...watchlistItem.toObject(),
+        addedToTab: targetWatchlistId
+      },
+      message: `${type === 'STOCK' ? 'Stock' : 'Mutual fund'} added to watchlist tab ${targetWatchlistId} successfully`
     });
   } catch (error: any) {
     console.error('❌ Error adding to watchlist:', error);
@@ -185,7 +327,7 @@ async function handleRemoveFromWatchlist(
   try {
     const result = await Watchlist.findOneAndUpdate(
       {
-        email: decoded.email,
+        userId: decoded.userId,
         symbol: symbol.toString().toUpperCase(),
         isActive: true
       },

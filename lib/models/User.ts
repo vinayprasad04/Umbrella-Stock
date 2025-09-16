@@ -13,15 +13,36 @@ export interface IUser extends Document {
   // Profile Information
   phone?: string;
   department?: string;
+  location?: string;
+  bio?: string;
+  avatar?: string;
+  isEmailVerified?: boolean;
+  lastLoginAt?: Date;
+  
+  // User Preferences
+  preferences?: {
+    theme: 'light' | 'dark' | 'auto';
+    language: string;
+    currency: string;
+    timezone: string;
+  };
+  
+  // Notification Settings
+  notifications?: {
+    email: boolean;
+    push: boolean;
+    marketing: boolean;
+  };
   
   // Activity Tracking
   totalMfDataEntered?: number;
   totalMfDataVerified?: number;
   lastActivity?: Date;
   
-  // Password Reset
+  // Password Management
   passwordResetToken?: string;
   passwordResetExpires?: Date;
+  passwordChangedAt?: Date;
 }
 
 const UserSchema: Schema = new Schema({
@@ -71,15 +92,36 @@ const UserSchema: Schema = new Schema({
   // Profile Information
   phone: String,
   department: String,
+  location: String,
+  bio: { type: String, maxlength: 500 },
+  avatar: String,
+  isEmailVerified: { type: Boolean, default: false },
+  lastLoginAt: Date,
+  
+  // User Preferences
+  preferences: {
+    theme: { type: String, enum: ['light', 'dark', 'auto'], default: 'light' },
+    language: { type: String, default: 'en' },
+    currency: { type: String, default: 'INR' },
+    timezone: { type: String, default: 'Asia/Kolkata' }
+  },
+  
+  // Notification Settings
+  notifications: {
+    email: { type: Boolean, default: true },
+    push: { type: Boolean, default: true },
+    marketing: { type: Boolean, default: false }
+  },
   
   // Activity Tracking
   totalMfDataEntered: { type: Number, default: 0 },
   totalMfDataVerified: { type: Number, default: 0 },
   lastActivity: Date,
   
-  // Password Reset
+  // Password Management
   passwordResetToken: String,
-  passwordResetExpires: Date
+  passwordResetExpires: Date,
+  passwordChangedAt: Date
 }, {
   timestamps: true
 });

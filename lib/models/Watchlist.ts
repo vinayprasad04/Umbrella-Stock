@@ -8,6 +8,8 @@ export interface IWatchlist extends Document {
   type: 'STOCK' | 'MUTUAL_FUND';
   addedAt: Date;
   isActive: boolean;
+  order: number;
+  watchlistId: number; // 1-5 for different tabs
 }
 
 const WatchlistSchema: Schema = new Schema({
@@ -43,13 +45,26 @@ const WatchlistSchema: Schema = new Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  order: {
+    type: Number,
+    default: 0,
+    index: true
+  },
+  watchlistId: {
+    type: Number,
+    required: true,
+    default: 1,
+    min: 1,
+    max: 5,
+    index: true
   }
 }, {
   timestamps: true
 });
 
-// Compound index to prevent duplicate watchlist entries
-WatchlistSchema.index({ userId: 1, symbol: 1 }, { unique: true });
+// Compound index to prevent duplicate watchlist entries per tab
+WatchlistSchema.index({ userId: 1, symbol: 1, watchlistId: 1 }, { unique: true });
 
 // Index for efficient user queries
 WatchlistSchema.index({ email: 1, isActive: 1 });

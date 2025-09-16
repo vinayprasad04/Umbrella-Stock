@@ -46,7 +46,7 @@ export default async function handler(
     await connectDB();
 
     const watchlistItem = await Watchlist.findOne({
-      email: decoded.email,
+      userId: decoded.userId,
       symbol: symbol.toString().toUpperCase(),
       isActive: true
     });

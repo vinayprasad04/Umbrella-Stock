@@ -15,12 +15,20 @@ import {
   faArrowTrendUp,
   faArrowTrendDown,
   faHeart,
-  faSearch,
   faSignOutAlt,
   faArrowRightFromBracket,
   faArrowUp,
   faArrowDown
 } from '@fortawesome/free-solid-svg-icons';
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface User {
   id: string;
@@ -90,7 +98,7 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
         
         {/* Sidebar Header */}
         <div className="relative p-8 border-b border-gray-200/50">
-          <div className="flex items-center">
+          <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
             <div className="relative">
               <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3 hover:rotate-0 transition-transform duration-300">
                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,7 +113,7 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
               </h2>
               <p className="text-sm text-gray-600 font-medium">Analytics Platform</p>
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* Navigation Menu */}
@@ -262,10 +270,18 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
             
             <Link
               href="/profile"
-              className="group relative flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-indigo-600 hover:bg-white rounded-xl transition-all duration-200 hover:shadow-sm border border-transparent hover:border-indigo-200"
+              className={`group relative flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:shadow-sm border ${
+                currentPage === 'profile'
+                  ? 'text-indigo-700 bg-white border-indigo-200'
+                  : 'text-gray-700 hover:text-indigo-600 hover:bg-white hover:border-indigo-200 border-transparent'
+              }`}
             >
-              <div className="flex items-center justify-center w-8 h-8 bg-gray-200 group-hover:bg-gradient-to-br group-hover:from-indigo-500 group-hover:to-blue-500 rounded-lg mr-4 transition-all duration-200 shadow-sm">
-                <FontAwesomeIcon icon={faUser} className="w-4 h-4 text-gray-600 group-hover:text-white" />
+              <div className={`flex items-center justify-center w-8 h-8 rounded-lg mr-4 transition-all duration-200 shadow-sm ${
+                currentPage === 'profile'
+                  ? 'bg-gradient-to-br from-indigo-500 to-blue-500'
+                  : 'bg-gray-200 group-hover:bg-gradient-to-br group-hover:from-indigo-500 group-hover:to-blue-500'
+              }`}>
+                <FontAwesomeIcon icon={faUser} className={`w-4 h-4 ${currentPage === 'profile' ? 'text-white' : 'text-gray-600 group-hover:text-white'}`} />
               </div>
               Profile
             </Link>
@@ -352,40 +368,60 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
               </div>
               
               <div className="flex items-center space-x-4">
-                {/* Search */}
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </div>
-                  <input
-                    type="text"
-                    className="block w-64 pl-10 pr-3 py-2.5 border border-gray-200 rounded-xl leading-5 bg-white/50 backdrop-blur-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    placeholder="Search funds, stocks..."
-                  />
-                </div>
-                
                 {/* Notifications */}
-                <button className="relative p-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200">
-                  <FontAwesomeIcon icon={faBell} className="w-6 h-6" />
-                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">3</span>
-                  </div>
-                </button>
+                <Link href="/notifications">
+                  <button className="relative p-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200">
+                    <FontAwesomeIcon icon={faBell} className="w-6 h-6" />
+                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+                      <span className="text-xs font-bold text-white">3</span>
+                    </div>
+                  </button>
+                </Link>
 
-                {/* Profile quick access */}
-                <div className="flex items-center space-x-3 bg-white/50 backdrop-blur-sm rounded-2xl px-4 py-2 border border-gray-200/50">
-                  <div className="text-right">
-                    <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
-                    <p className="text-xs text-gray-500">{user?.role} Account</p>
-                  </div>
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
-                    <span className="text-sm font-bold text-white">
-                      {user?.name?.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                </div>
+                {/* User Dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="flex items-center space-x-3 bg-white/50 backdrop-blur-sm rounded-2xl px-4 py-2 border border-gray-200/50 hover:bg-white/70 transition-all duration-200">
+                      <div className="text-right">
+                        <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
+                        <p className="text-xs text-gray-500">{user?.role} Account</p>
+                      </div>
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-bold text-white">
+                          {user?.name?.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56 mr-4">
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{user?.name}</p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {user?.email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile" className="flex items-center">
+                        <FontAwesomeIcon icon={faUser} className="w-4 h-4 mr-2" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings" className="flex items-center">
+                        <FontAwesomeIcon icon={faCog} className="w-4 h-4 mr-2" />
+                        Settings
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="flex items-center text-red-600 focus:text-red-600">
+                      <FontAwesomeIcon icon={faArrowRightFromBracket} className="w-4 h-4 mr-2" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </div>

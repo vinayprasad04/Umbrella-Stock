@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAuth } from '@/lib/AuthContext';
 
 interface LoginForm {
   email: string;
@@ -16,6 +17,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,12 +49,18 @@ export default function Login() {
         localStorage.setItem('refreshExpiry', (Date.now() + refreshExpiresIn).toString());
         localStorage.setItem('user', JSON.stringify(user));
         
-        // Redirect based on user role
-        if (['ADMIN', 'DATA_ENTRY'].includes(data.data.user.role)) {
-          router.push('/admin/dashboard');
-        } else {
-          router.push('/dashboard');
-        }
+        // Update AuthContext immediately
+        login(tokens, user);
+        
+        // Small delay to ensure AuthContext is updated before navigation
+        setTimeout(() => {
+          // Redirect based on user role
+          if (['ADMIN', 'DATA_ENTRY'].includes(data.data.user.role)) {
+            router.push('/admin/dashboard');
+          } else {
+            router.push('/dashboard');
+          }
+        }, 100);
       } else {
         setError(data.error || 'Login failed');
       }

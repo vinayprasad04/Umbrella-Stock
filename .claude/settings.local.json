@@ -28,7 +28,9 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Read(//home/qss/Downloads/**)",
-      "Bash(del scripts/debug-extraction.js)"
+      "Bash(del scripts/debug-extraction.js)",
+      "Bash(del:*)",
+      "Bash(netstat:*)"
     ],
     "deny": [],
     "ask": [],
