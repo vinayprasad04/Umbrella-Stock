@@ -243,6 +243,7 @@ export default function WatchlistPage() {
       if (!watchlistData?.watchlist?.length) return;
 
       setLoadingLive(true);
+      // Use the original watchlist order from the API, not from React Query cache
       const promises = watchlistData.watchlist.map(async (item: WatchlistItem) => {
         let detectedType = item.type;
 
@@ -323,7 +324,7 @@ export default function WatchlistPage() {
     // Refresh live data every 30 seconds
     const interval = setInterval(fetchLiveData, 30 * 1000);
     return () => clearInterval(interval);
-  }, [watchlistData]);
+  }, [watchlistData?.watchlist?.length, activeTab]); // Only re-run when items count or tab changes, not on every data update
 
   // Update tab data when data changes
   useEffect(() => {
@@ -348,13 +349,13 @@ export default function WatchlistPage() {
     const { active, over } = event;
 
     if (over && active.id !== over.id && watchlistData?.watchlist) {
-      const currentWatchlist = watchlistData.watchlist;
+      const currentWatchlist = [...watchlistData.watchlist]; // Create a new array
       const oldIndex = currentWatchlist.findIndex((item: WatchlistItem) => item._id === active.id);
       const newIndex = currentWatchlist.findIndex((item: WatchlistItem) => item._id === over.id);
 
       if (oldIndex !== -1 && newIndex !== -1) {
         const newWatchlist = arrayMove(currentWatchlist, oldIndex, newIndex) as WatchlistItem[];
-        
+
         // Optimistically update the React Query cache immediately
         queryClient.setQueryData(['watchlist', activeTab], {
           ...watchlistData,
@@ -366,8 +367,10 @@ export default function WatchlistPage() {
           const token = ClientAuth.getAccessToken();
           const orderData = newWatchlist.map((item, index) => ({
             id: item._id,
-            order: index
+            order: index + 1 // Start order from 1 instead of 0
           }));
+
+          console.log('💾 Saving new order:', orderData);
 
           await axios.put('/api/user/watchlist/reorder', {
             items: orderData,
@@ -377,6 +380,12 @@ export default function WatchlistPage() {
           });
 
           console.log('✅ Order saved successfully');
+
+          // Force a refetch after a short delay to ensure backend state is reflected
+          setTimeout(() => {
+            refetch();
+          }, 1000);
+
         } catch (error) {
           console.error('❌ Error saving watchlist order:', error);
           // Revert the optimistic update on error
@@ -432,11 +441,17 @@ export default function WatchlistPage() {
   const handleAddToWatchlist = async (item: SearchResult) => {
     console.log('🔄 Adding to watchlist:', { symbol: item.symbol, activeTab, item });
     setAddingToWatchlist(item.symbol);
-    
+
     try {
       const token = ClientAuth.getAccessToken();
       console.log('🔄 Making API request to add item...');
-      
+      console.log('📋 Request payload:', {
+        symbol: item.symbol,
+        companyName: item.name,
+        type: item.type,
+        watchlistId: activeTab
+      });
+
       const response = await axios.post('/api/user/watchlist', {
         symbol: item.symbol,
         companyName: item.name,
@@ -445,7 +460,7 @@ export default function WatchlistPage() {
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
+
       console.log('✅ API response:', response.data);
       
       // Clear search first

@@ -168,6 +168,7 @@ export default function MutualFundDetailPage() {
         setWatchlistStatus({ inWatchlist: false, loading: false });
       } else {
         // Add to watchlist - we'll need to modify the API to handle mutual funds
+        console.log('🚀 Adding mutual fund to watchlist:', { symbol: schemeCode, companyName: fundName, type: 'MUTUAL_FUND' });
         await axios.post('/api/user/watchlist',
           {
             symbol: schemeCode,

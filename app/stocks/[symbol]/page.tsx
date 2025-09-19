@@ -154,18 +154,29 @@ export default function StockDetailPage() {
         setWatchlistStatus({ inWatchlist: false, loading: false });
       } else {
         // Add to watchlist
+        console.log('🚀 Adding to watchlist:', { symbol, companyName: overview?.name, type: 'STOCK' });
         await axios.post('/api/user/watchlist',
-          { symbol },
+          {
+            symbol,
+            companyName: overview?.name || symbol,
+            type: 'STOCK'
+          },
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setWatchlistStatus({ inWatchlist: true, loading: false });
       }
     } catch (error: any) {
-      console.error('Watchlist error:', error);
+      console.error('❌ Watchlist error:', error);
+      console.error('❌ Error response:', error.response?.data);
+      console.error('❌ Error status:', error.response?.status);
       setWatchlistStatus(prev => ({ ...prev, loading: false }));
 
       if (error.response?.status === 401) {
         window.location.href = '/login';
+      } else {
+        // Show the actual error message
+        const errorMessage = error.response?.data?.error || error.message || 'Unknown error occurred';
+        alert(`Failed to add stock to watchlist: ${errorMessage}`);
       }
     }
   };

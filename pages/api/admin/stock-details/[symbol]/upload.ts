@@ -90,6 +90,7 @@ export default async function handler(
         : []
     };
 
+
     const dataQuality = (Array.isArray(fields.dataQuality) ? fields.dataQuality[0] : fields.dataQuality) || 'PENDING_VERIFICATION';
 
     let parsedData: any = null;
@@ -147,12 +148,12 @@ export default async function handler(
       }
     }
 
-    // Prepare data for saving - always set to PENDING_VERIFICATION when data is uploaded
+    // Prepare data for saving - use the status selected by the user
     const stockDetailData = {
       symbol: symbol.toUpperCase(),
       companyName: stock.companyName,
       additionalInfo,
-      dataQuality: parsedData ? 'PENDING_VERIFICATION' : (dataQuality as 'PENDING_VERIFICATION' | 'VERIFIED' | 'EXCELLENT' | 'GOOD'),
+      dataQuality: dataQuality as 'PENDING_VERIFICATION' | 'VERIFIED' | 'EXCELLENT' | 'GOOD',
       enteredBy: decoded.email,
       uploadedFiles: uploadedFileInfo,
       isActive: true,

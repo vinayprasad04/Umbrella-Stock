@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import AdminDashboardLayout from '@/components/layouts/AdminDashboardLayout';
 import Link from 'next/link';
 import { CustomSelect } from '@/components/ui/custom-select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { ApiClient } from '@/lib/apiClient';
 
 interface User {
@@ -49,6 +50,9 @@ export default function StocksDashboard() {
   const [exchangeFilter, setExchangeFilter] = useState('');
   const [dataFilter, setDataFilter] = useState('all');
   const [dataQualityFilter, setDataQualityFilter] = useState('all');
+  const [selectedStocks, setSelectedStocks] = useState<string[]>([]);
+  const [showBulkActions, setShowBulkActions] = useState(false);
+  const [bulkUpdating, setBulkUpdating] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -90,6 +94,57 @@ export default function StocksDashboard() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const handleSelectAll = (checked: boolean) => {
+    if (data?.stocks) {
+      if (checked) {
+        const allSymbols = data.stocks.map(stock => stock.symbol);
+        setSelectedStocks(allSymbols);
+      } else {
+        setSelectedStocks([]);
+      }
+    }
+  };
+
+  const handleSelectStock = (symbol: string) => {
+    setSelectedStocks(prev => {
+      if (prev.includes(symbol)) {
+        return prev.filter(s => s !== symbol);
+      } else {
+        return [...prev, symbol];
+      }
+    });
+  };
+
+  const handleBulkStatusUpdate = async (newStatus: string) => {
+    if (selectedStocks.length === 0) return;
+
+    setBulkUpdating(true);
+    try {
+      const response = await ApiClient.patch('/admin/stocks/bulk-update', {
+        symbols: selectedStocks,
+        dataQuality: newStatus
+      });
+
+      if (response.success) {
+        setSelectedStocks([]);
+        setShowBulkActions(false);
+        fetchData();
+      } else {
+        console.error('Bulk update failed:', response.error);
+        alert('Failed to update stock statuses: ' + response.error);
+      }
+    } catch (error) {
+      console.error('Bulk update error:', error);
+      alert('Failed to update stock statuses');
+    } finally {
+      setBulkUpdating(false);
+    }
+  };
+
+  useEffect(() => {
+    setShowBulkActions(selectedStocks.length > 0);
+  }, [selectedStocks]);
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return 'Never';
@@ -304,15 +359,62 @@ export default function StocksDashboard() {
           {/* Table */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-medium text-gray-900">
-                Equity Stocks ({data?.total.toLocaleString() || 0})
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-medium text-gray-900">
+                  Equity Stocks ({data?.total.toLocaleString() || 0})
+                  {selectedStocks.length > 0 && (
+                    <span className="ml-2 text-sm text-blue-600">({selectedStocks.length} selected)</span>
+                  )}
+                </h3>
+                {showBulkActions && (
+                  <div className="flex items-center space-x-3">
+                    <span className="text-sm text-gray-600">Bulk Actions:</span>
+                    <button
+                      onClick={() => handleBulkStatusUpdate('VERIFIED')}
+                      disabled={bulkUpdating}
+                      className="bg-green-600 text-white px-3 py-1 text-sm rounded hover:bg-green-700 disabled:opacity-50"
+                    >
+                      Mark as Verified
+                    </button>
+                    <button
+                      onClick={() => handleBulkStatusUpdate('PENDING_VERIFICATION')}
+                      disabled={bulkUpdating}
+                      className="bg-yellow-600 text-white px-3 py-1 text-sm rounded hover:bg-yellow-700 disabled:opacity-50"
+                    >
+                      Mark as Pending
+                    </button>
+                    <button
+                      onClick={() => handleBulkStatusUpdate('EXCELLENT')}
+                      disabled={bulkUpdating}
+                      className="bg-blue-600 text-white px-3 py-1 text-sm rounded hover:bg-blue-700 disabled:opacity-50"
+                    >
+                      Mark as Excellent
+                    </button>
+                    <button
+                      onClick={() => setSelectedStocks([])}
+                      disabled={bulkUpdating}
+                      className="bg-gray-600 text-white px-3 py-1 text-sm rounded hover:bg-gray-700 disabled:opacity-50"
+                    >
+                      Clear Selection
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          checked={data?.stocks && selectedStocks.length === data.stocks.length && data.stocks.length > 0}
+                          onCheckedChange={handleSelectAll}
+                        />
+                        <span>Select</span>
+                      </div>
+                    </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Symbol
                     </th>
@@ -341,7 +443,13 @@ export default function StocksDashboard() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {data?.stocks && data.stocks.length > 0 ? data.stocks.map((stock) => (
-                    <tr key={stock.symbol} className="hover:bg-gray-50">
+                    <tr key={stock.symbol} className={`hover:bg-gray-50 ${selectedStocks.includes(stock.symbol) ? 'bg-blue-50' : ''}`}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Checkbox
+                          checked={selectedStocks.includes(stock.symbol)}
+                          onCheckedChange={() => handleSelectStock(stock.symbol)}
+                        />
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {stock.symbol}
                         {stock.exchange && (
@@ -350,7 +458,14 @@ export default function StocksDashboard() {
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-900">
                         <div className="max-w-xs truncate" title={stock.companyName}>
-                          {stock.companyName}
+                          <Link
+                            href={`/stocks/${stock.symbol}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-800 hover:underline"
+                          >
+                            {stock.companyName}
+                          </Link>
                         </div>
                         {stock.industry && (
                           <div className="text-xs text-gray-500">{stock.industry}</div>
@@ -392,7 +507,7 @@ export default function StocksDashboard() {
                     </tr>
                   )) : (
                     <tr>
-                      <td colSpan={8} className="px-6 py-8 text-center text-sm text-gray-500">
+                      <td colSpan={9} className="px-6 py-8 text-center text-sm text-gray-500">
                         {dataQualityFilter === 'PENDING_VERIFICATION' ?
                           'No stocks found with Pending Verification status.' :
                           'No stocks found matching your filters.'

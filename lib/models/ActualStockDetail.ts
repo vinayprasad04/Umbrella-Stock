@@ -105,6 +105,7 @@ export interface IActualStockDetail extends Document {
     managementTeam?: string[];
   };
 
+
   // Metadata
   dataQuality: 'PENDING_VERIFICATION' | 'VERIFIED' | 'EXCELLENT' | 'GOOD';
   enteredBy: string;
@@ -239,6 +240,7 @@ const ActualStockDetailSchema: Schema = new Schema({
     industry: { type: String, index: true },
     managementTeam: [{ type: String }]
   },
+
 
   // Metadata
   dataQuality: {

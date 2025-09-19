@@ -74,13 +74,15 @@ async function handleGetWatchlist(
     // Sort by the order field for this specific tab
     const sortedItems = [...watchlistItems].sort((a: any, b: any) => {
       // Sort by order field, then by addedAt for items without order
-      const aOrder = a.order || 999999;
-      const bOrder = b.order || 999999;
-      
+      const aOrder = a.order !== undefined && a.order !== null ? a.order : 999999;
+      const bOrder = b.order !== undefined && b.order !== null ? b.order : 999999;
+
+      console.log(`🔄 Sorting: ${a.symbol}(order: ${a.order}) vs ${b.symbol}(order: ${b.order})`);
+
       if (aOrder !== bOrder) {
         return aOrder - bOrder;
       }
-      
+
       // If same order or both don't have order, sort by date (newest first)
       return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
     });
@@ -155,7 +157,10 @@ async function handleAddToWatchlist(
 ) {
   const { symbol, companyName, type = 'STOCK', watchlistId } = req.body;
 
+  console.log('📥 Watchlist add request:', { symbol, companyName, type, watchlistId, userId: decoded.userId });
+
   if (!symbol) {
+    console.log('❌ Symbol is required');
     return res.status(400).json({
       success: false,
       error: 'Symbol is required',
@@ -274,8 +279,18 @@ async function handleAddToWatchlist(
     const nextOrder = (maxOrderItem?.order || 0) + 1;
 
     // Add to watchlist
+    console.log('💾 Creating watchlist item:', {
+      userId: decoded.userId,
+      symbol: symbol.toUpperCase(),
+      companyName: finalCompanyName,
+      type: type,
+      watchlistId: targetWatchlistId,
+      order: nextOrder
+    });
+
     const watchlistItem = await Watchlist.create({
       userId: decoded.userId,
+      email: decoded.email,
       symbol: symbol.toUpperCase(),
       companyName: finalCompanyName,
       type: type,
@@ -284,6 +299,8 @@ async function handleAddToWatchlist(
       order: nextOrder,
       watchlistId: targetWatchlistId
     });
+
+    console.log('✅ Watchlist item created successfully:', watchlistItem._id);
 
     return res.status(201).json({
       success: true,
@@ -295,6 +312,12 @@ async function handleAddToWatchlist(
     });
   } catch (error: any) {
     console.error('❌ Error adding to watchlist:', error);
+    console.error('❌ Error stack:', error.stack);
+    console.error('❌ Error details:', {
+      name: error.name,
+      message: error.message,
+      code: error.code
+    });
 
     if (error.code === 11000) {
       return res.status(400).json({
@@ -305,7 +328,7 @@ async function handleAddToWatchlist(
 
     return res.status(500).json({
       success: false,
-      error: `Failed to add ${type === 'STOCK' ? 'stock' : 'mutual fund'} to watchlist`,
+      error: `Failed to add ${type === 'STOCK' ? 'stock' : 'mutual fund'} to watchlist: ${error.message}`,
     });
   }
 }

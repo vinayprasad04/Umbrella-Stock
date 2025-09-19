@@ -90,6 +90,7 @@ export default function StockEditPage() {
     managementTeam: []
   });
 
+
   useEffect(() => {
     if (symbol) {
       fetchStockData();
@@ -105,17 +106,19 @@ export default function StockEditPage() {
         // Handle new parsed stock detail data
         if (response.data.parsedStockDetail) {
           setParsedStockDetail(response.data.parsedStockDetail);
-          if (response.data.parsedStockDetail.additionalInfo) {
-            setFormData({
-              symbol,
-              dataQuality: 'PENDING_VERIFICATION',
-              description: response.data.parsedStockDetail.additionalInfo.description || '',
-              website: response.data.parsedStockDetail.additionalInfo.website || '',
-              sector: response.data.parsedStockDetail.additionalInfo.sector || '',
-              industry: response.data.parsedStockDetail.additionalInfo.industry || '',
-              managementTeam: response.data.parsedStockDetail.additionalInfo.managementTeam || []
-            });
-          }
+
+          // Set form data with additionalInfo if available
+          const additionalInfo = response.data.parsedStockDetail.additionalInfo || {};
+          setFormData({
+            symbol,
+            dataQuality: response.data.parsedStockDetail.dataQuality || 'PENDING_VERIFICATION',
+            description: additionalInfo.description || '',
+            website: additionalInfo.website || '',
+            sector: additionalInfo.sector || '',
+            industry: additionalInfo.industry || '',
+            managementTeam: additionalInfo.managementTeam || []
+          });
+
           setIsEdit(true);
         }
         // Handle old format data if exists
@@ -266,6 +269,7 @@ export default function StockEditPage() {
         });
       }
 
+
       // Add uploaded files
       uploadedFiles.forEach(uploadedFile => {
         formDataToSend.append('files', uploadedFile.file);
@@ -284,8 +288,8 @@ export default function StockEditPage() {
 
       if (result.success) {
         alert(result.message);
-        // Refresh the page to show updated data
-        window.location.reload();
+        // Refresh the data without reloading the entire page
+        await fetchStockData();
       } else {
         alert(`Error: ${result.error}`);
       }
@@ -758,6 +762,7 @@ export default function StockEditPage() {
                     </div>
                   )}
 
+
                   {/* Raw Data Summary */}
                   <div className="mb-8">
                     <h4 className="text-md font-medium text-gray-800 mb-4 border-b border-gray-200 pb-2">📋 Data Summary by Categories</h4>
@@ -839,9 +844,9 @@ export default function StockEditPage() {
 
           {/* Right Sidebar */}
           <div className="space-y-6">
-            {/* Data Quality */}
+            {/* Status */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Data Quality</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Status</h3>
               <select
                 value={formData.dataQuality}
                 onChange={(e) => handleInputChange('dataQuality', e.target.value)}
