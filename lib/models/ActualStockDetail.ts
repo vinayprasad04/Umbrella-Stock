@@ -105,6 +105,10 @@ export interface IActualStockDetail extends Document {
     managementTeam?: string[];
   };
 
+  // Stock ratios and financial metrics
+  ratios?: {
+    [key: string]: number | string;
+  };
 
   // Metadata
   dataQuality: 'PENDING_VERIFICATION' | 'VERIFIED' | 'EXCELLENT' | 'GOOD';
@@ -241,6 +245,11 @@ const ActualStockDetailSchema: Schema = new Schema({
     managementTeam: [{ type: String }]
   },
 
+  // Stock ratios and financial metrics
+  ratios: {
+    type: Schema.Types.Mixed,
+    default: undefined
+  },
 
   // Metadata
   dataQuality: {

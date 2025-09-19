@@ -90,6 +90,14 @@ export default function StockEditPage() {
     managementTeam: []
   });
 
+  // Ratios state
+  const [ratiosJson, setRatiosJson] = useState('');
+  const [parsedRatios, setParsedRatios] = useState<any>(null);
+  const [savedRatios, setSavedRatios] = useState<any>(null);
+  const [ratiosError, setRatiosError] = useState('');
+  const [savingRatios, setSavingRatios] = useState(false);
+  const [isEditingRatios, setIsEditingRatios] = useState(false);
+
 
   useEffect(() => {
     if (symbol) {
@@ -118,6 +126,11 @@ export default function StockEditPage() {
             industry: additionalInfo.industry || '',
             managementTeam: additionalInfo.managementTeam || []
           });
+
+          // Load existing ratios if available
+          if (response.data.parsedStockDetail.ratios) {
+            setSavedRatios(response.data.parsedStockDetail.ratios);
+          }
 
           setIsEdit(true);
         }
@@ -161,6 +174,78 @@ export default function StockEditPage() {
     const newTeam = [...(formData.managementTeam || [])];
     newTeam.splice(index, 1);
     setFormData(prev => ({ ...prev, managementTeam: newTeam }));
+  };
+
+  // Ratios handling functions
+  const handleRatiosJsonChange = (value: string) => {
+    setRatiosJson(value);
+    setRatiosError('');
+
+    if (value.trim()) {
+      try {
+        const parsed = JSON.parse(value);
+        setParsedRatios(parsed);
+        setRatiosError('');
+      } catch (error) {
+        setParsedRatios(null);
+        setRatiosError('Invalid JSON format');
+      }
+    } else {
+      setParsedRatios(null);
+    }
+  };
+
+  const handleSaveRatios = async () => {
+    if (!parsedRatios) {
+      setRatiosError('Please provide valid JSON data');
+      return;
+    }
+
+    setSavingRatios(true);
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`/api/admin/stock-details/${symbol}/ratios`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ratios: parsedRatios })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert('Ratios saved successfully!');
+        setSavedRatios(parsedRatios);
+        setRatiosJson('');
+        setParsedRatios(null);
+        setIsEditingRatios(false);
+        // Refresh the stock data to show the updated ratios
+        await fetchStockData();
+      } else {
+        setRatiosError(result.error || 'Failed to save ratios');
+      }
+    } catch (error) {
+      console.error('Error saving ratios:', error);
+      setRatiosError('Failed to save ratios. Please try again.');
+    } finally {
+      setSavingRatios(false);
+    }
+  };
+
+  const handleEditRatios = () => {
+    setIsEditingRatios(true);
+    setRatiosJson(JSON.stringify(savedRatios, null, 2));
+    setParsedRatios(savedRatios);
+    setRatiosError('');
+  };
+
+  const handleCancelEditRatios = () => {
+    setIsEditingRatios(false);
+    setRatiosJson('');
+    setParsedRatios(null);
+    setRatiosError('');
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -520,6 +605,124 @@ export default function StockEditPage() {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Stock Ratios Section */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-6">📊 Stock Ratios</h3>
+
+              {/* Display saved ratios when not editing */}
+              {savedRatios && !isEditingRatios && (
+                <div className="mb-6">
+                  <h4 className="text-md font-medium text-gray-800 mb-4 border-b border-gray-200 pb-2">Current Ratios</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {Object.entries(savedRatios).map(([key, value]) => (
+                      <div key={key} className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-200">
+                        <p className="text-sm text-gray-600 font-medium">{key}</p>
+                        <p className="text-lg font-bold text-indigo-600">
+                          {typeof value === 'number' ?
+                            (key.includes('(₹)') ? `₹${value}` :
+                             key.includes('(%)') ? `${value}%` :
+                             key.includes('(Cr)') ? `₹${value} Cr` : value) :
+                            String(value)
+                          }
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4">
+                    <button
+                      onClick={handleEditRatios}
+                      className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      ✏️ Edit Ratios
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* JSON Input for Ratios - shown when no saved ratios OR when editing */}
+              {(!savedRatios || isEditingRatios) && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {isEditingRatios ? 'Edit Stock Ratios JSON' : 'Paste Stock Ratios JSON'}
+                    </label>
+                    <p className="text-xs text-gray-500 mb-3">
+                      {isEditingRatios ? 'Modify the JSON data below and save' : 'Paste your JSON data containing stock ratios and financial metrics'}
+                    </p>
+                    <textarea
+                      value={ratiosJson}
+                      onChange={(e) => handleRatiosJsonChange(e.target.value)}
+                      placeholder={!isEditingRatios ? `Example:
+{
+  "Market Cap (Cr)": 812,
+  "Current Price (₹)": 230,
+  "Stock P/E": 13.0,
+  "Book Value (₹)": 122,
+  "Dividend Yield (%)": 0.53,
+  "ROCE (%)": 19.2,
+  "ROE (%)": 16.3,
+  "Face Value (₹)": 5.0
+}` : ''}
+                      rows={12}
+                      className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-mono text-sm"
+                    />
+                    {ratiosError && (
+                      <p className="text-sm text-red-600 mt-2">❌ {ratiosError}</p>
+                    )}
+                  </div>
+
+                  {/* Preview of parsed JSON - only show when there's new parsed data */}
+                  {parsedRatios && ratiosJson && (
+                    <div className="border border-green-200 bg-green-50 rounded-lg p-4">
+                      <h4 className="text-sm font-medium text-green-800 mb-2">✅ Preview of Parsed Data</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                        {Object.entries(parsedRatios).slice(0, 6).map(([key, value]) => (
+                          <div key={key} className="text-green-700">
+                            <span className="font-medium">{key}:</span> {String(value)}
+                          </div>
+                        ))}
+                        {Object.keys(parsedRatios).length > 6 && (
+                          <div className="text-green-600 italic">
+                            +{Object.keys(parsedRatios).length - 6} more metrics...
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={handleSaveRatios}
+                      disabled={!parsedRatios || savingRatios}
+                      className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {savingRatios ? 'Saving...' : isEditingRatios ? '💾 Update Ratios' : '💾 Save Ratios'}
+                    </button>
+                    {isEditingRatios && (
+                      <button
+                        onClick={handleCancelEditRatios}
+                        className="px-4 py-2 bg-gray-500 text-white text-sm font-medium rounded-lg hover:bg-gray-600 transition-colors"
+                      >
+                        ❌ Cancel
+                      </button>
+                    )}
+                    {ratiosJson && !isEditingRatios && (
+                      <button
+                        onClick={() => {
+                          setRatiosJson('');
+                          setParsedRatios(null);
+                          setRatiosError('');
+                        }}
+                        className="px-4 py-2 bg-gray-500 text-white text-sm font-medium rounded-lg hover:bg-gray-600 transition-colors"
+                      >
+                        🔄 Clear
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Parsed Excel Data Display */}

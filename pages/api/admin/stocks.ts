@@ -73,6 +73,10 @@ export default async function handler(
     const sortBy = req.query.sortBy as string || 'symbol';
     const sortOrder = req.query.sortOrder as string || 'asc';
 
+    // Determine if we need to sort by ActualStockDetail fields
+    const actualDataSortFields = ['marketCap', 'currentPrice', 'dataQuality', 'lastUpdated'];
+    const needsActualDataSort = actualDataSortFields.includes(sortBy);
+
     console.log('📥 API Received parameters:', {
       page, limit, search, sector, exchange, hasActualData, dataQuality, sortBy, sortOrder
     });
@@ -111,7 +115,7 @@ export default async function handler(
       ];
     }
 
-    // Handle dataQuality filtering differently - need to get matching ActualData first
+    // Handle dataQuality and hasActualData filtering
     let stocks: any[];
     let actualData: any[];
 
@@ -141,22 +145,52 @@ export default async function handler(
 
         stocks = await EquityStock.find(filter)
           .select('symbol companyName series dateOfListing isinNumber hasActualData lastUpdated')
-          .sort(search ? { symbol: 1 } : { [sortBy]: sortOrder === 'asc' ? 1 : -1 })
-          .skip(skip)
-          .limit(searchLimit)
+          .sort(search || needsActualDataSort ? { symbol: 1 } : { [sortBy]: sortOrder === 'asc' ? 1 : -1 })
+          .skip(needsActualDataSort ? 0 : skip)
+          .limit(needsActualDataSort ? 0 : searchLimit)
           .lean();
       }
+    } else if (hasActualData === 'false') {
+      // Special case for "No Data" - filter at database level
+      console.log('🎯 Filtering for stocks with NO actual data...');
+
+      // Get all symbols that DO have actual data
+      const stocksWithData = await ActualStockDetail.find({
+        isActive: true
+      }).select('symbol').lean();
+
+      const symbolsWithData = stocksWithData.map(s => s.symbol);
+      console.log('📋 Found', symbolsWithData.length, 'stocks WITH actual data');
+
+      // Filter to exclude stocks that have actual data
+      filter.symbol = { $nin: symbolsWithData };
+
+      // Apply pagination at database level (only if not sorting by actual data fields)
+      const skip = needsActualDataSort ? 0 : (page - 1) * limit;
+      const dbLimit = needsActualDataSort ? 0 : limit;
+      stocks = await EquityStock.find(filter)
+        .select('symbol companyName series dateOfListing isinNumber hasActualData lastUpdated')
+        .sort(needsActualDataSort ? { symbol: 1 } : { [sortBy]: sortOrder === 'asc' ? 1 : -1 })
+        .skip(skip)
+        .limit(dbLimit)
+        .lean();
+
+      console.log('📊 Found', stocks.length, 'stocks WITHOUT actual data for page', page);
+
+      // No actual data needed since these stocks don't have any
+      actualData = [];
     } else {
-      // Normal flow when not filtering by dataQuality
+      // Normal flow when not filtering by dataQuality or hasActualData=false
       // For search queries with relevance, we need to get more results first, then sort and paginate
       const searchLimit = search ? Math.max(limit * 3, 150) : limit;
-      const skip = search ? 0 : (page - 1) * limit;
+      const skip = search || needsActualDataSort ? 0 : (page - 1) * limit;
+      const dbLimit = needsActualDataSort ? 0 : searchLimit;
 
       stocks = await EquityStock.find(filter)
         .select('symbol companyName series dateOfListing isinNumber hasActualData lastUpdated')
-        .sort(search ? { symbol: 1 } : { [sortBy]: sortOrder === 'asc' ? 1 : -1 })
+        .sort(search || needsActualDataSort ? { symbol: 1 } : { [sortBy]: sortOrder === 'asc' ? 1 : -1 })
         .skip(skip)
-        .limit(searchLimit)
+        .limit(dbLimit)
         .lean();
 
       // Get actual data status for these stocks
@@ -203,9 +237,53 @@ export default async function handler(
       };
     });
 
-    // Apply relevance scoring for search queries
+    // Apply sorting if needed for ActualStockDetail fields
     let filteredResult = result;
 
+    if (needsActualDataSort && !search) {
+      console.log('🔄 Applying sorting by', sortBy, 'in', sortOrder, 'order');
+
+      filteredResult.sort((a, b) => {
+        let aValue, bValue;
+
+        switch (sortBy) {
+          case 'marketCap':
+            aValue = a.marketCap || 0;
+            bValue = b.marketCap || 0;
+            break;
+          case 'currentPrice':
+            aValue = a.currentPrice || 0;
+            bValue = b.currentPrice || 0;
+            break;
+          case 'dataQuality':
+            aValue = a.dataQuality || 'ZZZ'; // Put undefined values at end
+            bValue = b.dataQuality || 'ZZZ';
+            break;
+          case 'lastUpdated':
+            aValue = a.lastUpdated ? new Date(a.lastUpdated).getTime() : 0;
+            bValue = b.lastUpdated ? new Date(b.lastUpdated).getTime() : 0;
+            break;
+          default:
+            aValue = 0;
+            bValue = 0;
+        }
+
+        if (sortOrder === 'asc') {
+          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+        } else {
+          return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+        }
+      });
+
+      // Apply pagination after sorting
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      filteredResult = filteredResult.slice(startIndex, endIndex);
+
+      console.log('📊 Applied sorting and pagination:', filteredResult.length, 'results for page', page);
+    }
+
+    // Apply relevance scoring for search queries
     if (search) {
       console.log('🎯 Applying relevance scoring for search:', search);
 
@@ -268,12 +346,11 @@ export default async function handler(
       );
     }
 
-    // Apply hasActualData filter
+    // Apply hasActualData filter (only for hasActualData=true, false is handled at DB level)
     if (hasActualData === 'true') {
       filteredResult = filteredResult.filter(s => s.hasActualData);
-    } else if (hasActualData === 'false') {
-      filteredResult = filteredResult.filter(s => !s.hasActualData);
     }
+    // Note: hasActualData=false is now handled at database level for proper pagination
 
     // dataQuality filtering is now handled earlier in the query logic
     console.log('📊 Final result after all filters:', filteredResult.length, 'stocks');
@@ -284,7 +361,16 @@ export default async function handler(
     const stocksWithoutActualData = totalStocks - stocksWithActualData;
 
     // Get total for current filter
-    const total = await EquityStock.countDocuments(filter);
+    let total: number;
+    if (hasActualData === 'false') {
+      // For "No Data" filter, count stocks without actual data
+      const stocksWithDataCount = await ActualStockDetail.countDocuments({ isActive: true });
+      const totalStocksCount = await EquityStock.countDocuments({ isActive: true });
+      total = totalStocksCount - stocksWithDataCount;
+      console.log('📊 Total calculation for No Data:', { totalStocksCount, stocksWithDataCount, total });
+    } else {
+      total = await EquityStock.countDocuments(filter);
+    }
 
     res.status(200).json({
       success: true,

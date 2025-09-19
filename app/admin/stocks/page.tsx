@@ -53,20 +53,34 @@ export default function StocksDashboard() {
   const [selectedStocks, setSelectedStocks] = useState<string[]>([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
   const [bulkUpdating, setBulkUpdating] = useState(false);
+  const [perPage, setPerPage] = useState(50);
+  const [sortBy, setSortBy] = useState('symbol');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const fetchData = useCallback(async () => {
     try {
       const params = new URLSearchParams({
         page: page.toString(),
-        limit: '50',
+        limit: perPage.toString(),
         ...(search && { search }),
         ...(sectorFilter && { sector: sectorFilter }),
         ...(exchangeFilter && { exchange: exchangeFilter }),
         ...(dataFilter && dataFilter !== 'all' && { hasActualData: dataFilter }),
-        ...(dataQualityFilter && dataQualityFilter !== 'all' && { dataQuality: dataQualityFilter }),
-        sortBy: 'symbol',
-        sortOrder: 'asc'
+        sortBy: sortBy,
+        sortOrder: sortOrder
       });
+
+      // Handle dataQualityFilter - special case for NO_DATA
+      if (dataQualityFilter && dataQualityFilter !== 'all') {
+        if (dataQualityFilter === 'NO_DATA') {
+          // For "No Data", only set hasActualData=false, don't set dataQuality
+          params.append('hasActualData', 'false');
+        } else {
+          // For actual quality values, set dataQuality and ensure hasActualData=true
+          params.append('dataQuality', dataQualityFilter);
+          params.append('hasActualData', 'true');
+        }
+      }
 
       const url = `/admin/stocks?${params}`;
       console.log('🔗 API URL:', url);
@@ -89,7 +103,7 @@ export default function StocksDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, sectorFilter, exchangeFilter, dataFilter, dataQualityFilter]);
+  }, [page, search, sectorFilter, exchangeFilter, dataFilter, dataQualityFilter, perPage, sortBy, sortOrder]);
 
   useEffect(() => {
     fetchData();
@@ -146,6 +160,50 @@ export default function StocksDashboard() {
     setShowBulkActions(selectedStocks.length > 0);
   }, [selectedStocks]);
 
+  const handleSort = (column: string) => {
+    if (sortBy === column) {
+      // Toggle sort order if same column
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      // Set new column with ascending order
+      setSortBy(column);
+      setSortOrder('asc');
+    }
+    setPage(1); // Reset to first page when sorting
+  };
+
+  const SortableHeader = ({ column, children }: { column: string; children: React.ReactNode }) => {
+    const isActive = sortBy === column;
+    const isAsc = sortOrder === 'asc';
+
+    return (
+      <th
+        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
+        onClick={() => handleSort(column)}
+      >
+        <div className="flex items-center space-x-1">
+          <span>{children}</span>
+          <div className="flex flex-col">
+            <svg
+              className={`w-3 h-3 ${isActive && isAsc ? 'text-blue-600' : 'text-gray-400'}`}
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+            </svg>
+            <svg
+              className={`w-3 h-3 -mt-1 ${isActive && !isAsc ? 'text-blue-600' : 'text-gray-400'}`}
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </div>
+        </div>
+      </th>
+    );
+  };
+
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return 'Never';
     return new Date(dateStr).toLocaleDateString();
@@ -164,6 +222,44 @@ export default function StocksDashboard() {
   const formatPrice = (price?: number) => {
     if (!price) return 'N/A';
     return `₹${price.toFixed(2)}`;
+  };
+
+  const PaginationComponent = () => {
+    if (!data || data.total <= data.limit) return null;
+
+    return (
+      <div className="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-700">
+              Showing <span className="font-medium">{((page - 1) * data.limit) + 1}</span> to{' '}
+              <span className="font-medium">
+                {Math.min(page * data.limit, data.total)}
+              </span>{' '}
+              of <span className="font-medium">{data.total}</span> results
+            </p>
+          </div>
+          <div>
+            <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+              <button
+                onClick={() => setPage(Math.max(1, page - 1))}
+                disabled={page === 1}
+                className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+              <button
+                onClick={() => setPage(page + 1)}
+                disabled={page * data.limit >= data.total}
+                className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
+            </nav>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   const getStatusBadge = (stock: EquityStock) => {
@@ -264,6 +360,8 @@ export default function StocksDashboard() {
                   setExchangeFilter('');
                   setDataFilter('all');
                   setDataQualityFilter('PENDING_VERIFICATION');
+                  setSortBy('symbol');
+                  setSortOrder('asc');
                   setPage(1);
                 }}
                 className="bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-yellow-700 transition duration-200 flex items-center space-x-2"
@@ -274,7 +372,7 @@ export default function StocksDashboard() {
                 <span>Show Pending Verification</span>
               </button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
                 <input
@@ -286,54 +384,38 @@ export default function StocksDashboard() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Sector</label>
-                <input
-                  type="text"
-                  placeholder="Filter by sector..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  value={sectorFilter}
-                  onChange={(e) => setSectorFilter(e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Exchange</label>
-                <input
-                  type="text"
-                  placeholder="Filter by exchange..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  value={exchangeFilter}
-                  onChange={(e) => setExchangeFilter(e.target.value)}
-                />
-              </div>
-
               <CustomSelect
-                label="Data Status"
-                value={dataFilter}
-                onValueChange={setDataFilter}
+                label="Status"
+                value={dataQualityFilter}
+                onValueChange={setDataQualityFilter}
                 options={[
-                  { value: 'all', label: 'All Stocks' },
-                  { value: 'false', label: 'Missing Actual Data' },
-                  { value: 'true', label: 'Has Actual Data' }
+                  { value: 'all', label: 'All Status' },
+                  { value: 'PENDING_VERIFICATION', label: 'Pending Verification' },
+                  { value: 'VERIFIED', label: 'Verified' },
+                  { value: 'EXCELLENT', label: 'Excellent' },
+                  { value: 'GOOD', label: 'Good' },
+                  { value: 'NO_DATA', label: 'No Data' }
                 ]}
-                placeholder="All Stocks"
+                placeholder="All Status"
                 triggerClassName="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
               />
 
               <CustomSelect
-                label="Data Quality"
-                value={dataQualityFilter}
-                onValueChange={setDataQualityFilter}
+                label="Per Page"
+                value={perPage.toString()}
+                onValueChange={(value) => {
+                  setPerPage(parseInt(value));
+                  setPage(1); // Reset to first page when changing per page
+                }}
                 options={[
-                  { value: 'all', label: 'All Quality' },
-                  { value: 'PENDING_VERIFICATION', label: 'Pending Verification' },
-                  { value: 'VERIFIED', label: 'Verified' },
-                  { value: 'EXCELLENT', label: 'Excellent' },
-                  { value: 'GOOD', label: 'Good' }
+                  { value: '10', label: '10 per page' },
+                  { value: '20', label: '20 per page' },
+                  { value: '50', label: '50 per page' },
+                  { value: '100', label: '100 per page' },
+                  { value: '200', label: '200 per page' }
                 ]}
-                placeholder="All Quality"
+                placeholder="50 per page"
                 triggerClassName="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
               />
@@ -342,10 +424,9 @@ export default function StocksDashboard() {
                 <button
                   onClick={() => {
                     setSearch('');
-                    setSectorFilter('');
-                    setExchangeFilter('');
-                    setDataFilter('all');
                     setDataQualityFilter('all');
+                    setSortBy('symbol');
+                    setSortOrder('asc');
                     setPage(1);
                   }}
                   className="w-full bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-200"
@@ -358,6 +439,9 @@ export default function StocksDashboard() {
 
           {/* Table */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            {/* Top Pagination */}
+            <PaginationComponent />
+
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium text-gray-900">
@@ -415,27 +499,24 @@ export default function StocksDashboard() {
                         <span>Select</span>
                       </div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <SortableHeader column="symbol">
                       Symbol
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    </SortableHeader>
+                    <SortableHeader column="companyName">
                       Company Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Sector
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    </SortableHeader>
+                    <SortableHeader column="marketCap">
                       Market Cap
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    </SortableHeader>
+                    <SortableHeader column="currentPrice">
                       Current Price
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    </SortableHeader>
+                    <SortableHeader column="dataQuality">
                       Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    </SortableHeader>
+                    <SortableHeader column="lastUpdated">
                       Last Updated
-                    </th>
+                    </SortableHeader>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
@@ -472,9 +553,6 @@ export default function StocksDashboard() {
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {stock.sector}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {formatMarketCap(stock.marketCap)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -507,7 +585,7 @@ export default function StocksDashboard() {
                     </tr>
                   )) : (
                     <tr>
-                      <td colSpan={9} className="px-6 py-8 text-center text-sm text-gray-500">
+                      <td colSpan={8} className="px-6 py-8 text-center text-sm text-gray-500">
                         {dataQualityFilter === 'PENDING_VERIFICATION' ?
                           'No stocks found with Pending Verification status.' :
                           'No stocks found matching your filters.'
@@ -519,40 +597,8 @@ export default function StocksDashboard() {
               </table>
             </div>
 
-            {/* Pagination */}
-            {data && data.total > data.limit && (
-              <div className="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-700">
-                      Showing <span className="font-medium">{((page - 1) * data.limit) + 1}</span> to{' '}
-                      <span className="font-medium">
-                        {Math.min(page * data.limit, data.total)}
-                      </span>{' '}
-                      of <span className="font-medium">{data.total}</span> results
-                    </p>
-                  </div>
-                  <div>
-                    <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                      <button
-                        onClick={() => setPage(Math.max(1, page - 1))}
-                        disabled={page === 1}
-                        className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Previous
-                      </button>
-                      <button
-                        onClick={() => setPage(page + 1)}
-                        disabled={page * data.limit >= data.total}
-                        className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Next
-                      </button>
-                    </nav>
-                  </div>
-                </div>
-              </div>
-            )}
+            {/* Bottom Pagination */}
+            <PaginationComponent />
           </div>
       </div>
     </AdminDashboardLayout>

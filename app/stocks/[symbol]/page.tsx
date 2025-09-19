@@ -74,6 +74,21 @@ export default function StockDetailPage() {
     staleTime: 30 * 1000, // 30 seconds
   });
 
+  // Fetch ratios data for verified stocks - moved here to maintain hook order
+  const { data: ratiosData } = useQuery({
+    queryKey: ['stockRatios', symbol],
+    queryFn: async () => {
+      try {
+        const response = await axios.get(`/api/stocks/verified/${symbol}/ratios`);
+        return response.data.data;
+      } catch (error) {
+        return null;
+      }
+    },
+    enabled: !!symbol && !!verifiedData, // Check verifiedData directly instead of isVerified
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
   // Update watchlist status when data changes
   useEffect(() => {
     if (watchlistData) {
@@ -209,7 +224,9 @@ export default function StockDetailPage() {
           </div>
         </div>
 
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+         
           <div className="lg:col-span-2 space-y-6">
             {loadingDetails ? (
               <div className="card">
@@ -229,6 +246,53 @@ export default function StockDetailPage() {
                 </div>
               </div>
             )}
+            {
+              ratiosData?.ratios && (
+               <div className="card">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Key Financial Ratios</h3>
+                  <div className="grid grid-cols-3 gap-x-8">
+                    {Object.entries(ratiosData.ratios).map(([key, value], index) => {
+                      // Calculate background color based on position in 6-item groups
+                      // Positions 0,1,2 (6n+1, 6n+2, 6n+3) get white background
+                      // Positions 3,4,5 (6n+4, 6n+5, 6n+6) get #f8f8fc background
+                      const positionInGroup = index % 6;
+                      const backgroundColor = positionInGroup < 3 ? 'white' : '#f8f8fc';
+
+                      return (
+                        <div
+                          key={key}
+                          className="flex justify-between items-center"
+                          style={{
+                            backgroundColor,
+                            padding: '12px',
+                            marginTop: '0',
+                            marginBottom: '0',
+                            borderRadius: '6px'
+                          }}
+                        >
+                          <span className="font-normal" style={{fontSize: '15px', color: '#606f7b'}}>{key}</span>
+                          <span className="text-sm font-semibold text-gray-900">
+                            {typeof value === 'number' ?
+                              (key.includes('(₹)') ? `₹ ${value.toLocaleString()}` :
+                               key.includes('(%)') ? `${value} %` :
+                               key.includes('(Cr)') ? `₹ ${value.toLocaleString()} Cr.` : value) :
+                              String(value)
+                            }
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-4 pt-3 border-t border-gray-200">
+                    <div className="flex items-center text-xs text-gray-600">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                      <span>Verified financial ratios</span>
+                    </div>
+                  </div>
+                </div>
+                )
+            }
+
 
             {liveData && (
               <div className="card">
@@ -453,6 +517,7 @@ export default function StockDetailPage() {
                 </div>
               </div>
             )}
+
 
             {/* Profit & Loss Data */}
             {verifiedData.parsedStockDetail.profitAndLoss && (
