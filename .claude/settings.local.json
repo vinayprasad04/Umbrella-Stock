@@ -30,7 +30,8 @@
       "Read(//home/qss/Downloads/**)",
       "Bash(del scripts/debug-extraction.js)",
       "Bash(del:*)",
-      "Bash(netstat:*)"
+      "Bash(netstat:*)",
+      "Read(//c/Users/QSS/Desktop/**)"
     ],
     "deny": [],
     "ask": [],
