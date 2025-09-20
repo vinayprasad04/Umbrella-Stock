@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
@@ -15,6 +15,7 @@ export default function StockDetailPage() {
   const params = useParams();
   const symbol = params?.symbol as string;
   const { user, isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
   const [watchlistStatus, setWatchlistStatus] = useState({
     inWatchlist: false,
     loading: false
@@ -57,7 +58,7 @@ export default function StockDetailPage() {
   });
 
   // Check watchlist status
-  const { data: watchlistData } = useQuery({
+  const { data: watchlistData, refetch: refetchWatchlistStatus } = useQuery({
     queryKey: ['watchlistCheck', symbol],
     queryFn: async () => {
       try {
@@ -71,7 +72,8 @@ export default function StockDetailPage() {
       }
     },
     enabled: !!symbol && isAuthenticated,
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 0, // Always fetch fresh data
+    cacheTime: 0, // Don't cache the result
   });
 
   // Fetch ratios data for verified stocks - moved here to maintain hook order
@@ -91,7 +93,8 @@ export default function StockDetailPage() {
 
   // Update watchlist status when data changes
   useEffect(() => {
-    if (watchlistData) {
+    if (watchlistData !== undefined) {
+      console.log('🔄 Updating watchlist status from query data:', watchlistData);
       setWatchlistStatus(prev => ({
         ...prev,
         inWatchlist: watchlistData.inWatchlist
@@ -156,21 +159,39 @@ export default function StockDetailPage() {
       return;
     }
 
+    // Prevent multiple simultaneous requests
+    if (watchlistStatus.loading) {
+      console.log('⏳ Watchlist operation already in progress, ignoring click');
+      return;
+    }
+
+    console.log('🔄 Watchlist toggle started. Current local state:', watchlistStatus);
+    console.log('🔄 Current query data:', watchlistData);
+
     setWatchlistStatus(prev => ({ ...prev, loading: true }));
 
     try {
       const token = ClientAuth.getAccessToken();
 
-      if (watchlistStatus.inWatchlist) {
-        // Remove from watchlist
+      // ALWAYS check current status from backend first to avoid conflicts
+      console.log('🔍 Checking current status from backend...');
+      const statusResponse = await axios.get(`/api/user/watchlist/check/${symbol}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const currentStatus = statusResponse.data.data.inWatchlist;
+      console.log('🔍 Backend says current status is:', currentStatus);
+
+      if (currentStatus) {
+        // Remove from watchlist (this removes from ALL tabs)
+        console.log('🗑️ Removing from watchlist:', symbol);
         await axios.delete(`/api/user/watchlist?symbol=${symbol}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setWatchlistStatus({ inWatchlist: false, loading: false });
+        console.log('✅ Removed from watchlist successfully');
       } else {
-        // Add to watchlist
+        // Add to watchlist (will add to default tab or first available tab)
         console.log('🚀 Adding to watchlist:', { symbol, companyName: overview?.name, type: 'STOCK' });
-        await axios.post('/api/user/watchlist',
+        const response = await axios.post('/api/user/watchlist',
           {
             symbol,
             companyName: overview?.name || symbol,
@@ -178,12 +199,21 @@ export default function StockDetailPage() {
           },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        setWatchlistStatus({ inWatchlist: true, loading: false });
+        console.log('✅ Added to watchlist successfully:', response.data);
       }
+
+      // Refetch the status immediately after operation
+      console.log('🔄 Refetching watchlist status...');
+      await refetchWatchlistStatus();
+      setWatchlistStatus(prev => ({ ...prev, loading: false }));
+
     } catch (error: any) {
       console.error('❌ Watchlist error:', error);
       console.error('❌ Error response:', error.response?.data);
       console.error('❌ Error status:', error.response?.status);
+      console.error('❌ Current local state was:', watchlistStatus);
+      console.error('❌ Current query data was:', watchlistData);
+
       setWatchlistStatus(prev => ({ ...prev, loading: false }));
 
       if (error.response?.status === 401) {
@@ -191,7 +221,12 @@ export default function StockDetailPage() {
       } else {
         // Show the actual error message
         const errorMessage = error.response?.data?.error || error.message || 'Unknown error occurred';
-        alert(`Failed to add stock to watchlist: ${errorMessage}`);
+
+        // Force a refetch to get the actual state
+        console.log('🔄 Error occurred, refetching status to sync UI...');
+        await refetchWatchlistStatus();
+
+        alert(`Watchlist operation failed: ${errorMessage}`);
       }
     }
   };

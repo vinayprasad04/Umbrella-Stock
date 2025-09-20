@@ -254,18 +254,56 @@ async function handleAddToWatchlist(
       });
     }
 
-    // Check if already in this specific watchlist tab
-    const existingWatchlist = await Watchlist.findOne({
+    // Check if already in ANY watchlist tab (active records)
+    const existingActiveWatchlist = await Watchlist.findOne({
       userId: decoded.userId,
       symbol: symbol.toUpperCase(),
-      isActive: true,
-      watchlistId: targetWatchlistId
+      isActive: true
     });
 
-    if (existingWatchlist) {
+    if (existingActiveWatchlist) {
       return res.status(400).json({
         success: false,
-        error: `${type === 'STOCK' ? 'Stock' : 'Mutual fund'} already in watchlist`,
+        error: `${type === 'STOCK' ? 'Stock' : 'Mutual fund'} already in watchlist tab ${existingActiveWatchlist.watchlistId}`,
+      });
+    }
+
+    // Check for inactive records in the target tab that might cause unique constraint issues
+    const inactiveRecord = await Watchlist.findOne({
+      userId: decoded.userId,
+      symbol: symbol.toUpperCase(),
+      watchlistId: targetWatchlistId,
+      isActive: false
+    });
+
+    if (inactiveRecord) {
+      console.log('🔄 Found inactive record, reactivating instead of creating new:', inactiveRecord._id);
+      // Reactivate the existing record instead of creating a new one
+      inactiveRecord.isActive = true;
+      inactiveRecord.addedAt = new Date();
+      inactiveRecord.companyName = finalCompanyName;
+      inactiveRecord.type = type;
+
+      // Get the current maximum order for this specific tab
+      const maxOrderItem: any = await Watchlist.findOne({
+        userId: decoded.userId,
+        isActive: true,
+        watchlistId: targetWatchlistId
+      }).sort({ order: -1 }).lean();
+
+      inactiveRecord.order = (maxOrderItem?.order || 0) + 1;
+
+      await inactiveRecord.save();
+
+      console.log('✅ Reactivated existing watchlist item:', inactiveRecord._id);
+
+      return res.status(201).json({
+        success: true,
+        data: {
+          ...inactiveRecord.toObject(),
+          addedToTab: targetWatchlistId
+        },
+        message: `${type === 'STOCK' ? 'Stock' : 'Mutual fund'} added to watchlist tab ${targetWatchlistId} successfully`
       });
     }
 
