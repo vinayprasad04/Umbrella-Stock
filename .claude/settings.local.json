@@ -31,7 +31,17 @@
       "Bash(del scripts/debug-extraction.js)",
       "Bash(del:*)",
       "Bash(netstat:*)",
-      "Read(//c/Users/QSS/Desktop/**)"
+      "Read(//c/Users/QSS/Desktop/**)",
+      "Bash(npm run automate-all:*)",
+      "Bash(set PUPPETEER_SKIP_DOWNLOAD=true)",
+      "Bash(echo:*)",
+      "Bash(npm run download-help:*)",
+      "Bash(dir:*)",
+      "Bash(start open-all-stocks.bat)",
+      "Bash(npm run rename-files:*)",
+      "Bash(grep:*)",
+      "Bash(npm run bulk-test:*)",
+      "WebFetch(domain:www.screener.in)"
     ],
     "deny": [],
     "ask": [],
