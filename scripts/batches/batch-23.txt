@@ -1,0 +1,110 @@
+# Batch 23 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/NYKAA/
+https://www.screener.in/company/OAL/
+https://www.screener.in/company/OBCL/
+https://www.screener.in/company/OBEROIRLTY/
+https://www.screener.in/company/OFSS/
+https://www.screener.in/company/OIL/
+https://www.screener.in/company/OILCOUNTUB/
+https://www.screener.in/company/OLAELEC/
+https://www.screener.in/company/OLECTRA/
+https://www.screener.in/company/OMAXE/
+https://www.screener.in/company/OMINFRAL/
+https://www.screener.in/company/ONESOURCE/
+https://www.screener.in/company/ONGC/
+https://www.screener.in/company/ONMOBILE/
+https://www.screener.in/company/OPTIEMUS/
+https://www.screener.in/company/ORCHASP/
+https://www.screener.in/company/ORCHPHARMA/
+https://www.screener.in/company/ORICONENT/
+https://www.screener.in/company/ORIENTBELL/
+https://www.screener.in/company/ORIENTCEM/
+https://www.screener.in/company/ORIENTCER/
+https://www.screener.in/company/ORIENTELEC/
+https://www.screener.in/company/ORIENTHOT/
+https://www.screener.in/company/ORIENTLTD/
+https://www.screener.in/company/ORIENTPPR/
+https://www.screener.in/company/ORIENTTECH/
+https://www.screener.in/company/ORISSAMINE/
+https://www.screener.in/company/OSWALAGRO/
+https://www.screener.in/company/OSWALGREEN/
+https://www.screener.in/company/OSWALPUMPS/
+https://www.screener.in/company/PAGEIND/
+https://www.screener.in/company/PAISALO/
+https://www.screener.in/company/PAKKA/
+https://www.screener.in/company/PALASHSECU/
+https://www.screener.in/company/PANACEABIO/
+https://www.screener.in/company/PANAMAPET/
+https://www.screener.in/company/PARACABLES/
+https://www.screener.in/company/PARADEEP/
+https://www.screener.in/company/PARAGMILK/
+https://www.screener.in/company/PARAS/
+https://www.screener.in/company/PARASPETRO/
+https://www.screener.in/company/PARKHOTELS/
+https://www.screener.in/company/PASHUPATI/
+https://www.screener.in/company/PASUPTAC/
+https://www.screener.in/company/PATANJALI/
+https://www.screener.in/company/PATELENG/
+https://www.screener.in/company/PATINTLOG/
+https://www.screener.in/company/PAVNAIND/
+https://www.screener.in/company/PAYTM/
+https://www.screener.in/company/PCBL/
+
+# Stock symbols for this batch:
+# NYKAA - FSN E-Commerce Ventures Limited
+# OAL - Oriental Aromatics Limited
+# OBCL - Orissa Bengal Carrier Limited
+# OBEROIRLTY - Oberoi Realty Limited
+# OFSS - Oracle Financial Services Software Limited
+# OIL - Oil India Limited
+# OILCOUNTUB - Oil Country Tubular Limited
+# OLAELEC - Ola Electric Mobility Limited
+# OLECTRA - Olectra Greentech Limited
+# OMAXE - Omaxe Limited
+# OMINFRAL - OM INFRA LIMITED
+# ONESOURCE - Onesource Specialty Pharma Limited
+# ONGC - Oil & Natural Gas Corporation Limited
+# ONMOBILE - OnMobile Global Limited
+# OPTIEMUS - Optiemus Infracom Limited
+# ORCHASP - Orchasp Limited
+# ORCHPHARMA - Orchid Pharma Limited
+# ORICONENT - Oricon Enterprises Limited
+# ORIENTBELL - Orient Bell Limited
+# ORIENTCEM - Orient Cement Limited
+# ORIENTCER - ORIENT CERATECH LIMITED
+# ORIENTELEC - Orient Electric Limited
+# ORIENTHOT - Oriental Hotels Limited
+# ORIENTLTD - Orient Press Limited
+# ORIENTPPR - Orient Paper & Industries Limited
+# ORIENTTECH - Orient Technologies Limited
+# ORISSAMINE - The Orissa Minerals Development Company Limited
+# OSWALAGRO - Oswal Agro Mills Limited
+# OSWALGREEN - Oswal Greentech Limited
+# OSWALPUMPS - Oswal Pumps Limited
+# PAGEIND - Page Industries Limited
+# PAISALO - Paisalo Digital Limited
+# PAKKA - PAKKA LIMITED
+# PALASHSECU - Palash Securities Limited
+# PANACEABIO - Panacea Biotec Limited
+# PANAMAPET - Panama Petrochem Limited
+# PARACABLES - Paramount Communications Limited
+# PARADEEP - Paradeep Phosphates Limited
+# PARAGMILK - Parag Milk Foods Limited
+# PARAS - Paras Defence and Space Technologies Limited
+# PARASPETRO - Paras Petrofils Limited
+# PARKHOTELS - Apeejay Surrendra Park Hotels Limited
+# PASHUPATI - Pashupati Cotspin Limited
+# PASUPTAC - Pasupati Acrylon Limited
+# PATANJALI - Patanjali Foods Limited
+# PATELENG - Patel Engineering Limited
+# PATINTLOG - Patel Integrated Logistics Limited
+# PAVNAIND - Pavna Industries Limited
+# PAYTM - One 97 Communications Limited
+# PCBL - PCBL Chemical Limited

@@ -1,0 +1,110 @@
+# Batch 9 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/EASEMYTRIP/
+https://www.screener.in/company/EBGNG/
+https://www.screener.in/company/ECLERX/
+https://www.screener.in/company/ECOSMOBLTY/
+https://www.screener.in/company/EDELWEISS/
+https://www.screener.in/company/EFCIL/
+https://www.screener.in/company/EICHERMOT/
+https://www.screener.in/company/EIDPARRY/
+https://www.screener.in/company/EIEL/
+https://www.screener.in/company/EIHAHOTELS/
+https://www.screener.in/company/EIHOTEL/
+https://www.screener.in/company/EIMCOELECO/
+https://www.screener.in/company/EKC/
+https://www.screener.in/company/ELDEHSG/
+https://www.screener.in/company/ELECON/
+https://www.screener.in/company/ELECTCAST/
+https://www.screener.in/company/ELECTHERM/
+https://www.screener.in/company/ELGIEQUIP/
+https://www.screener.in/company/ELGIRUBCO/
+https://www.screener.in/company/ELIN/
+https://www.screener.in/company/ELLEN/
+https://www.screener.in/company/EMAMILTD/
+https://www.screener.in/company/EMAMIPAP/
+https://www.screener.in/company/EMAMIREAL/
+https://www.screener.in/company/EMBDL/
+https://www.screener.in/company/EMCURE/
+https://www.screener.in/company/EMIL/
+https://www.screener.in/company/EMKAY/
+https://www.screener.in/company/EMMBI/
+https://www.screener.in/company/EMSLIMITED/
+https://www.screener.in/company/EMUDHRA/
+https://www.screener.in/company/ENDURANCE/
+https://www.screener.in/company/ENGINERSIN/
+https://www.screener.in/company/ENIL/
+https://www.screener.in/company/ENRIN/
+https://www.screener.in/company/ENTERO/
+https://www.screener.in/company/EPACK/
+https://www.screener.in/company/EPIGRAL/
+https://www.screener.in/company/EPL/
+https://www.screener.in/company/EQUITASBNK/
+https://www.screener.in/company/ERIS/
+https://www.screener.in/company/ESABINDIA/
+https://www.screener.in/company/ESAFSFB/
+https://www.screener.in/company/ESCORTS/
+https://www.screener.in/company/ESSARSHPNG/
+https://www.screener.in/company/ESSENTIA/
+https://www.screener.in/company/ESTER/
+https://www.screener.in/company/ETERNAL/
+https://www.screener.in/company/ETHOSLTD/
+https://www.screener.in/company/EUREKAFORB/
+
+# Stock symbols for this batch:
+# EASEMYTRIP - Easy Trip Planners Limited
+# EBGNG - GNG Electronics Limited
+# ECLERX - eClerx Services Limited
+# ECOSMOBLTY - Ecos (India) Mobility & Hospitality Limited
+# EDELWEISS - Edelweiss Financial Services Limited
+# EFCIL - EFC (I) Limited
+# EICHERMOT - Eicher Motors Limited
+# EIDPARRY - EID Parry India Limited
+# EIEL - Enviro Infra Engineers Limited
+# EIHAHOTELS - EIH Associated Hotels Limited
+# EIHOTEL - EIH Limited
+# EIMCOELECO - Eimco Elecon (India) Limited
+# EKC - Everest Kanto Cylinder Limited
+# ELDEHSG - Eldeco Housing And Industries Limited
+# ELECON - Elecon Engineering Company Limited
+# ELECTCAST - Electrosteel Castings Limited
+# ELECTHERM - Electrotherm (India) Limited
+# ELGIEQUIP - Elgi Equipments Limited
+# ELGIRUBCO - Elgi Rubber Company Limited
+# ELIN - Elin Electronics Limited
+# ELLEN - Ellenbarrie Industrial Gases Limited
+# EMAMILTD - Emami Limited
+# EMAMIPAP - Emami Paper Mills Limited
+# EMAMIREAL - Emami Realty Limited
+# EMBDL - Embassy Developments Limited
+# EMCURE - Emcure Pharmaceuticals Limited
+# EMIL - Electronics Mart India Limited
+# EMKAY - Emkay Global Financial Services Limited
+# EMMBI - Emmbi Industries Limited
+# EMSLIMITED - EMS Limited
+# EMUDHRA - eMudhra Limited
+# ENDURANCE - Endurance Technologies Limited
+# ENGINERSIN - Engineers India Limited
+# ENIL - Entertainment Network (India) Limited
+# ENRIN - Siemens Energy India Limited
+# ENTERO - Entero Healthcare Solutions Limited
+# EPACK - EPACK Durable Limited
+# EPIGRAL - Epigral Limited
+# EPL - EPL Limited
+# EQUITASBNK - Equitas Small Finance Bank Limited
+# ERIS - Eris Lifesciences Limited
+# ESABINDIA - Esab India Limited
+# ESAFSFB - ESAF Small Finance Bank Limited
+# ESCORTS - Escorts Kubota Limited
+# ESSARSHPNG - Essar Shipping Limited
+# ESSENTIA - Integra Essentia Limited
+# ESTER - Ester Industries Limited
+# ETERNAL - ETERNAL LIMITED
+# ETHOSLTD - Ethos Limited
+# EUREKAFORB - Eureka Forbes Limited

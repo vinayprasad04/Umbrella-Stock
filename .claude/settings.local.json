@@ -41,7 +41,8 @@
       "Bash(npm run rename-files:*)",
       "Bash(grep:*)",
       "Bash(npm run bulk-test:*)",
-      "WebFetch(domain:www.screener.in)"
+      "WebFetch(domain:www.screener.in)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": [],

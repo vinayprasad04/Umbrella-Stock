@@ -1,0 +1,110 @@
+# Batch 8 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/DELTACORP/
+https://www.screener.in/company/DEN/
+https://www.screener.in/company/DENORA/
+https://www.screener.in/company/DENTA/
+https://www.screener.in/company/DEVIT/
+https://www.screener.in/company/DEVYANI/
+https://www.screener.in/company/DHAMPURSUG/
+https://www.screener.in/company/DHANBANK/
+https://www.screener.in/company/DHANI/
+https://www.screener.in/company/DHANUKA/
+https://www.screener.in/company/DHUNINV/
+https://www.screener.in/company/DIACABS/
+https://www.screener.in/company/DIAMINESQ/
+https://www.screener.in/company/DIAMONDYD/
+https://www.screener.in/company/DICIND/
+https://www.screener.in/company/DIFFNKG/
+https://www.screener.in/company/DIGIDRIVE/
+https://www.screener.in/company/DIGISPICE/
+https://www.screener.in/company/DIGITIDE/
+https://www.screener.in/company/DIL/
+https://www.screener.in/company/DISHTV/
+https://www.screener.in/company/DIVGIITTS/
+https://www.screener.in/company/DIVISLAB/
+https://www.screener.in/company/DIXON/
+https://www.screener.in/company/DJML/
+https://www.screener.in/company/DLF/
+https://www.screener.in/company/DLINKINDIA/
+https://www.screener.in/company/DMART/
+https://www.screener.in/company/DMCC/
+https://www.screener.in/company/DNAMEDIA/
+https://www.screener.in/company/DODLA/
+https://www.screener.in/company/DOLATALGO/
+https://www.screener.in/company/DOLLAR/
+https://www.screener.in/company/DOLPHIN/
+https://www.screener.in/company/DOMS/
+https://www.screener.in/company/DONEAR/
+https://www.screener.in/company/DPABHUSHAN/
+https://www.screener.in/company/DPSCLTD/
+https://www.screener.in/company/DPWIRES/
+https://www.screener.in/company/DREDGECORP/
+https://www.screener.in/company/DRREDDY/
+https://www.screener.in/company/DSSL/
+https://www.screener.in/company/DTIL/
+https://www.screener.in/company/DUCON/
+https://www.screener.in/company/DVL/
+https://www.screener.in/company/DWARKESH/
+https://www.screener.in/company/DYCL/
+https://www.screener.in/company/DYNAMATECH/
+https://www.screener.in/company/DYNPRO/
+https://www.screener.in/company/E2E/
+
+# Stock symbols for this batch:
+# DELTACORP - Delta Corp Limited
+# DEN - Den Networks Limited
+# DENORA - De Nora India Limited
+# DENTA - Denta Water and Infra Solutions Limited
+# DEVIT - Dev Information Technology Limited
+# DEVYANI - Devyani International Limited
+# DHAMPURSUG - Dhampur Sugar Mills Limited
+# DHANBANK - Dhanlaxmi Bank Limited
+# DHANI - Dhani Services Limited
+# DHANUKA - Dhanuka Agritech Limited
+# DHUNINV - Dhunseri Investments Limited
+# DIACABS - Diamond Power Infrastructure Limited
+# DIAMINESQ - Diamines & Chemicals Limited
+# DIAMONDYD - Prataap Snacks Limited
+# DICIND - DIC India Limited
+# DIFFNKG - Diffusion Engineers Limited
+# DIGIDRIVE - Digidrive Distributors Limited
+# DIGISPICE - DiGiSPICE Technologies Limited
+# DIGITIDE - Digitide Solutions Limited
+# DIL - Debock Industries Limited
+# DISHTV - Dish TV India Limited
+# DIVGIITTS - Divgi Torqtransfer Systems Limited
+# DIVISLAB - Divi's Laboratories Limited
+# DIXON - Dixon Technologies (India) Limited
+# DJML - DJ Mediaprint & Logistics Limited
+# DLF - DLF Limited
+# DLINKINDIA - D-Link (India) Limited
+# DMART - Avenue Supermarts Limited
+# DMCC - DMCC SPECIALITY CHEMICALS LIMITED
+# DNAMEDIA - Diligent Media Corporation Limited
+# DODLA - Dodla Dairy Limited
+# DOLATALGO - Dolat Algotech Limited
+# DOLLAR - Dollar Industries Limited
+# DOLPHIN - Dolphin Offshore Enterprises (India) Limited
+# DOMS - DOMS Industries Limited
+# DONEAR - Donear Industries Limited
+# DPABHUSHAN - D. P. Abhushan Limited
+# DPSCLTD - DPSC Limited
+# DPWIRES - D P Wires Limited
+# DREDGECORP - Dredging Corporation of India Limited
+# DRREDDY - Dr. Reddy's Laboratories Limited
+# DSSL - Dynacons Systems & Solutions Limited
+# DTIL - Dhunseri Tea & Industries Limited
+# DUCON - Ducon Infratechnologies Limited
+# DVL - Dhunseri Ventures Limited
+# DWARKESH - Dwarikesh Sugar Industries Limited
+# DYCL - Dynamic Cables Limited
+# DYNAMATECH - Dynamatic Technologies Limited
+# DYNPRO - Dynemic Products Limited
+# E2E - E2E Networks Limited

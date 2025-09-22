@@ -1,0 +1,110 @@
+# Batch 22 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/NCC/
+https://www.screener.in/company/NCLIND/
+https://www.screener.in/company/NDGL/
+https://www.screener.in/company/NDL/
+https://www.screener.in/company/NDRAUTO/
+https://www.screener.in/company/NECCLTD/
+https://www.screener.in/company/NELCAST/
+https://www.screener.in/company/NELCO/
+https://www.screener.in/company/NEOGEN/
+https://www.screener.in/company/NESCO/
+https://www.screener.in/company/NETWEB/
+https://www.screener.in/company/NETWORK18/
+https://www.screener.in/company/NEULANDLAB/
+https://www.screener.in/company/NEWGEN/
+https://www.screener.in/company/NEXTMEDIA/
+https://www.screener.in/company/NFL/
+https://www.screener.in/company/NGIL/
+https://www.screener.in/company/NGLFINE/
+https://www.screener.in/company/NH/
+https://www.screener.in/company/NHPC/
+https://www.screener.in/company/NIACL/
+https://www.screener.in/company/NIBE/
+https://www.screener.in/company/NIITLTD/
+https://www.screener.in/company/NIITMTS/
+https://www.screener.in/company/NILAINFRA/
+https://www.screener.in/company/NILASPACES/
+https://www.screener.in/company/NILKAMAL/
+https://www.screener.in/company/NINSYS/
+https://www.screener.in/company/NIPPOBATRY/
+https://www.screener.in/company/NIRAJ/
+https://www.screener.in/company/NITCO/
+https://www.screener.in/company/NITINSPIN/
+https://www.screener.in/company/NITIRAJ/
+https://www.screener.in/company/NIVABUPA/
+https://www.screener.in/company/NKIND/
+https://www.screener.in/company/NLCINDIA/
+https://www.screener.in/company/NMDC/
+https://www.screener.in/company/NOCIL/
+https://www.screener.in/company/NORTHARC/
+https://www.screener.in/company/NOVAAGRI/
+https://www.screener.in/company/NPST/
+https://www.screener.in/company/NRBBEARING/
+https://www.screener.in/company/NSIL/
+https://www.screener.in/company/NSLNISP/
+https://www.screener.in/company/NTPC/
+https://www.screener.in/company/NTPCGREEN/
+https://www.screener.in/company/NUCLEUS/
+https://www.screener.in/company/NURECA/
+https://www.screener.in/company/NUVAMA/
+https://www.screener.in/company/NUVOCO/
+
+# Stock symbols for this batch:
+# NCC - NCC Limited
+# NCLIND - NCL Industries Limited
+# NDGL - Naga Dhunseri Group Limited
+# NDL - Nandan Denim Limited
+# NDRAUTO - Ndr Auto Components Limited
+# NECCLTD - North Eastern Carrying Corporation Limited
+# NELCAST - Nelcast Limited
+# NELCO - NELCO Limited
+# NEOGEN - Neogen Chemicals Limited
+# NESCO - Nesco Limited
+# NETWEB - Netweb Technologies India Limited
+# NETWORK18 - Network18 Media & Investments Limited
+# NEULANDLAB - Neuland Laboratories Limited
+# NEWGEN - Newgen Software Technologies Limited
+# NEXTMEDIA - Next Mediaworks Limited
+# NFL - National Fertilizers Limited
+# NGIL - Nakoda Group of Industries Limited
+# NGLFINE - NGL Fine-Chem Limited
+# NH - Narayana Hrudayalaya Ltd.
+# NHPC - NHPC Limited
+# NIACL - The New India Assurance Company Limited
+# NIBE - NIBE Limited
+# NIITLTD - NIIT Limited
+# NIITMTS - NIIT Learning Systems Limited
+# NILAINFRA - Nila Infrastructures Limited
+# NILASPACES - Nila Spaces Limited
+# NILKAMAL - Nilkamal Limited
+# NINSYS - NINtec Systems Limited
+# NIPPOBATRY - Indo-National Limited
+# NIRAJ - Niraj Cement Structurals Limited
+# NITCO - Nitco Limited
+# NITINSPIN - Nitin Spinners Limited
+# NITIRAJ - Nitiraj Engineers Limited
+# NIVABUPA - Niva Bupa Health Insurance Company Limited
+# NKIND - NK Industries Limited
+# NLCINDIA - NLC India Limited
+# NMDC - NMDC Limited
+# NOCIL - NOCIL Limited
+# NORTHARC - Northern Arc Capital Limited
+# NOVAAGRI - Nova Agritech Limited
+# NPST - Network People Services Technologies Limited
+# NRBBEARING - NRB Bearing Limited
+# NSIL - Nalwa Sons Investments Limited
+# NSLNISP - NMDC Steel Limited
+# NTPC - NTPC Limited
+# NTPCGREEN - NTPC Green Energy Limited
+# NUCLEUS - Nucleus Software Exports Limited
+# NURECA - Nureca Limited
+# NUVAMA - Nuvama Wealth Management Limited
+# NUVOCO - Nuvoco Vistas Corporation Limited

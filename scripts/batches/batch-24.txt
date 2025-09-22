@@ -1,0 +1,110 @@
+# Batch 24 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/PCJEWELLER/
+https://www.screener.in/company/PDMJEPAPER/
+https://www.screener.in/company/PDSL/
+https://www.screener.in/company/PEARLPOLY/
+https://www.screener.in/company/PEL/
+https://www.screener.in/company/PENIND/
+https://www.screener.in/company/PENINLAND/
+https://www.screener.in/company/PERSISTENT/
+https://www.screener.in/company/PETRONET/
+https://www.screener.in/company/PFC/
+https://www.screener.in/company/PFIZER/
+https://www.screener.in/company/PFOCUS/
+https://www.screener.in/company/PFS/
+https://www.screener.in/company/PGEL/
+https://www.screener.in/company/PGHH/
+https://www.screener.in/company/PGHL/
+https://www.screener.in/company/PGIL/
+https://www.screener.in/company/PHOENIXLTD/
+https://www.screener.in/company/PICCADIL/
+https://www.screener.in/company/PIDILITIND/
+https://www.screener.in/company/PIIND/
+https://www.screener.in/company/PILANIINVS/
+https://www.screener.in/company/PIONEEREMB/
+https://www.screener.in/company/PITTIENG/
+https://www.screener.in/company/PIXTRANS/
+https://www.screener.in/company/PLASTIBLEN/
+https://www.screener.in/company/PLATIND/
+https://www.screener.in/company/PLAZACABLE/
+https://www.screener.in/company/PNB/
+https://www.screener.in/company/PNBGILTS/
+https://www.screener.in/company/PNBHOUSING/
+https://www.screener.in/company/PNCINFRA/
+https://www.screener.in/company/PNGJL/
+https://www.screener.in/company/POCL/
+https://www.screener.in/company/PODDARMENT/
+https://www.screener.in/company/POKARNA/
+https://www.screener.in/company/POLICYBZR/
+https://www.screener.in/company/POLYCAB/
+https://www.screener.in/company/POLYMED/
+https://www.screener.in/company/POLYPLEX/
+https://www.screener.in/company/PONNIERODE/
+https://www.screener.in/company/POONAWALLA/
+https://www.screener.in/company/POWERGRID/
+https://www.screener.in/company/POWERINDIA/
+https://www.screener.in/company/POWERMECH/
+https://www.screener.in/company/PPL/
+https://www.screener.in/company/PPLPHARMA/
+https://www.screener.in/company/PRABHA/
+https://www.screener.in/company/PRAENG/
+https://www.screener.in/company/PRAJIND/
+
+# Stock symbols for this batch:
+# PCJEWELLER - PC Jeweller Limited
+# PDMJEPAPER - Pudumjee Paper Products Limited
+# PDSL - PDS Limited
+# PEARLPOLY - Pearl Polymers Limited
+# PEL - Piramal Enterprises Limited
+# PENIND - Pennar Industries Limited
+# PENINLAND - Peninsula Land Limited
+# PERSISTENT - Persistent Systems Limited
+# PETRONET - Petronet LNG Limited
+# PFC - Power Finance Corporation Limited
+# PFIZER - Pfizer Limited
+# PFOCUS - Prime Focus Limited
+# PFS - PTC India Financial Services Limited
+# PGEL - PG Electroplast Limited
+# PGHH - Procter & Gamble Hygiene and Health Care Limited
+# PGHL - Procter & Gamble Health Limited
+# PGIL - Pearl Global Industries Limited
+# PHOENIXLTD - The Phoenix Mills Limited
+# PICCADIL - Piccadily Agro Industries Limited
+# PIDILITIND - Pidilite Industries Limited
+# PIIND - PI Industries Limited
+# PILANIINVS - Pilani Investment and Industries Corporation Limited
+# PIONEEREMB - Pioneer Embroideries Limited
+# PITTIENG - Pitti Engineering Limited
+# PIXTRANS - Pix Transmissions Limited
+# PLASTIBLEN - Plastiblends India Limited
+# PLATIND - Platinum Industries Limited
+# PLAZACABLE - Plaza Wires Limited
+# PNB - Punjab National Bank
+# PNBGILTS - PNB Gilts Limited
+# PNBHOUSING - PNB Housing Finance Limited
+# PNCINFRA - PNC Infratech Limited
+# PNGJL - P N Gadgil Jewellers Limited
+# POCL - Pondy Oxides & Chemicals Limited
+# PODDARMENT - Poddar Pigments Limited
+# POKARNA - Pokarna Limited
+# POLICYBZR - PB Fintech Limited
+# POLYCAB - Polycab India Limited
+# POLYMED - Poly Medicure Limited
+# POLYPLEX - Polyplex Corporation Limited
+# PONNIERODE - Ponni Sugars (Erode) Limited
+# POONAWALLA - Poonawalla Fincorp Limited
+# POWERGRID - Power Grid Corporation of India Limited
+# POWERINDIA - Hitachi Energy India Limited
+# POWERMECH - Power Mech Projects Limited
+# PPL - Prakash Pipes Limited
+# PPLPHARMA - Piramal Pharma Limited
+# PRABHA - Prabha Energy Limited
+# PRAENG - Prajay Engineers Syndicate Limited
+# PRAJIND - Praj Industries Limited

@@ -1,0 +1,110 @@
+# Batch 35 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/VIVIDHA/
+https://www.screener.in/company/VLEGOV/
+https://www.screener.in/company/VLSFINANCE/
+https://www.screener.in/company/VMART/
+https://www.screener.in/company/VMM/
+https://www.screener.in/company/VOLTAMP/
+https://www.screener.in/company/VOLTAS/
+https://www.screener.in/company/VPRPL/
+https://www.screener.in/company/VRAJ/
+https://www.screener.in/company/VRLLOG/
+https://www.screener.in/company/VSSL/
+https://www.screener.in/company/VSTIND/
+https://www.screener.in/company/VSTL/
+https://www.screener.in/company/VSTTILLERS/
+https://www.screener.in/company/VTL/
+https://www.screener.in/company/WAAREEENER/
+https://www.screener.in/company/WAAREERTL/
+https://www.screener.in/company/WABAG/
+https://www.screener.in/company/WANBURY/
+https://www.screener.in/company/WCIL/
+https://www.screener.in/company/WEALTH/
+https://www.screener.in/company/WEBELSOLAR/
+https://www.screener.in/company/WEIZMANIND/
+https://www.screener.in/company/WEL/
+https://www.screener.in/company/WELCORP/
+https://www.screener.in/company/WELENT/
+https://www.screener.in/company/WELSPUNLIV/
+https://www.screener.in/company/WENDT/
+https://www.screener.in/company/WESTLIFE/
+https://www.screener.in/company/WEWIN/
+https://www.screener.in/company/WHEELS/
+https://www.screener.in/company/WHIRLPOOL/
+https://www.screener.in/company/WILLAMAGOR/
+https://www.screener.in/company/WINDLAS/
+https://www.screener.in/company/WINDMACHIN/
+https://www.screener.in/company/WIPL/
+https://www.screener.in/company/WOCKPHARMA/
+https://www.screener.in/company/WONDERLA/
+https://www.screener.in/company/WORTH/
+https://www.screener.in/company/WSI/
+https://www.screener.in/company/WSTCSTPAPR/
+https://www.screener.in/company/XCHANGING/
+https://www.screener.in/company/XELPMOC/
+https://www.screener.in/company/XPROINDIA/
+https://www.screener.in/company/XTGLOBAL/
+https://www.screener.in/company/YASHO/
+https://www.screener.in/company/YATHARTH/
+https://www.screener.in/company/YATRA/
+https://www.screener.in/company/YESBANK/
+https://www.screener.in/company/YUKEN/
+
+# Stock symbols for this batch:
+# VIVIDHA - Visagar Polytex Limited
+# VLEGOV - VL E-Governance & IT Solutions Limited
+# VLSFINANCE - VLS Finance Limited
+# VMART - V-Mart Retail Limited
+# VMM - Vishal Mega Mart Limited
+# VOLTAMP - Voltamp Transformers Limited
+# VOLTAS - Voltas Limited
+# VPRPL - Vishnu Prakash R Punglia Limited
+# VRAJ - Vraj Iron and Steel Limited
+# VRLLOG - VRL Logistics Limited
+# VSSL - Vardhman Special Steels Limited
+# VSTIND - VST Industries Limited
+# VSTL - Vibhor Steel Tubes Limited
+# VSTTILLERS - V.S.T Tillers Tractors Limited
+# VTL - Vardhman Textiles Limited
+# WAAREEENER - Waaree Energies Limited
+# WAAREERTL - Waaree Renewable Technologies Limited
+# WABAG - VA Tech Wabag Limited
+# WANBURY - Wanbury Limited
+# WCIL - Western Carriers (India) Limited
+# WEALTH - Wealth First Portfolio Managers Limited
+# WEBELSOLAR - Websol Energy System Limited
+# WEIZMANIND - Weizmann Limited
+# WEL - Wonder Electricals Limited
+# WELCORP - Welspun Corp Limited
+# WELENT - Welspun Enterprises Limited
+# WELSPUNLIV - Welspun Living Limited
+# WENDT - Wendt (India) Limited
+# WESTLIFE - WESTLIFE FOODWORLD LIMITED
+# WEWIN - WE WIN LIMITED
+# WHEELS - Wheels India Limited
+# WHIRLPOOL - Whirlpool of India Limited
+# WILLAMAGOR - Williamson Magor & Company Limited
+# WINDLAS - Windlas Biotech Limited
+# WINDMACHIN - Windsor Machines Limited
+# WIPL - The Western India Plywoods Limited
+# WOCKPHARMA - Wockhardt Limited
+# WONDERLA - Wonderla Holidays Limited
+# WORTH - Worth Peripherals Limited
+# WSI - W S Industries (I) Limited
+# WSTCSTPAPR - West Coast Paper Mills Limited
+# XCHANGING - Xchanging Solutions Limited
+# XELPMOC - Xelpmoc Design And Tech Limited
+# XPROINDIA - Xpro India Limited
+# XTGLOBAL - Xtglobal Infotech Limited
+# YASHO - Yasho Industries Limited
+# YATHARTH - Yatharth Hospital & Trauma Care Services Limited
+# YATRA - Yatra Online Limited
+# YESBANK - Yes Bank Limited
+# YUKEN - Yuken India Limited

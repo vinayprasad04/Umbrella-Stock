@@ -1,0 +1,110 @@
+# Batch 15 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/INDRAMEDCO/
+https://www.screener.in/company/INDTERRAIN/
+https://www.screener.in/company/INDUSINDBK/
+https://www.screener.in/company/INDUSTOWER/
+https://www.screener.in/company/INFIBEAM/
+https://www.screener.in/company/INFOBEAN/
+https://www.screener.in/company/INGERRAND/
+https://www.screener.in/company/INNOVACAP/
+https://www.screener.in/company/INOXINDIA/
+https://www.screener.in/company/INOXWIND/
+https://www.screener.in/company/INSECTICID/
+https://www.screener.in/company/INTELLECT/
+https://www.screener.in/company/INTENTECH/
+https://www.screener.in/company/INTLCONV/
+https://www.screener.in/company/INVENTURE/
+https://www.screener.in/company/IOB/
+https://www.screener.in/company/IOC/
+https://www.screener.in/company/IOLCP/
+https://www.screener.in/company/IONEXCHANG/
+https://www.screener.in/company/IPCALAB/
+https://www.screener.in/company/IPL/
+https://www.screener.in/company/IRB/
+https://www.screener.in/company/IRCON/
+https://www.screener.in/company/IRCTC/
+https://www.screener.in/company/IREDA/
+https://www.screener.in/company/IRFC/
+https://www.screener.in/company/IRMENERGY/
+https://www.screener.in/company/ISFT/
+https://www.screener.in/company/ISGEC/
+https://www.screener.in/company/ITCHOTELS/
+https://www.screener.in/company/ITDC/
+https://www.screener.in/company/ITDCEM/
+https://www.screener.in/company/ITI/
+https://www.screener.in/company/IVC/
+https://www.screener.in/company/IVP/
+https://www.screener.in/company/IXIGO/
+https://www.screener.in/company/J&KBANK/
+https://www.screener.in/company/JAGRAN/
+https://www.screener.in/company/JAGSNPHARM/
+https://www.screener.in/company/JAIBALAJI/
+https://www.screener.in/company/JAICORPLTD/
+https://www.screener.in/company/JAIPURKURT/
+https://www.screener.in/company/JAMNAAUTO/
+https://www.screener.in/company/JASH/
+https://www.screener.in/company/JAYAGROGN/
+https://www.screener.in/company/JAYNECOIND/
+https://www.screener.in/company/JAYSREETEA/
+https://www.screener.in/company/JBCHEPHARM/
+https://www.screener.in/company/JBMA/
+https://www.screener.in/company/JCHAC/
+
+# Stock symbols for this batch:
+# INDRAMEDCO - Indraprastha Medical Corporation Limited
+# INDTERRAIN - Indian Terrain Fashions Limited
+# INDUSINDBK - IndusInd Bank Limited
+# INDUSTOWER - Indus Towers Limited
+# INFIBEAM - Infibeam Avenues Limited
+# INFOBEAN - InfoBeans Technologies Limited
+# INGERRAND - Ingersoll Rand (India) Limited
+# INNOVACAP - Innova Captab Limited
+# INOXINDIA - INOX India Limited
+# INOXWIND - Inox Wind Limited
+# INSECTICID - Insecticides (India) Limited
+# INTELLECT - Intellect Design Arena Limited
+# INTENTECH - Intense Technologies Limited
+# INTLCONV - International Conveyors Limited
+# INVENTURE - Inventure Growth & Securities Limited
+# IOB - Indian Overseas Bank
+# IOC - Indian Oil Corporation Limited
+# IOLCP - IOL Chemicals and Pharmaceuticals Limited
+# IONEXCHANG - ION Exchange (India) Limited
+# IPCALAB - IPCA Laboratories Limited
+# IPL - India Pesticides Limited
+# IRB - IRB Infrastructure Developers Limited
+# IRCON - Ircon International Limited
+# IRCTC - Indian Railway Catering And Tourism Corporation Limited
+# IREDA - Indian Renewable Energy Development Agency Limited
+# IRFC - Indian Railway Finance Corporation Limited
+# IRMENERGY - IRM Energy Limited
+# ISFT - Intrasoft Technologies Limited
+# ISGEC - Isgec Heavy Engineering Limited
+# ITCHOTELS - ITC Hotels Limited
+# ITDC - India Tourism Development Corporation Limited
+# ITDCEM - ITD Cementation India Limited
+# ITI - ITI Limited
+# IVC - IL&FS Investment Managers Limited
+# IVP - IVP Limited
+# IXIGO - Le Travenues Technology Limited
+# J&KBANK - The Jammu & Kashmir Bank Limited
+# JAGRAN - Jagran Prakashan Limited
+# JAGSNPHARM - Jagsonpal Pharmaceuticals Limited
+# JAIBALAJI - Jai Balaji Industries Limited
+# JAICORPLTD - Jai Corp Limited
+# JAIPURKURT - Nandani Creation Limited
+# JAMNAAUTO - Jamna Auto Industries Limited
+# JASH - Jash Engineering Limited
+# JAYAGROGN - Jayant Agro Organics Limited
+# JAYNECOIND - Jayaswal Neco Industries Limited
+# JAYSREETEA - Jayshree Tea & Industries Limited
+# JBCHEPHARM - JB Chemicals & Pharmaceuticals Limited
+# JBMA - JBM Auto Limited
+# JCHAC - Johnson Controls - Hitachi Air Conditioning India Limited

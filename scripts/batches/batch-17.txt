@@ -1,0 +1,110 @@
+# Batch 17 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/KALYANIFRG/
+https://www.screener.in/company/KALYANKJIL/
+https://www.screener.in/company/KAMATHOTEL/
+https://www.screener.in/company/KAMDHENU/
+https://www.screener.in/company/KAMOPAINTS/
+https://www.screener.in/company/KANANIIND/
+https://www.screener.in/company/KANORICHEM/
+https://www.screener.in/company/KANPRPLA/
+https://www.screener.in/company/KANSAINER/
+https://www.screener.in/company/KAPSTON/
+https://www.screener.in/company/KARURVYSYA/
+https://www.screener.in/company/KAUSHALYA/
+https://www.screener.in/company/KAYNES/
+https://www.screener.in/company/KCP/
+https://www.screener.in/company/KCPSUGIND/
+https://www.screener.in/company/KDDL/
+https://www.screener.in/company/KEC/
+https://www.screener.in/company/KECL/
+https://www.screener.in/company/KEI/
+https://www.screener.in/company/KELLTONTEC/
+https://www.screener.in/company/KEYFINSERV/
+https://www.screener.in/company/KFINTECH/
+https://www.screener.in/company/KHADIM/
+https://www.screener.in/company/KHANDSE/
+https://www.screener.in/company/KICL/
+https://www.screener.in/company/KIMS/
+https://www.screener.in/company/KINGFA/
+https://www.screener.in/company/KIOCL/
+https://www.screener.in/company/KIRIINDUS/
+https://www.screener.in/company/KIRLOSBROS/
+https://www.screener.in/company/KIRLOSENG/
+https://www.screener.in/company/KIRLOSIND/
+https://www.screener.in/company/KIRLPNU/
+https://www.screener.in/company/KITEX/
+https://www.screener.in/company/KKCL/
+https://www.screener.in/company/KMEW/
+https://www.screener.in/company/KMSUGAR/
+https://www.screener.in/company/KNRCON/
+https://www.screener.in/company/KOHINOOR/
+https://www.screener.in/company/KOKUYOCMLN/
+https://www.screener.in/company/KOLTEPATIL/
+https://www.screener.in/company/KOPRAN/
+https://www.screener.in/company/KOTARISUG/
+https://www.screener.in/company/KOTHARIPET/
+https://www.screener.in/company/KOTHARIPRO/
+https://www.screener.in/company/KPEL/
+https://www.screener.in/company/KPIGREEN/
+https://www.screener.in/company/KPIL/
+https://www.screener.in/company/KPITTECH/
+https://www.screener.in/company/KPRMILL/
+
+# Stock symbols for this batch:
+# KALYANIFRG - Kalyani Forge Limited
+# KALYANKJIL - Kalyan Jewellers India Limited
+# KAMATHOTEL - Kamat Hotels (I) Limited
+# KAMDHENU - Kamdhenu Limited
+# KAMOPAINTS - Kamdhenu Ventures Limited
+# KANANIIND - Kanani Industries Limited
+# KANORICHEM - Kanoria Chemicals & Industries Limited
+# KANPRPLA - Kanpur Plastipack Limited
+# KANSAINER - Kansai Nerolac Paints Limited
+# KAPSTON - Kapston Services Limited
+# KARURVYSYA - Karur Vysya Bank Limited
+# KAUSHALYA - Kaushalya Infrastructure Development Corporation Limited
+# KAYNES - Kaynes Technology India Limited
+# KCP - KCP Limited
+# KCPSUGIND - KCP Sugar and Industries Corporation Limited
+# KDDL - KDDL Limited
+# KEC - KEC International Limited
+# KECL - Kirloskar Electric Company Limited
+# KEI - KEI Industries Limited
+# KELLTONTEC - Kellton Tech Solutions Limited
+# KEYFINSERV - Keynote Financial Services Limited
+# KFINTECH - Kfin Technologies Limited
+# KHADIM - Khadim India Limited
+# KHANDSE - Khandwala Securities Limited
+# KICL - Kalyani Investment Company Limited
+# KIMS - Krishna Institute of Medical Sciences Limited
+# KINGFA - Kingfa Science & Technology (India) Limited
+# KIOCL - KIOCL Limited
+# KIRIINDUS - Kiri Industries Limited
+# KIRLOSBROS - Kirloskar Brothers Limited
+# KIRLOSENG - Kirloskar Oil Engines Limited
+# KIRLOSIND - Kirloskar Industries Limited
+# KIRLPNU - Kirloskar Pneumatic Company Limited
+# KITEX - Kitex Garments Limited
+# KKCL - Kewal Kiran Clothing Limited
+# KMEW - Knowledge Marine & Engineering Works Limited
+# KMSUGAR - K.M.Sugar Mills Limited
+# KNRCON - KNR Constructions Limited
+# KOHINOOR - Kohinoor Foods Limited
+# KOKUYOCMLN - Kokuyo Camlin Limited
+# KOLTEPATIL - Kolte - Patil Developers Limited
+# KOPRAN - Kopran Limited
+# KOTARISUG - Kothari Sugars And Chemicals Limited
+# KOTHARIPET - Kothari Petrochemicals Limited
+# KOTHARIPRO - Kothari Products Limited
+# KPEL - K.P. Energy Limited
+# KPIGREEN - KPI Green Energy Limited
+# KPIL - Kalpataru Projects International Limited
+# KPITTECH - KPIT Technologies Limited
+# KPRMILL - K.P.R. Mill Limited

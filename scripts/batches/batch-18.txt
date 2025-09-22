@@ -1,0 +1,110 @@
+# Batch 18 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/KRBL/
+https://www.screener.in/company/KRISHANA/
+https://www.screener.in/company/KRITIKA/
+https://www.screener.in/company/KRITINUT/
+https://www.screener.in/company/KRN/
+https://www.screener.in/company/KRONOX/
+https://www.screener.in/company/KROSS/
+https://www.screener.in/company/KRSNAA/
+https://www.screener.in/company/KRYSTAL/
+https://www.screener.in/company/KSB/
+https://www.screener.in/company/KSCL/
+https://www.screener.in/company/KSHITIJPOL/
+https://www.screener.in/company/KSL/
+https://www.screener.in/company/KSOLVES/
+https://www.screener.in/company/KTKBANK/
+https://www.screener.in/company/KUANTUM/
+https://www.screener.in/company/LAGNAM/
+https://www.screener.in/company/LALPATHLAB/
+https://www.screener.in/company/LAMBODHARA/
+https://www.screener.in/company/LANCORHOL/
+https://www.screener.in/company/LANDMARK/
+https://www.screener.in/company/LAOPALA/
+https://www.screener.in/company/LATENTVIEW/
+https://www.screener.in/company/LATTEYS/
+https://www.screener.in/company/LAURUSLABS/
+https://www.screener.in/company/LAXMICOT/
+https://www.screener.in/company/LAXMIDENTL/
+https://www.screener.in/company/LAXMIINDIA/
+https://www.screener.in/company/LCCINFOTEC/
+https://www.screener.in/company/LEMONTREE/
+https://www.screener.in/company/LEXUS/
+https://www.screener.in/company/LFIC/
+https://www.screener.in/company/LGBBROSLTD/
+https://www.screener.in/company/LGHL/
+https://www.screener.in/company/LIBAS/
+https://www.screener.in/company/LICHSGFIN/
+https://www.screener.in/company/LICI/
+https://www.screener.in/company/LIKHITHA/
+https://www.screener.in/company/LINCOLN/
+https://www.screener.in/company/LINDEINDIA/
+https://www.screener.in/company/LLOYDSENGG/
+https://www.screener.in/company/LLOYDSENT/
+https://www.screener.in/company/LLOYDSME/
+https://www.screener.in/company/LMW/
+https://www.screener.in/company/LODHA/
+https://www.screener.in/company/LOKESHMACH/
+https://www.screener.in/company/LOTUSDEV/
+https://www.screener.in/company/LOTUSEYE/
+https://www.screener.in/company/LOVABLE/
+https://www.screener.in/company/LPDC/
+
+# Stock symbols for this batch:
+# KRBL - KRBL Limited
+# KRISHANA - Krishana Phoschem Limited
+# KRITIKA - Kritika Wires Limited
+# KRITINUT - Kriti Nutrients Limited
+# KRN - KRN Heat Exchanger and Refrigeration Limited
+# KRONOX - Kronox Lab Sciences Limited
+# KROSS - Kross Limited
+# KRSNAA - Krsnaa Diagnostics Limited
+# KRYSTAL - Krystal Integrated Services Limited
+# KSB - Ksb Limited
+# KSCL - Kaveri Seed Company Limited
+# KSHITIJPOL - Kshitij Polyline Limited
+# KSL - Kalyani Steels Limited
+# KSOLVES - Ksolves India Limited
+# KTKBANK - The Karnataka Bank Limited
+# KUANTUM - Kuantum Papers Limited
+# LAGNAM - Lagnam Spintex Limited
+# LALPATHLAB - Dr. Lal Path Labs Ltd.
+# LAMBODHARA - Lambodhara Textiles Limited
+# LANCORHOL - Lancor Holdings Limited
+# LANDMARK - Landmark Cars Limited
+# LAOPALA - La Opala RG Limited
+# LATENTVIEW - Latent View Analytics Limited
+# LATTEYS - Latteys Industries Limited
+# LAURUSLABS - Laurus Labs Limited
+# LAXMICOT - Laxmi Cotspin Limited
+# LAXMIDENTL - Laxmi Dental Limited
+# LAXMIINDIA - Laxmi India Finance Limited
+# LCCINFOTEC - LCC Infotech Limited
+# LEMONTREE - Lemon Tree Hotels Limited
+# LEXUS - Lexus Granito (India) Limited
+# LFIC - Lakshmi Finance & Industrial Corporation Limited
+# LGBBROSLTD - LG Balakrishnan & Bros Limited
+# LGHL - Laxmi Goldorna House Limited
+# LIBAS - Libas Consumer Products Limited
+# LICHSGFIN - LIC Housing Finance Limited
+# LICI - Life Insurance Corporation Of India
+# LIKHITHA - Likhitha Infrastructure Limited
+# LINCOLN - Lincoln Pharmaceuticals Limited
+# LINDEINDIA - Linde India Limited
+# LLOYDSENGG - LLOYDS ENGINEERING WORKS LIMITED
+# LLOYDSENT - Lloyds Enterprises Limited
+# LLOYDSME - Lloyds Metals And Energy Limited
+# LMW - LMW Limited
+# LODHA - Lodha Developers Limited
+# LOKESHMACH - Lokesh Machines Limited
+# LOTUSDEV - Sri Lotus Developers and Realty Limited
+# LOTUSEYE - Lotus Eye Hospital and Institute Limited
+# LOVABLE - Lovable Lingerie Limited
+# LPDC - Landmark Property Development Company Limited

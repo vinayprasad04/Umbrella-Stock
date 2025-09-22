@@ -1,0 +1,110 @@
+# Batch 30 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/SMCGLOBAL/
+https://www.screener.in/company/SMLISUZU/
+https://www.screener.in/company/SMLT/
+https://www.screener.in/company/SMSLIFE/
+https://www.screener.in/company/SMSPHARMA/
+https://www.screener.in/company/SNOWMAN/
+https://www.screener.in/company/SOBHA/
+https://www.screener.in/company/SOFTTECH/
+https://www.screener.in/company/SOLARA/
+https://www.screener.in/company/SOLARINDS/
+https://www.screener.in/company/SOMANYCERA/
+https://www.screener.in/company/SOMICONVEY/
+https://www.screener.in/company/SONACOMS/
+https://www.screener.in/company/SONAMLTD/
+https://www.screener.in/company/SONATSOFTW/
+https://www.screener.in/company/SOTL/
+https://www.screener.in/company/SOUTHBANK/
+https://www.screener.in/company/SPAL/
+https://www.screener.in/company/SPANDANA/
+https://www.screener.in/company/SPARC/
+https://www.screener.in/company/SPECIALITY/
+https://www.screener.in/company/SPECTRUM/
+https://www.screener.in/company/SPENCERS/
+https://www.screener.in/company/SPIC/
+https://www.screener.in/company/SPLIL/
+https://www.screener.in/company/SPLPETRO/
+https://www.screener.in/company/SPMLINFRA/
+https://www.screener.in/company/SPORTKING/
+https://www.screener.in/company/SRD/
+https://www.screener.in/company/SREEL/
+https://www.screener.in/company/SRF/
+https://www.screener.in/company/SRGHFL/
+https://www.screener.in/company/SRHHYPOLTD/
+https://www.screener.in/company/SRM/
+https://www.screener.in/company/SSDL/
+https://www.screener.in/company/SSWL/
+https://www.screener.in/company/STALLION/
+https://www.screener.in/company/STANLEY/
+https://www.screener.in/company/STAR/
+https://www.screener.in/company/STARCEMENT/
+https://www.screener.in/company/STARHEALTH/
+https://www.screener.in/company/STARPAPER/
+https://www.screener.in/company/STARTECK/
+https://www.screener.in/company/STEELCAS/
+https://www.screener.in/company/STEELCITY/
+https://www.screener.in/company/STEELXIND/
+https://www.screener.in/company/STEL/
+https://www.screener.in/company/STERTOOLS/
+https://www.screener.in/company/STLTECH/
+https://www.screener.in/company/STOVEKRAFT/
+
+# Stock symbols for this batch:
+# SMCGLOBAL - SMC Global Securities Limited
+# SMLISUZU - SML Isuzu Limited
+# SMLT - Sarthak Metals Limited
+# SMSLIFE - SMS Lifesciences India Limited
+# SMSPHARMA - SMS Pharmaceuticals Limited
+# SNOWMAN - Snowman Logistics Limited
+# SOBHA - Sobha Limited
+# SOFTTECH - Softtech Engineers Limited
+# SOLARA - Solara Active Pharma Sciences Limited
+# SOLARINDS - Solar Industries India Limited
+# SOMANYCERA - Somany Ceramics Limited
+# SOMICONVEY - Somi Conveyor Beltings Limited
+# SONACOMS - Sona BLW Precision Forgings Limited
+# SONAMLTD - SONAM LIMITED
+# SONATSOFTW - Sonata Software Limited
+# SOTL - Savita Oil Technologies Limited
+# SOUTHBANK - The South Indian Bank Limited
+# SPAL - S. P. Apparels Limited
+# SPANDANA - Spandana Sphoorty Financial Limited
+# SPARC - Sun Pharma Advanced Research Company Limited
+# SPECIALITY - Speciality Restaurants Limited
+# SPECTRUM - Spectrum Electrical Industries Limited
+# SPENCERS - Spencer's Retail Limited
+# SPIC - Southern Petrochemicals Industries Corporation  Limited
+# SPLIL - SPL Industries Limited
+# SPLPETRO - Supreme Petrochem Limited
+# SPMLINFRA - SPML Infra Limited
+# SPORTKING - Sportking India Limited
+# SRD - Shankar Lal Rampal Dye-Chem Limited
+# SREEL - Sreeleathers Limited
+# SRF - SRF Limited
+# SRGHFL - SRG Housing Finance Limited
+# SRHHYPOLTD - Sree Rayalaseema Hi-Strength Hypo Limited
+# SRM - SRM Contractors Limited
+# SSDL - Saraswati Saree Depot Limited
+# SSWL - Steel Strips Wheels Limited
+# STALLION - Stallion India Fluorochemicals Limited
+# STANLEY - Stanley Lifestyles Limited
+# STAR - Strides Pharma Science Limited
+# STARCEMENT - Star Cement Limited
+# STARHEALTH - Star Health and Allied Insurance Company Limited
+# STARPAPER - Star Paper Mills Limited
+# STARTECK - Starteck Finance Limited
+# STEELCAS - Steelcast Limited
+# STEELCITY - Steel City Securities Limited
+# STEELXIND - STEEL EXCHANGE INDIA LIMITED
+# STEL - Stel Holdings Limited
+# STERTOOLS - Sterling Tools Limited
+# STLTECH - Sterlite Technologies Limited
+# STOVEKRAFT - Stove Kraft Limited

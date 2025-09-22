@@ -1,0 +1,110 @@
+# Batch 29 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/SHALBY/
+https://www.screener.in/company/SHALPAINTS/
+https://www.screener.in/company/SHANKARA/
+https://www.screener.in/company/SHANTIGEAR/
+https://www.screener.in/company/SHANTIGOLD/
+https://www.screener.in/company/SHARDACROP/
+https://www.screener.in/company/SHARDAMOTR/
+https://www.screener.in/company/SHAREINDIA/
+https://www.screener.in/company/SHEKHAWATI/
+https://www.screener.in/company/SHIVALIK/
+https://www.screener.in/company/SHIVAMAUTO/
+https://www.screener.in/company/SHIVAMILLS/
+https://www.screener.in/company/SHIVATEX/
+https://www.screener.in/company/SHK/
+https://www.screener.in/company/SHOPERSTOP/
+https://www.screener.in/company/SHRADHA/
+https://www.screener.in/company/SHREDIGCEM/
+https://www.screener.in/company/SHREECEM/
+https://www.screener.in/company/SHREEJISPG/
+https://www.screener.in/company/SHREEPUSHK/
+https://www.screener.in/company/SHREERAMA/
+https://www.screener.in/company/SHRENIK/
+https://www.screener.in/company/SHRIPISTON/
+https://www.screener.in/company/SHRIRAMFIN/
+https://www.screener.in/company/SHRIRAMPPS/
+https://www.screener.in/company/SHYAMMETL/
+https://www.screener.in/company/SIEMENS/
+https://www.screener.in/company/SIGACHI/
+https://www.screener.in/company/SIGNATURE/
+https://www.screener.in/company/SIGNPOST/
+https://www.screener.in/company/SIKKO/
+https://www.screener.in/company/SIL/
+https://www.screener.in/company/SILGO/
+https://www.screener.in/company/SILINV/
+https://www.screener.in/company/SILLYMONKS/
+https://www.screener.in/company/SILVERTUC/
+https://www.screener.in/company/SIMPLEXINF/
+https://www.screener.in/company/SINCLAIR/
+https://www.screener.in/company/SINDHUTRAD/
+https://www.screener.in/company/SINTERCOM/
+https://www.screener.in/company/SIRCA/
+https://www.screener.in/company/SIS/
+https://www.screener.in/company/SIYSIL/
+https://www.screener.in/company/SJS/
+https://www.screener.in/company/SJVN/
+https://www.screener.in/company/SKFINDIA/
+https://www.screener.in/company/SKIPPER/
+https://www.screener.in/company/SKYGOLD/
+https://www.screener.in/company/SMARTLINK/
+https://www.screener.in/company/SMARTWORKS/
+
+# Stock symbols for this batch:
+# SHALBY - Shalby Limited
+# SHALPAINTS - Shalimar Paints Limited
+# SHANKARA - Shankara Building Products Limited
+# SHANTIGEAR - Shanthi Gears Limited
+# SHANTIGOLD - Shanti Gold International Limited
+# SHARDACROP - Sharda Cropchem Limited
+# SHARDAMOTR - Sharda Motor Industries Limited
+# SHAREINDIA - Share India Securities Limited
+# SHEKHAWATI - Shekhawati Industries Limited
+# SHIVALIK - Shivalik Rasayan Limited
+# SHIVAMAUTO - Shivam Autotech Limited
+# SHIVAMILLS - Shiva Mills Limited
+# SHIVATEX - Shiva Texyarn Limited
+# SHK - S H Kelkar and Company Limited
+# SHOPERSTOP - Shoppers Stop Limited
+# SHRADHA - Shradha Infraprojects Limited
+# SHREDIGCEM - Shree Digvijay Cement Co.Ltd
+# SHREECEM - SHREE CEMENT LIMITED
+# SHREEJISPG - Shreeji Shipping Global Limited
+# SHREEPUSHK - Shree Pushkar Chemicals & Fertilisers Limited
+# SHREERAMA - Shree Rama Multi-Tech Limited
+# SHRENIK - Shrenik Limited
+# SHRIPISTON - Shriram Pistons & Rings Limited
+# SHRIRAMFIN - Shriram Finance Limited
+# SHRIRAMPPS - Shriram Properties Limited
+# SHYAMMETL - Shyam Metalics and Energy Limited
+# SIEMENS - Siemens Limited
+# SIGACHI - Sigachi Industries Limited
+# SIGNATURE - Signatureglobal (India) Limited
+# SIGNPOST - Signpost India Limited
+# SIKKO - Sikko Industries Limited
+# SIL - Standard Industries Limited
+# SILGO - Silgo Retail Limited
+# SILINV - SIL Investments Limited
+# SILLYMONKS - Silly Monks Entertainment Limited
+# SILVERTUC - Silver Touch Technologies Limited
+# SIMPLEXINF - Simplex Infrastructures Limited
+# SINCLAIR - Sinclairs Hotels Limited
+# SINDHUTRAD - Sindhu Trade Links Limited
+# SINTERCOM - Sintercom India Limited
+# SIRCA - Sirca Paints India Limited
+# SIS - SIS LIMITED
+# SIYSIL - Siyaram Silk Mills Limited
+# SJS - S.J.S. Enterprises Limited
+# SJVN - SJVN Limited
+# SKFINDIA - SKF India Limited
+# SKIPPER - Skipper Limited
+# SKYGOLD - SKY GOLD AND DIAMONDS LIMITED
+# SMARTLINK - Smartlink Holdings Limited
+# SMARTWORKS - Smartworks Coworking Spaces Limited

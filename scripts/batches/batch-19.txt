@@ -1,0 +1,110 @@
+# Batch 19 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/LTF/
+https://www.screener.in/company/LTFOODS/
+https://www.screener.in/company/LTIM/
+https://www.screener.in/company/LTTS/
+https://www.screener.in/company/LUMAXIND/
+https://www.screener.in/company/LUMAXTECH/
+https://www.screener.in/company/LUPIN/
+https://www.screener.in/company/LUXIND/
+https://www.screener.in/company/LXCHEM/
+https://www.screener.in/company/LYKALABS/
+https://www.screener.in/company/M&M/
+https://www.screener.in/company/M&MFIN/
+https://www.screener.in/company/MACPOWER/
+https://www.screener.in/company/MADHAV/
+https://www.screener.in/company/MADRASFERT/
+https://www.screener.in/company/MAGADSUGAR/
+https://www.screener.in/company/MAGNUM/
+https://www.screener.in/company/MAHABANK/
+https://www.screener.in/company/MAHAPEXLTD/
+https://www.screener.in/company/MAHASTEEL/
+https://www.screener.in/company/MAHEPC/
+https://www.screener.in/company/MAHESHWARI/
+https://www.screener.in/company/MAHLIFE/
+https://www.screener.in/company/MAHLOG/
+https://www.screener.in/company/MAHSCOOTER/
+https://www.screener.in/company/MAHSEAMLES/
+https://www.screener.in/company/MAITHANALL/
+https://www.screener.in/company/MALLCOM/
+https://www.screener.in/company/MALUPAPER/
+https://www.screener.in/company/MAMATA/
+https://www.screener.in/company/MANAKALUCO/
+https://www.screener.in/company/MANAKCOAT/
+https://www.screener.in/company/MANAKSIA/
+https://www.screener.in/company/MANALIPETC/
+https://www.screener.in/company/MANAPPURAM/
+https://www.screener.in/company/MANBA/
+https://www.screener.in/company/MANCREDIT/
+https://www.screener.in/company/MANGALAM/
+https://www.screener.in/company/MANGCHEFER/
+https://www.screener.in/company/MANGLMCEM/
+https://www.screener.in/company/MANINDS/
+https://www.screener.in/company/MANINFRA/
+https://www.screener.in/company/MANKIND/
+https://www.screener.in/company/MANOMAY/
+https://www.screener.in/company/MANORAMA/
+https://www.screener.in/company/MANYAVAR/
+https://www.screener.in/company/MAPMYINDIA/
+https://www.screener.in/company/MARALOVER/
+https://www.screener.in/company/MARATHON/
+https://www.screener.in/company/MARICO/
+
+# Stock symbols for this batch:
+# LTF - L&T Finance Limited
+# LTFOODS - LT Foods Limited
+# LTIM - LTIMindtree Limited
+# LTTS - L&T Technology Services Limited
+# LUMAXIND - Lumax Industries Limited
+# LUMAXTECH - Lumax Auto Technologies Limited
+# LUPIN - Lupin Limited
+# LUXIND - Lux Industries Limited
+# LXCHEM - Laxmi Organic Industries Limited
+# LYKALABS - Lyka Labs Limited
+# M&M - Mahindra & Mahindra Limited
+# M&MFIN - Mahindra & Mahindra Financial Services Limited
+# MACPOWER - Macpower CNC Machines Limited
+# MADHAV - Madhav Marbles and Granites Limited
+# MADRASFERT - Madras Fertilizers Limited
+# MAGADSUGAR - Magadh Sugar & Energy Limited
+# MAGNUM - Magnum Ventures Limited
+# MAHABANK - Bank of Maharashtra
+# MAHAPEXLTD - Maha Rashtra Apex Corporation Limited
+# MAHASTEEL - Mahamaya Steel Industries Limited
+# MAHEPC - Mahindra EPC Irrigation Limited
+# MAHESHWARI - Maheshwari Logistics Limited
+# MAHLIFE - Mahindra Lifespace Developers Limited
+# MAHLOG - Mahindra Logistics Limited
+# MAHSCOOTER - Maharashtra Scooters Limited
+# MAHSEAMLES - Maharashtra Seamless Limited
+# MAITHANALL - Maithan Alloys Limited
+# MALLCOM - Mallcom (India) Limited
+# MALUPAPER - Malu Paper Mills Limited
+# MAMATA - Mamata Machinery Limited
+# MANAKALUCO - Manaksia Aluminium Company Limited
+# MANAKCOAT - Manaksia Coated Metals & Industries Limited
+# MANAKSIA - Manaksia Limited
+# MANALIPETC - Manali Petrochemicals Limited
+# MANAPPURAM - Manappuram Finance Limited
+# MANBA - Manba Finance Limited
+# MANCREDIT - Mangal Credit and Fincorp Limited
+# MANGALAM - Mangalam Drugs And Organics Limited
+# MANGCHEFER - Mangalore Chemicals & Fertilizers Limited
+# MANGLMCEM - Mangalam Cement Limited
+# MANINDS - Man Industries (India) Limited
+# MANINFRA - Man Infraconstruction Limited
+# MANKIND - Mankind Pharma Limited
+# MANOMAY - Manomay Tex India Limited
+# MANORAMA - Manorama Industries Limited
+# MANYAVAR - Vedant Fashions Limited
+# MAPMYINDIA - C.E. Info Systems Limited
+# MARALOVER - Maral Overseas Limited
+# MARATHON - Marathon Nextgen Realty Limited
+# MARICO - Marico Limited

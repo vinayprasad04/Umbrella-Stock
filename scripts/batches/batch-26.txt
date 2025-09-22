@@ -1,0 +1,110 @@
+# Batch 26 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/RAJSREESUG/
+https://www.screener.in/company/RAJTV/
+https://www.screener.in/company/RALLIS/
+https://www.screener.in/company/RAMASTEEL/
+https://www.screener.in/company/RAMCOCEM/
+https://www.screener.in/company/RAMCOIND/
+https://www.screener.in/company/RAMKY/
+https://www.screener.in/company/RAMRAT/
+https://www.screener.in/company/RANASUG/
+https://www.screener.in/company/RANEHOLDIN/
+https://www.screener.in/company/RATEGAIN/
+https://www.screener.in/company/RATNAMANI/
+https://www.screener.in/company/RATNAVEER/
+https://www.screener.in/company/RAYMOND/
+https://www.screener.in/company/RAYMONDLSL/
+https://www.screener.in/company/RAYMONDREL/
+https://www.screener.in/company/RBA/
+https://www.screener.in/company/RBLBANK/
+https://www.screener.in/company/RBZJEWEL/
+https://www.screener.in/company/RCF/
+https://www.screener.in/company/RECLTD/
+https://www.screener.in/company/REDINGTON/
+https://www.screener.in/company/REDTAPE/
+https://www.screener.in/company/REFEX/
+https://www.screener.in/company/REGAAL/
+https://www.screener.in/company/REGENCERAM/
+https://www.screener.in/company/RELAXO/
+https://www.screener.in/company/RELCHEMQ/
+https://www.screener.in/company/RELIABLE/
+https://www.screener.in/company/RELIGARE/
+https://www.screener.in/company/REMSONSIND/
+https://www.screener.in/company/RENUKA/
+https://www.screener.in/company/REPCOHOME/
+https://www.screener.in/company/REPL/
+https://www.screener.in/company/REPRO/
+https://www.screener.in/company/RESPONIND/
+https://www.screener.in/company/RETAIL/
+https://www.screener.in/company/RGL/
+https://www.screener.in/company/RHIM/
+https://www.screener.in/company/RHL/
+https://www.screener.in/company/RICOAUTO/
+https://www.screener.in/company/RIIL/
+https://www.screener.in/company/RISHABH/
+https://www.screener.in/company/RITCO/
+https://www.screener.in/company/RITES/
+https://www.screener.in/company/RKDL/
+https://www.screener.in/company/RKEC/
+https://www.screener.in/company/RKFORGE/
+https://www.screener.in/company/RKSWAMY/
+https://www.screener.in/company/RMDRIP/
+
+# Stock symbols for this batch:
+# RAJSREESUG - Rajshree Sugars & Chemicals Limited
+# RAJTV - Raj Television Network Limited
+# RALLIS - Rallis India Limited
+# RAMASTEEL - Rama Steel Tubes Limited
+# RAMCOCEM - The Ramco Cements Limited
+# RAMCOIND - Ramco Industries Limited
+# RAMKY - Ramky Infrastructure Limited
+# RAMRAT - Ram Ratna Wires Limited
+# RANASUG - Rana Sugars Limited
+# RANEHOLDIN - Rane Holdings Limited
+# RATEGAIN - Rategain Travel Technologies Limited
+# RATNAMANI - Ratnamani Metals & Tubes Limited
+# RATNAVEER - Ratnaveer Precision Engineering Limited
+# RAYMOND - Raymond Limited
+# RAYMONDLSL - Raymond Lifestyle Limited
+# RAYMONDREL - Raymond Realty Limited
+# RBA - Restaurant Brands Asia Limited
+# RBLBANK - RBL Bank Limited
+# RBZJEWEL - RBZ Jewellers Limited
+# RCF - Rashtriya Chemicals and Fertilizers Limited
+# RECLTD - REC Limited
+# REDINGTON - Redington Limited
+# REDTAPE - Redtape Limited
+# REFEX - Refex Industries Limited
+# REGAAL - Regaal Resources Limited
+# REGENCERAM - Regency Ceramics Limited
+# RELAXO - Relaxo Footwears Limited
+# RELCHEMQ - Reliance Chemotex Industries Limited
+# RELIABLE - Reliable Data Services Limited
+# RELIGARE - Religare Enterprises Limited
+# REMSONSIND - Remsons Industries Limited
+# RENUKA - Shree Renuka Sugars Limited
+# REPCOHOME - Repco Home Finance Limited
+# REPL - Rudrabhishek Enterprises Limited
+# REPRO - Repro India Limited
+# RESPONIND - Responsive Industries Limited
+# RETAIL - JHS Svendgaard Retail Ventures Limited
+# RGL - Renaissance Global Limited
+# RHIM - RHI MAGNESITA INDIA LIMITED
+# RHL - Robust Hotels Limited
+# RICOAUTO - Rico Auto Industries Limited
+# RIIL - Reliance Industrial Infrastructure Limited
+# RISHABH - Rishabh Instruments Limited
+# RITCO - Ritco Logistics Limited
+# RITES - RITES Limited
+# RKDL - Ravi Kumar Distilleries Limited
+# RKEC - RKEC Projects Limited
+# RKFORGE - Ramkrishna Forgings Limited
+# RKSWAMY - R K Swamy Limited
+# RMDRIP - R M Drip and Sprinklers Systems Limited

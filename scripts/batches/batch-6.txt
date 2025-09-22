@@ -1,0 +1,110 @@
+# Batch 6 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/CEIGALL/
+https://www.screener.in/company/CELEBRITY/
+https://www.screener.in/company/CELLO/
+https://www.screener.in/company/CENTENKA/
+https://www.screener.in/company/CENTEXT/
+https://www.screener.in/company/CENTRALBK/
+https://www.screener.in/company/CENTUM/
+https://www.screener.in/company/CENTURYPLY/
+https://www.screener.in/company/CERA/
+https://www.screener.in/company/CESC/
+https://www.screener.in/company/CEWATER/
+https://www.screener.in/company/CGCL/
+https://www.screener.in/company/CGPOWER/
+https://www.screener.in/company/CHALET/
+https://www.screener.in/company/CHAMBLFERT/
+https://www.screener.in/company/CHEMBONDCH/
+https://www.screener.in/company/CHEMCON/
+https://www.screener.in/company/CHEMFAB/
+https://www.screener.in/company/CHEMPLASTS/
+https://www.screener.in/company/CHENNPETRO/
+https://www.screener.in/company/CHEVIOT/
+https://www.screener.in/company/CHOICEIN/
+https://www.screener.in/company/CHOLAFIN/
+https://www.screener.in/company/CHOLAHLDNG/
+https://www.screener.in/company/CIEINDIA/
+https://www.screener.in/company/CIFL/
+https://www.screener.in/company/CIGNITITEC/
+https://www.screener.in/company/CINELINE/
+https://www.screener.in/company/CIPLA/
+https://www.screener.in/company/CLEAN/
+https://www.screener.in/company/CLEDUCATE/
+https://www.screener.in/company/CLSEL/
+https://www.screener.in/company/CMSINFO/
+https://www.screener.in/company/COALINDIA/
+https://www.screener.in/company/COASTCORP/
+https://www.screener.in/company/COCHINSHIP/
+https://www.screener.in/company/COFFEEDAY/
+https://www.screener.in/company/COFORGE/
+https://www.screener.in/company/COHANCE/
+https://www.screener.in/company/COLPAL/
+https://www.screener.in/company/COMPUSOFT/
+https://www.screener.in/company/COMSYN/
+https://www.screener.in/company/CONCOR/
+https://www.screener.in/company/CONCORDBIO/
+https://www.screener.in/company/CONFIPET/
+https://www.screener.in/company/CONSOFINVT/
+https://www.screener.in/company/CONTROLPR/
+https://www.screener.in/company/CORALFINAC/
+https://www.screener.in/company/CORDSCABLE/
+https://www.screener.in/company/COROMANDEL/
+
+# Stock symbols for this batch:
+# CEIGALL - Ceigall India Limited
+# CELEBRITY - Celebrity Fashions Limited
+# CELLO - Cello World Limited
+# CENTENKA - Century Enka Limited
+# CENTEXT - Century Extrusions Limited
+# CENTRALBK - Central Bank of India
+# CENTUM - Centum Electronics Limited
+# CENTURYPLY - Century Plyboards (India) Limited
+# CERA - Cera Sanitaryware Limited
+# CESC - CESC Limited
+# CEWATER - Concord Enviro Systems Limited
+# CGCL - Capri Global Capital Limited
+# CGPOWER - CG Power and Industrial Solutions Limited
+# CHALET - Chalet Hotels Limited
+# CHAMBLFERT - Chambal Fertilizers & Chemicals Limited
+# CHEMBONDCH - Chembond Chemicals Limited
+# CHEMCON - Chemcon Speciality Chemicals Limited
+# CHEMFAB - Chemfab Alkalis Limited
+# CHEMPLASTS - Chemplast Sanmar Limited
+# CHENNPETRO - Chennai Petroleum Corporation Limited
+# CHEVIOT - Cheviot Company Limited
+# CHOICEIN - Choice International Limited
+# CHOLAFIN - Cholamandalam Investment and Finance Company Limited
+# CHOLAHLDNG - Cholamandalam Financial Holdings Limited
+# CIEINDIA - CIE Automotive India Limited
+# CIFL - Capital India Finance Limited
+# CIGNITITEC - Cigniti Technologies Limited
+# CINELINE - Cineline India Limited
+# CIPLA - Cipla Limited
+# CLEAN - Clean Science and Technology Limited
+# CLEDUCATE - CL Educate Limited
+# CLSEL - Chaman Lal Setia Exports Limited
+# CMSINFO - CMS Info Systems Limited
+# COALINDIA - Coal India Limited
+# COASTCORP - Coastal Corporation Limited
+# COCHINSHIP - Cochin Shipyard Limited
+# COFFEEDAY - Coffee Day Enterprises Limited
+# COFORGE - Coforge Limited
+# COHANCE - Cohance Lifesciences Limited
+# COLPAL - Colgate Palmolive (India) Limited
+# COMPUSOFT - Compucom Software Limited
+# COMSYN - Commercial Syn Bags Limited
+# CONCOR - Container Corporation of India Limited
+# CONCORDBIO - Concord Biotech Limited
+# CONFIPET - Confidence Petroleum India Limited
+# CONSOFINVT - Consolidated Finvest & Holdings Limited
+# CONTROLPR - Control Print Limited
+# CORALFINAC - Coral India Finance & Housing Limited
+# CORDSCABLE - Cords Cable Industries Limited
+# COROMANDEL - Coromandel International Limited

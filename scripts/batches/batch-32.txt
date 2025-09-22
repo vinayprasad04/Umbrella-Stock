@@ -1,0 +1,110 @@
+# Batch 32 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/TARACHAND/
+https://www.screener.in/company/TARAPUR/
+https://www.screener.in/company/TARC/
+https://www.screener.in/company/TARIL/
+https://www.screener.in/company/TARMAT/
+https://www.screener.in/company/TARSONS/
+https://www.screener.in/company/TASTYBITE/
+https://www.screener.in/company/TATACHEM/
+https://www.screener.in/company/TATACOMM/
+https://www.screener.in/company/TATACONSUM/
+https://www.screener.in/company/TATAELXSI/
+https://www.screener.in/company/TATAINVEST/
+https://www.screener.in/company/TATAMOTORS/
+https://www.screener.in/company/TATAPOWER/
+https://www.screener.in/company/TATASTEEL/
+https://www.screener.in/company/TATATECH/
+https://www.screener.in/company/TATVA/
+https://www.screener.in/company/TBOTEK/
+https://www.screener.in/company/TBZ/
+https://www.screener.in/company/TCI/
+https://www.screener.in/company/TCIEXP/
+https://www.screener.in/company/TCPLPACK/
+https://www.screener.in/company/TDPOWERSYS/
+https://www.screener.in/company/TEAMLEASE/
+https://www.screener.in/company/TECHM/
+https://www.screener.in/company/TECHNOE/
+https://www.screener.in/company/TEGA/
+https://www.screener.in/company/TEJASNET/
+https://www.screener.in/company/TEMBO/
+https://www.screener.in/company/TEXINFRA/
+https://www.screener.in/company/TEXMOPIPES/
+https://www.screener.in/company/TEXRAIL/
+https://www.screener.in/company/TFCILTD/
+https://www.screener.in/company/TGBHOTELS/
+https://www.screener.in/company/THANGAMAYL/
+https://www.screener.in/company/THEINVEST/
+https://www.screener.in/company/THEJO/
+https://www.screener.in/company/THELEELA/
+https://www.screener.in/company/THEMISMED/
+https://www.screener.in/company/THERMAX/
+https://www.screener.in/company/THOMASCOOK/
+https://www.screener.in/company/THYROCARE/
+https://www.screener.in/company/TI/
+https://www.screener.in/company/TIIL/
+https://www.screener.in/company/TIINDIA/
+https://www.screener.in/company/TIMETECHNO/
+https://www.screener.in/company/TIMKEN/
+https://www.screener.in/company/TINNARUBR/
+https://www.screener.in/company/TIPSFILMS/
+https://www.screener.in/company/TIPSMUSIC/
+
+# Stock symbols for this batch:
+# TARACHAND - Tara Chand InfraLogistic Solutions Limited
+# TARAPUR - Tarapur Transformers Limited
+# TARC - TARC Limited
+# TARIL - Transformers And Rectifiers (India) Limited
+# TARMAT - Tarmat Limited
+# TARSONS - Tarsons Products Limited
+# TASTYBITE - Tasty Bite Eatables Limited
+# TATACHEM - Tata Chemicals Limited
+# TATACOMM - Tata Communications Limited
+# TATACONSUM - TATA CONSUMER PRODUCTS LIMITED
+# TATAELXSI - Tata Elxsi Limited
+# TATAINVEST - Tata Investment Corporation Limited
+# TATAMOTORS - Tata Motors Limited
+# TATAPOWER - Tata Power Company Limited
+# TATASTEEL - Tata Steel Limited
+# TATATECH - Tata Technologies Limited
+# TATVA - Tatva Chintan Pharma Chem Limited
+# TBOTEK - TBO Tek Limited
+# TBZ - Tribhovandas Bhimji Zaveri Limited
+# TCI - Transport Corporation of India Limited
+# TCIEXP - TCI Express Limited
+# TCPLPACK - TCPL Packaging Limited
+# TDPOWERSYS - TD Power Systems Limited
+# TEAMLEASE - Teamlease Services Limited
+# TECHM - Tech Mahindra Limited
+# TECHNOE - Techno Electric & Engineering Company Limited
+# TEGA - Tega Industries Limited
+# TEJASNET - Tejas Networks Limited
+# TEMBO - Tembo Global Industries Limited
+# TEXINFRA - Texmaco Infrastructure & Holdings Limited
+# TEXMOPIPES - Texmo Pipes and Products Limited
+# TEXRAIL - Texmaco Rail & Engineering Limited
+# TFCILTD - Tourism Finance Corporation of India Limited
+# TGBHOTELS - TGB Banquets And Hotels Limited
+# THANGAMAYL - Thangamayil Jewellery Limited
+# THEINVEST - The Investment Trust Of India Limited
+# THEJO - Thejo Engineering Limited
+# THELEELA - Schloss Bangalore Limited
+# THEMISMED - Themis Medicare Limited
+# THERMAX - Thermax Limited
+# THOMASCOOK - Thomas Cook  (India)  Limited
+# THYROCARE - Thyrocare Technologies Limited
+# TI - Tilaknagar Industries Limited
+# TIIL - Technocraft Industries (India) Limited
+# TIINDIA - Tube Investments of India Limited
+# TIMETECHNO - Time Technoplast Limited
+# TIMKEN - Timken India Limited
+# TINNARUBR - Tinna Rubber and Infrastructure Limited
+# TIPSFILMS - Tips Films Limited
+# TIPSMUSIC - Tips Music Limited

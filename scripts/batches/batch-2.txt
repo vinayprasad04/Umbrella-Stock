@@ -1,0 +1,110 @@
+# Batch 2 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/ANUHPHR/
+https://www.screener.in/company/ANUP/
+https://www.screener.in/company/ANURAS/
+https://www.screener.in/company/APARINDS/
+https://www.screener.in/company/APCOTEXIND/
+https://www.screener.in/company/APEX/
+https://www.screener.in/company/APLAPOLLO/
+https://www.screener.in/company/APLLTD/
+https://www.screener.in/company/APOLLO/
+https://www.screener.in/company/APOLLOHOSP/
+https://www.screener.in/company/APOLLOPIPE/
+https://www.screener.in/company/APOLLOTYRE/
+https://www.screener.in/company/APOLSINHOT/
+https://www.screener.in/company/APTUS/
+https://www.screener.in/company/ARCHIDPLY/
+https://www.screener.in/company/ARE&M/
+https://www.screener.in/company/ARFIN/
+https://www.screener.in/company/ARIES/
+https://www.screener.in/company/ARIHANTCAP/
+https://www.screener.in/company/ARIHANTSUP/
+https://www.screener.in/company/ARISINFRA/
+https://www.screener.in/company/ARKADE/
+https://www.screener.in/company/ARMANFIN/
+https://www.screener.in/company/AROGRANITE/
+https://www.screener.in/company/ARROWGREEN/
+https://www.screener.in/company/ARTEMISMED/
+https://www.screener.in/company/ARVEE/
+https://www.screener.in/company/ARVIND/
+https://www.screener.in/company/ARVINDFASN/
+https://www.screener.in/company/ARVSMART/
+https://www.screener.in/company/ASAHIINDIA/
+https://www.screener.in/company/ASAHISONG/
+https://www.screener.in/company/ASAL/
+https://www.screener.in/company/ASALCBR/
+https://www.screener.in/company/ASHAPURMIN/
+https://www.screener.in/company/ASHIANA/
+https://www.screener.in/company/ASHIMASYN/
+https://www.screener.in/company/ASHOKA/
+https://www.screener.in/company/ASHOKAMET/
+https://www.screener.in/company/ASHOKLEY/
+https://www.screener.in/company/ASIANENE/
+https://www.screener.in/company/ASIANHOTNR/
+https://www.screener.in/company/ASKAUTOLTD/
+https://www.screener.in/company/ASMS/
+https://www.screener.in/company/ASPINWALL/
+https://www.screener.in/company/ASTEC/
+https://www.screener.in/company/ASTERDM/
+https://www.screener.in/company/ASTRAL/
+https://www.screener.in/company/ASTRAMICRO/
+https://www.screener.in/company/ASTRAZEN/
+
+# Stock symbols for this batch:
+# ANUHPHR - Anuh Pharma Limited
+# ANUP - The Anup Engineering Limited
+# ANURAS - Anupam Rasayan India Limited
+# APARINDS - Apar Industries Limited
+# APCOTEXIND - Apcotex Industries Limited
+# APEX - Apex Frozen Foods Limited
+# APLAPOLLO - APL Apollo Tubes Limited
+# APLLTD - Alembic Pharmaceuticals Limited
+# APOLLO - Apollo Micro Systems Limited
+# APOLLOHOSP - Apollo Hospitals Enterprise Limited
+# APOLLOPIPE - Apollo Pipes Limited
+# APOLLOTYRE - Apollo Tyres Limited
+# APOLSINHOT - Apollo Sindoori Hotels Limited
+# APTUS - Aptus Value Housing Finance India Limited
+# ARCHIDPLY - Archidply Industries Limited
+# ARE&M - Amara Raja Energy & Mobility Limited
+# ARFIN - Arfin India Limited
+# ARIES - Aries Agro Limited
+# ARIHANTCAP - Arihant Capital Markets Limited
+# ARIHANTSUP - Arihant Superstructures Limited
+# ARISINFRA - Arisinfra Solutions Limited
+# ARKADE - Arkade Developers Limited
+# ARMANFIN - Arman Financial Services Limited
+# AROGRANITE - Aro Granite Industries Limited
+# ARROWGREEN - Arrow Greentech Limited
+# ARTEMISMED - Artemis Medicare Services Limited
+# ARVEE - Arvee Laboratories (India) Limited
+# ARVIND - Arvind Limited
+# ARVINDFASN - Arvind Fashions Limited
+# ARVSMART - Arvind SmartSpaces Limited
+# ASAHIINDIA - Asahi India Glass Limited
+# ASAHISONG - Asahi Songwon Colors Limited
+# ASAL - Automotive Stampings and Assemblies Limited
+# ASALCBR - Associated Alcohols & Breweries Ltd.
+# ASHAPURMIN - Ashapura Minechem Limited
+# ASHIANA - Ashiana Housing Limited
+# ASHIMASYN - Ashima Limited
+# ASHOKA - Ashoka Buildcon Limited
+# ASHOKAMET - Ashoka Metcast Limited
+# ASHOKLEY - Ashok Leyland Limited
+# ASIANENE - Asian Energy Services Limited
+# ASIANHOTNR - Asian Hotels (North) Limited
+# ASKAUTOLTD - ASK Automotive Limited
+# ASMS - Bartronics India Limited
+# ASPINWALL - Aspinwall and Company Limited
+# ASTEC - Astec LifeSciences Limited
+# ASTERDM - Aster DM Healthcare Limited
+# ASTRAL - Astral Limited
+# ASTRAMICRO - Astra Microwave Products Limited
+# ASTRAZEN - AstraZeneca Pharma India Limited

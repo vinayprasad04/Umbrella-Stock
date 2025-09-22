@@ -1,0 +1,110 @@
+# Batch 34 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/UNITDSPR/
+https://www.screener.in/company/UNITEDTEA/
+https://www.screener.in/company/UNIVASTU/
+https://www.screener.in/company/UNIVCABLES/
+https://www.screener.in/company/UNOMINDA/
+https://www.screener.in/company/UPL/
+https://www.screener.in/company/URJA/
+https://www.screener.in/company/USHAMART/
+https://www.screener.in/company/USK/
+https://www.screener.in/company/UTIAMC/
+https://www.screener.in/company/UTKARSHBNK/
+https://www.screener.in/company/UTTAMSUGAR/
+https://www.screener.in/company/UYFINCORP/
+https://www.screener.in/company/V2RETAIL/
+https://www.screener.in/company/VADILALIND/
+https://www.screener.in/company/VAIBHAVGBL/
+https://www.screener.in/company/VAISHALI/
+https://www.screener.in/company/VAKRANGEE/
+https://www.screener.in/company/VALIANTLAB/
+https://www.screener.in/company/VARDHACRLC/
+https://www.screener.in/company/VARDMNPOLY/
+https://www.screener.in/company/VARROC/
+https://www.screener.in/company/VASCONEQ/
+https://www.screener.in/company/VBL/
+https://www.screener.in/company/VEDL/
+https://www.screener.in/company/VEEDOL/
+https://www.screener.in/company/VENKEYS/
+https://www.screener.in/company/VENTIVE/
+https://www.screener.in/company/VENUSPIPES/
+https://www.screener.in/company/VERANDA/
+https://www.screener.in/company/VERTOZ/
+https://www.screener.in/company/VESUVIUS/
+https://www.screener.in/company/VETO/
+https://www.screener.in/company/VGUARD/
+https://www.screener.in/company/VHL/
+https://www.screener.in/company/VIDHIING/
+https://www.screener.in/company/VIJAYA/
+https://www.screener.in/company/VIKASECO/
+https://www.screener.in/company/VIKASLIFE/
+https://www.screener.in/company/VIKRAMSOLR/
+https://www.screener.in/company/VIMTALABS/
+https://www.screener.in/company/VINATIORGA/
+https://www.screener.in/company/VINCOFE/
+https://www.screener.in/company/VINDHYATEL/
+https://www.screener.in/company/VINNY/
+https://www.screener.in/company/VIPCLOTHNG/
+https://www.screener.in/company/VIPIND/
+https://www.screener.in/company/VIPULLTD/
+https://www.screener.in/company/VISHNU/
+https://www.screener.in/company/VISHWARAJ/
+
+# Stock symbols for this batch:
+# UNITDSPR - United Spirits Limited
+# UNITEDTEA - The United Nilgiri Tea Estates Company Limited
+# UNIVASTU - Univastu India Limited
+# UNIVCABLES - Universal Cables Limited
+# UNOMINDA - UNO Minda Limited
+# UPL - UPL Limited
+# URJA - Urja Global Limited
+# USHAMART - Usha Martin Limited
+# USK - Udayshivakumar Infra Limited
+# UTIAMC - UTI Asset Management Company Limited
+# UTKARSHBNK - Utkarsh Small Finance Bank Limited
+# UTTAMSUGAR - Uttam Sugar Mills Limited
+# UYFINCORP - U. Y. Fincorp Limited
+# V2RETAIL - V2 Retail Limited
+# VADILALIND - Vadilal Industries Limited
+# VAIBHAVGBL - Vaibhav Global Limited
+# VAISHALI - Vaishali Pharma Limited
+# VAKRANGEE - Vakrangee Limited
+# VALIANTLAB - Valiant Laboratories Limited
+# VARDHACRLC - Vardhman Acrylics Limited
+# VARDMNPOLY - Vardhman Polytex Limited
+# VARROC - Varroc Engineering Limited
+# VASCONEQ - Vascon Engineers Limited
+# VBL - Varun Beverages Limited
+# VEDL - Vedanta Limited
+# VEEDOL - Veedol Corporation Limited
+# VENKEYS - Venky's (India) Limited
+# VENTIVE - Ventive Hospitality Limited
+# VENUSPIPES - Venus Pipes & Tubes Limited
+# VERANDA - Veranda Learning Solutions Limited
+# VERTOZ - Vertoz Limited
+# VESUVIUS - Vesuvius India Limited
+# VETO - Veto Switchgears And Cables Limited
+# VGUARD - V-Guard Industries Limited
+# VHL - Vardhman Holdings Limited
+# VIDHIING - Vidhi Specialty Food Ingredients Limited
+# VIJAYA - Vijaya Diagnostic Centre Limited
+# VIKASECO - Vikas EcoTech Limited
+# VIKASLIFE - Vikas Lifecare Limited
+# VIKRAMSOLR - Vikram Solar Limited
+# VIMTALABS - Vimta Labs Limited
+# VINATIORGA - Vinati Organics Limited
+# VINCOFE - Vintage Coffee And Beverages Limited
+# VINDHYATEL - Vindhya Telelinks Limited
+# VINNY - Vinny Overseas Limited
+# VIPCLOTHNG - VIP Clothing Limited
+# VIPIND - VIP Industries Limited
+# VIPULLTD - Vipul Limited
+# VISHNU - Vishnu Chemicals Limited
+# VISHWARAJ - Vishwaraj Sugar Industries Limited

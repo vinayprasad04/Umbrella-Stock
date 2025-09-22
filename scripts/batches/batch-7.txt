@@ -1,0 +1,110 @@
+# Batch 7 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/COSMOFIRST/
+https://www.screener.in/company/COUNCODOS/
+https://www.screener.in/company/CPCAP/
+https://www.screener.in/company/CPPLUS/
+https://www.screener.in/company/CRAFTSMAN/
+https://www.screener.in/company/CREATIVE/
+https://www.screener.in/company/CREDITACC/
+https://www.screener.in/company/CREST/
+https://www.screener.in/company/CRISIL/
+https://www.screener.in/company/CRIZAC/
+https://www.screener.in/company/CROMPTON/
+https://www.screener.in/company/CROWN/
+https://www.screener.in/company/CSBBANK/
+https://www.screener.in/company/CSLFINANCE/
+https://www.screener.in/company/CUB/
+https://www.screener.in/company/CUMMINSIND/
+https://www.screener.in/company/CUPID/
+https://www.screener.in/company/CYBERMEDIA/
+https://www.screener.in/company/CYBERTECH/
+https://www.screener.in/company/CYIENT/
+https://www.screener.in/company/CYIENTDLM/
+https://www.screener.in/company/DABUR/
+https://www.screener.in/company/DALBHARAT/
+https://www.screener.in/company/DALMIASUG/
+https://www.screener.in/company/DAMCAPITAL/
+https://www.screener.in/company/DAMODARIND/
+https://www.screener.in/company/DATAMATICS/
+https://www.screener.in/company/DATAPATTNS/
+https://www.screener.in/company/DAVANGERE/
+https://www.screener.in/company/DBCORP/
+https://www.screener.in/company/DBEIL/
+https://www.screener.in/company/DBL/
+https://www.screener.in/company/DBOL/
+https://www.screener.in/company/DBREALTY/
+https://www.screener.in/company/DBSTOCKBRO/
+https://www.screener.in/company/DCBBANK/
+https://www.screener.in/company/DCI/
+https://www.screener.in/company/DCM/
+https://www.screener.in/company/DCMNVL/
+https://www.screener.in/company/DCMSHRIRAM/
+https://www.screener.in/company/DCMSRIND/
+https://www.screener.in/company/DCW/
+https://www.screener.in/company/DCXINDIA/
+https://www.screener.in/company/DDEVPLSTIK/
+https://www.screener.in/company/DECCANCE/
+https://www.screener.in/company/DEEDEV/
+https://www.screener.in/company/DEEPAKFERT/
+https://www.screener.in/company/DEEPAKNTR/
+https://www.screener.in/company/DEEPINDS/
+https://www.screener.in/company/DELHIVERY/
+
+# Stock symbols for this batch:
+# COSMOFIRST - COSMO FIRST LIMITED
+# COUNCODOS - Country Condo's Limited
+# CPCAP - CP Capital Limited
+# CPPLUS - Aditya Infotech Limited
+# CRAFTSMAN - Craftsman Automation Limited
+# CREATIVE - Creative Newtech Limited
+# CREDITACC - CREDITACCESS GRAMEEN LIMITED
+# CREST - Crest Ventures Limited
+# CRISIL - CRISIL Limited
+# CRIZAC - Crizac Limited
+# CROMPTON - Crompton Greaves Consumer Electricals Limited
+# CROWN - Crown Lifters Limited
+# CSBBANK - CSB Bank Limited
+# CSLFINANCE - CSL Finance Limited
+# CUB - City Union Bank Limited
+# CUMMINSIND - Cummins India Limited
+# CUPID - Cupid Limited
+# CYBERMEDIA - Cyber Media (India) Limited
+# CYBERTECH - Cybertech Systems And Software Limited
+# CYIENT - Cyient Limited
+# CYIENTDLM - Cyient DLM Limited
+# DABUR - Dabur India Limited
+# DALBHARAT - Dalmia Bharat Limited
+# DALMIASUG - Dalmia Bharat Sugar and Industries Limited
+# DAMCAPITAL - Dam Capital Advisors Limited
+# DAMODARIND - Damodar Industries Limited
+# DATAMATICS - Datamatics Global Services Limited
+# DATAPATTNS - Data Patterns (India) Limited
+# DAVANGERE - Davangere Sugar Company Limited
+# DBCORP - D.B.Corp Limited
+# DBEIL - Deepak Builders & Engineers India Limited
+# DBL - Dilip Buildcon Limited
+# DBOL - Dhampur Bio Organics Limited
+# DBREALTY - Valor Estate Limited
+# DBSTOCKBRO - DB (International) Stock Brokers Limited
+# DCBBANK - DCB Bank Limited
+# DCI - Dc Infotech And Communication Limited
+# DCM - DCM  Limited
+# DCMNVL - DCM Nouvelle Limited
+# DCMSHRIRAM - DCM Shriram Limited
+# DCMSRIND - DCM Shriram Industries Limited
+# DCW - DCW Limited
+# DCXINDIA - DCX Systems Limited
+# DDEVPLSTIK - Ddev Plastiks Industries Limited
+# DECCANCE - Deccan Cements Limited
+# DEEDEV - DEE Development Engineers Limited
+# DEEPAKFERT - Deepak Fertilizers and Petrochemicals Corporation Limited
+# DEEPAKNTR - Deepak Nitrite Limited
+# DEEPINDS - Deep Industries Limited
+# DELHIVERY - Delhivery Limited

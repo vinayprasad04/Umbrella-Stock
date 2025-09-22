@@ -1,0 +1,110 @@
+# Batch 33 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/TIRUMALCHM/
+https://www.screener.in/company/TIRUPATIFL/
+https://www.screener.in/company/TITAGARH/
+https://www.screener.in/company/TMB/
+https://www.screener.in/company/TNPL/
+https://www.screener.in/company/TOKYOPLAST/
+https://www.screener.in/company/TOLINS/
+https://www.screener.in/company/TORNTPHARM/
+https://www.screener.in/company/TORNTPOWER/
+https://www.screener.in/company/TOTAL/
+https://www.screener.in/company/TOUCHWOOD/
+https://www.screener.in/company/TPLPLASTEH/
+https://www.screener.in/company/TRACXN/
+https://www.screener.in/company/TRANSRAILL/
+https://www.screener.in/company/TRANSWORLD/
+https://www.screener.in/company/TRAVELFOOD/
+https://www.screener.in/company/TREEHOUSE/
+https://www.screener.in/company/TREJHARA/
+https://www.screener.in/company/TREL/
+https://www.screener.in/company/TRENT/
+https://www.screener.in/company/TRF/
+https://www.screener.in/company/TRIDENT/
+https://www.screener.in/company/TRIGYN/
+https://www.screener.in/company/TRITURBINE/
+https://www.screener.in/company/TRIVENI/
+https://www.screener.in/company/TTKHLTCARE/
+https://www.screener.in/company/TTKPRESTIG/
+https://www.screener.in/company/TVSHLTD/
+https://www.screener.in/company/TVSMOTOR/
+https://www.screener.in/company/TVSSCS/
+https://www.screener.in/company/TVSSRICHAK/
+https://www.screener.in/company/TVTODAY/
+https://www.screener.in/company/TVVISION/
+https://www.screener.in/company/UBL/
+https://www.screener.in/company/UCAL/
+https://www.screener.in/company/UCOBANK/
+https://www.screener.in/company/UDS/
+https://www.screener.in/company/UFLEX/
+https://www.screener.in/company/UFO/
+https://www.screener.in/company/UGARSUGAR/
+https://www.screener.in/company/UGROCAP/
+https://www.screener.in/company/UJJIVANSFB/
+https://www.screener.in/company/UMESLTD/
+https://www.screener.in/company/UMIYA-MRO/
+https://www.screener.in/company/UNICHEMLAB/
+https://www.screener.in/company/UNIDT/
+https://www.screener.in/company/UNIECOM/
+https://www.screener.in/company/UNIENTER/
+https://www.screener.in/company/UNIONBANK/
+https://www.screener.in/company/UNIPARTS/
+
+# Stock symbols for this batch:
+# TIRUMALCHM - Thirumalai Chemicals Limited
+# TIRUPATIFL - Tirupati Forge Limited
+# TITAGARH - TITAGARH RAIL SYSTEMS LIMITED
+# TMB - Tamilnad Mercantile Bank Limited
+# TNPL - Tamil Nadu Newsprint & Papers Limited
+# TOKYOPLAST - Tokyo Plast International Limited
+# TOLINS - Tolins Tyres Limited
+# TORNTPHARM - Torrent Pharmaceuticals Limited
+# TORNTPOWER - Torrent Power Limited
+# TOTAL - Total Transport Systems Limited
+# TOUCHWOOD - Touchwood Entertainment Limited
+# TPLPLASTEH - TPL Plastech Limited
+# TRACXN - Tracxn Technologies Limited
+# TRANSRAILL - Transrail Lighting Limited
+# TRANSWORLD - TRANSWORLD SHIPPING LINES LIMITED
+# TRAVELFOOD - Travel Food Services Limited
+# TREEHOUSE - Tree House Education & Accessories Limited
+# TREJHARA - TREJHARA SOLUTIONS LIMITED
+# TREL - Transindia Real Estate Limited
+# TRENT - Trent Limited
+# TRF - TRF Limited
+# TRIDENT - Trident Limited
+# TRIGYN - Trigyn Technologies Limited
+# TRITURBINE - Triveni Turbine Limited
+# TRIVENI - Triveni Engineering & Industries Limited
+# TTKHLTCARE - TTK Healthcare Limited
+# TTKPRESTIG - TTK Prestige Limited
+# TVSHLTD - TVS Holdings Limited
+# TVSMOTOR - TVS Motor Company Limited
+# TVSSCS - TVS Supply Chain Solutions Limited
+# TVSSRICHAK - TVS Srichakra Limited
+# TVTODAY - TV Today Network Limited
+# TVVISION - TV Vision Limited
+# UBL - United Breweries Limited
+# UCAL - UCAL LIMITED
+# UCOBANK - UCO Bank
+# UDS - Updater Services Limited
+# UFLEX - UFLEX Limited
+# UFO - UFO Moviez India Limited
+# UGARSUGAR - The Ugar Sugar Works Limited
+# UGROCAP - Ugro Capital Limited
+# UJJIVANSFB - Ujjivan Small Finance Bank Limited
+# UMESLTD - Usha Martin Education & Solutions Limited
+# UMIYA-MRO - UMIYA BUILDCON LIMITED
+# UNICHEMLAB - Unichem Laboratories Limited
+# UNIDT - United Drilling Tools Limited
+# UNIECOM - Unicommerce Esolutions Limited
+# UNIENTER - Uniphos Enterprises Limited
+# UNIONBANK - Union Bank of India
+# UNIPARTS - Uniparts India Limited

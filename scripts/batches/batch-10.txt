@@ -1,0 +1,110 @@
+# Batch 10 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/EUROBOND/
+https://www.screener.in/company/EUROTEXIND/
+https://www.screener.in/company/EVEREADY/
+https://www.screener.in/company/EVERESTIND/
+https://www.screener.in/company/EXCELINDUS/
+https://www.screener.in/company/EXICOM/
+https://www.screener.in/company/EXIDEIND/
+https://www.screener.in/company/EXPLEOSOL/
+https://www.screener.in/company/FACT/
+https://www.screener.in/company/FAIRCHEMOR/
+https://www.screener.in/company/FAZE3Q/
+https://www.screener.in/company/FCL/
+https://www.screener.in/company/FCSSOFT/
+https://www.screener.in/company/FDC/
+https://www.screener.in/company/FEDERALBNK/
+https://www.screener.in/company/FEDFINA/
+https://www.screener.in/company/FIBERWEB/
+https://www.screener.in/company/FIEMIND/
+https://www.screener.in/company/FILATEX/
+https://www.screener.in/company/FILATFASH/
+https://www.screener.in/company/FINCABLES/
+https://www.screener.in/company/FINEORG/
+https://www.screener.in/company/FINOPB/
+https://www.screener.in/company/FINPIPE/
+https://www.screener.in/company/FIRSTCRY/
+https://www.screener.in/company/FISCHER/
+https://www.screener.in/company/FIVESTAR/
+https://www.screener.in/company/FLAIR/
+https://www.screener.in/company/FLEXITUFF/
+https://www.screener.in/company/FLUOROCHEM/
+https://www.screener.in/company/FMGOETZE/
+https://www.screener.in/company/FMNL/
+https://www.screener.in/company/FORCEMOT/
+https://www.screener.in/company/FORTIS/
+https://www.screener.in/company/FOSECOIND/
+https://www.screener.in/company/FSL/
+https://www.screener.in/company/FUSION/
+https://www.screener.in/company/GABRIEL/
+https://www.screener.in/company/GAEL/
+https://www.screener.in/company/GAIL/
+https://www.screener.in/company/GALAPREC/
+https://www.screener.in/company/GALAXYSURF/
+https://www.screener.in/company/GALLANTT/
+https://www.screener.in/company/GANDHAR/
+https://www.screener.in/company/GANDHITUBE/
+https://www.screener.in/company/GANECOS/
+https://www.screener.in/company/GANESHBE/
+https://www.screener.in/company/GANESHHOUC/
+https://www.screener.in/company/GANGAFORGE/
+https://www.screener.in/company/GANGESSECU/
+
+# Stock symbols for this batch:
+# EUROBOND - Euro Panel Products Limited
+# EUROTEXIND - Eurotex Industries and Exports Limited
+# EVEREADY - Eveready Industries India Limited
+# EVERESTIND - Everest Industries Limited
+# EXCELINDUS - Excel Industries Limited
+# EXICOM - Exicom Tele-Systems Limited
+# EXIDEIND - Exide Industries Limited
+# EXPLEOSOL - Expleo Solutions Limited
+# FACT - Fertilizers and Chemicals Travancore Limited
+# FAIRCHEMOR - Fairchem Organics Limited
+# FAZE3Q - Faze Three Limited
+# FCL - Fineotex Chemical Limited
+# FCSSOFT - FCS Software Solutions Limited
+# FDC - FDC Limited
+# FEDERALBNK - The Federal Bank  Limited
+# FEDFINA - Fedbank Financial Services Limited
+# FIBERWEB - Fiberweb (India) Limited
+# FIEMIND - Fiem Industries Limited
+# FILATEX - Filatex India Limited
+# FILATFASH - Filatex Fashions Limited
+# FINCABLES - Finolex Cables Limited
+# FINEORG - Fine Organic Industries Limited
+# FINOPB - Fino Payments Bank Limited
+# FINPIPE - Finolex Industries Limited
+# FIRSTCRY - Brainbees Solutions Limited
+# FISCHER - Fischer Medical Ventures Limited
+# FIVESTAR - Five-Star Business Finance Limited
+# FLAIR - Flair Writing Industries Limited
+# FLEXITUFF - Flexituff Ventures International Limited
+# FLUOROCHEM - Gujarat Fluorochemicals Limited
+# FMGOETZE - Federal-Mogul Goetze (India) Limited.
+# FMNL - Future Market Networks Limited
+# FORCEMOT - FORCE MOTORS LTD
+# FORTIS - Fortis Healthcare Limited
+# FOSECOIND - Foseco India Limited
+# FSL - Firstsource Solutions Limited
+# FUSION - Fusion Finance Limited
+# GABRIEL - Gabriel India Limited
+# GAEL - Gujarat Ambuja Exports Limited
+# GAIL - GAIL (India) Limited
+# GALAPREC - Gala Precision Engineering Limited
+# GALAXYSURF - Galaxy Surfactants Limited
+# GALLANTT - Gallantt Ispat Limited
+# GANDHAR - Gandhar Oil Refinery (India) Limited
+# GANDHITUBE - Gandhi Special Tubes Limited
+# GANECOS - Ganesha Ecosphere Limited
+# GANESHBE - Ganesh Benzoplast Limited
+# GANESHHOUC - Ganesh Housing Corporation Limited
+# GANGAFORGE - Ganga Forging Limited
+# GANGESSECU - Ganges Securities Limited

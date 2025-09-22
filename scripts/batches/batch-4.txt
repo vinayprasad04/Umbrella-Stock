@@ -1,0 +1,110 @@
+# Batch 4 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/BANARISUG/
+https://www.screener.in/company/BANCOINDIA/
+https://www.screener.in/company/BANDHANBNK/
+https://www.screener.in/company/BANG/
+https://www.screener.in/company/BANKA/
+https://www.screener.in/company/BANKBARODA/
+https://www.screener.in/company/BANKINDIA/
+https://www.screener.in/company/BANSALWIRE/
+https://www.screener.in/company/BANSWRAS/
+https://www.screener.in/company/BARBEQUE/
+https://www.screener.in/company/BASF/
+https://www.screener.in/company/BASML/
+https://www.screener.in/company/BATAINDIA/
+https://www.screener.in/company/BAYERCROP/
+https://www.screener.in/company/BBL/
+https://www.screener.in/company/BBTC/
+https://www.screener.in/company/BBTCL/
+https://www.screener.in/company/BCG/
+https://www.screener.in/company/BCLIND/
+https://www.screener.in/company/BCONCEPTS/
+https://www.screener.in/company/BDL/
+https://www.screener.in/company/BEARDSELL/
+https://www.screener.in/company/BECTORFOOD/
+https://www.screener.in/company/BEDMUTHA/
+https://www.screener.in/company/BEL/
+https://www.screener.in/company/BELLACASA/
+https://www.screener.in/company/BELRISE/
+https://www.screener.in/company/BEML/
+https://www.screener.in/company/BEPL/
+https://www.screener.in/company/BERGEPAINT/
+https://www.screener.in/company/BESTAGRO/
+https://www.screener.in/company/BFINVEST/
+https://www.screener.in/company/BFUTILITIE/
+https://www.screener.in/company/BHAGCHEM/
+https://www.screener.in/company/BHAGERIA/
+https://www.screener.in/company/BHANDARI/
+https://www.screener.in/company/BHARATFORG/
+https://www.screener.in/company/BHARATGEAR/
+https://www.screener.in/company/BHARATRAS/
+https://www.screener.in/company/BHARATSE/
+https://www.screener.in/company/BHARATWIRE/
+https://www.screener.in/company/BHARTIHEXA/
+https://www.screener.in/company/BHEL/
+https://www.screener.in/company/BIGBLOC/
+https://www.screener.in/company/BIKAJI/
+https://www.screener.in/company/BIL/
+https://www.screener.in/company/BIOCON/
+https://www.screener.in/company/BIRLACORPN/
+https://www.screener.in/company/BIRLAMONEY/
+https://www.screener.in/company/BIRLANU/
+
+# Stock symbols for this batch:
+# BANARISUG - Bannari Amman Sugars Limited
+# BANCOINDIA - Banco Products (I) Limited
+# BANDHANBNK - Bandhan Bank Limited
+# BANG - Bang Overseas Limited
+# BANKA - Banka BioLoo Limited
+# BANKBARODA - Bank of Baroda
+# BANKINDIA - Bank of India
+# BANSALWIRE - Bansal Wire Industries Limited
+# BANSWRAS - Banswara Syntex Limited
+# BARBEQUE - Barbeque Nation Hospitality Limited
+# BASF - BASF India Limited
+# BASML - Bannari Amman Spinning Mills Limited
+# BATAINDIA - Bata India Limited
+# BAYERCROP - Bayer Cropscience Limited
+# BBL - Bharat Bijlee Limited
+# BBTC - Bombay Burmah Trading Corporation Limited
+# BBTCL - B&B Triplewall Containers Limited
+# BCG - Brightcom Group Limited
+# BCLIND - Bcl Industries Limited
+# BCONCEPTS - Brand Concepts Limited
+# BDL - Bharat Dynamics Limited
+# BEARDSELL - Beardsell Limited
+# BECTORFOOD - Mrs. Bectors Food Specialities Limited
+# BEDMUTHA - Bedmutha Industries Limited
+# BEL - Bharat Electronics Limited
+# BELLACASA - Bella Casa Fashion & Retail Limited
+# BELRISE - Belrise Industries Limited
+# BEML - BEML Limited
+# BEPL - Bhansali Engineering Polymers Limited
+# BERGEPAINT - Berger Paints (I) Limited
+# BESTAGRO - Best Agrolife Limited
+# BFINVEST - BF Investment Limited
+# BFUTILITIE - BF Utilities Limited
+# BHAGCHEM - Bhagiradha Chemicals & Industries Limited
+# BHAGERIA - Bhageria Industries Limited
+# BHANDARI - Bhandari Hosiery Exports Limited
+# BHARATFORG - Bharat Forge Limited
+# BHARATGEAR - Bharat Gears Limited
+# BHARATRAS - Bharat Rasayan Limited
+# BHARATSE - Bharat Seats Limited
+# BHARATWIRE - Bharat Wire Ropes Limited
+# BHARTIHEXA - Bharti Hexacom Limited
+# BHEL - Bharat Heavy Electricals Limited
+# BIGBLOC - Bigbloc Construction Limited
+# BIKAJI - Bikaji Foods International Limited
+# BIL - Bhartiya International Limited
+# BIOCON - Biocon Limited
+# BIRLACORPN - Birla Corporation Limited
+# BIRLAMONEY - Aditya Birla Money Limited
+# BIRLANU - BirlaNu Limited

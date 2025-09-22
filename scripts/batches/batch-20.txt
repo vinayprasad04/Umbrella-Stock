@@ -1,0 +1,110 @@
+# Batch 20 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/MARKSANS/
+https://www.screener.in/company/MASFIN/
+https://www.screener.in/company/MASKINVEST/
+https://www.screener.in/company/MASTEK/
+https://www.screener.in/company/MASTERTR/
+https://www.screener.in/company/MATRIMONY/
+https://www.screener.in/company/MAWANASUG/
+https://www.screener.in/company/MAXESTATES/
+https://www.screener.in/company/MAXHEALTH/
+https://www.screener.in/company/MAXIND/
+https://www.screener.in/company/MAYURUNIQ/
+https://www.screener.in/company/MAZDA/
+https://www.screener.in/company/MAZDOCK/
+https://www.screener.in/company/MBAPL/
+https://www.screener.in/company/MBEL/
+https://www.screener.in/company/MBLINFRA/
+https://www.screener.in/company/MCL/
+https://www.screener.in/company/MCLEODRUSS/
+https://www.screener.in/company/MCLOUD/
+https://www.screener.in/company/MCX/
+https://www.screener.in/company/MEDANTA/
+https://www.screener.in/company/MEDIASSIST/
+https://www.screener.in/company/MEDICAMEQ/
+https://www.screener.in/company/MEDICO/
+https://www.screener.in/company/MEDPLUS/
+https://www.screener.in/company/MEGASTAR/
+https://www.screener.in/company/MEIL/
+https://www.screener.in/company/MENONBE/
+https://www.screener.in/company/METROBRAND/
+https://www.screener.in/company/METROPOLIS/
+https://www.screener.in/company/MFSL/
+https://www.screener.in/company/MGEL/
+https://www.screener.in/company/MGL/
+https://www.screener.in/company/MHLXMIRU/
+https://www.screener.in/company/MHRIL/
+https://www.screener.in/company/MICEL/
+https://www.screener.in/company/MIDHANI/
+https://www.screener.in/company/MINDACORP/
+https://www.screener.in/company/MIRZAINT/
+https://www.screener.in/company/MITCON/
+https://www.screener.in/company/MITTAL/
+https://www.screener.in/company/MMFL/
+https://www.screener.in/company/MMP/
+https://www.screener.in/company/MMTC/
+https://www.screener.in/company/MOBIKWIK/
+https://www.screener.in/company/MODIRUBBER/
+https://www.screener.in/company/MODISONLTD/
+https://www.screener.in/company/MODTHREAD/
+https://www.screener.in/company/MOHITIND/
+https://www.screener.in/company/MOIL/
+
+# Stock symbols for this batch:
+# MARKSANS - Marksans Pharma Limited
+# MASFIN - MAS Financial Services Limited
+# MASKINVEST - Mask Investments Limited
+# MASTEK - Mastek Limited
+# MASTERTR - Master Trust Limited
+# MATRIMONY - Matrimony.Com Limited
+# MAWANASUG - Mawana Sugars Limited
+# MAXESTATES - Max Estates Limited
+# MAXHEALTH - Max Healthcare Institute Limited
+# MAXIND - Max India Limited
+# MAYURUNIQ - Mayur Uniquoters Ltd
+# MAZDA - Mazda Limited
+# MAZDOCK - Mazagon Dock Shipbuilders Limited
+# MBAPL - Madhya Bharat Agro Products Limited
+# MBEL - M & B Engineering Limited
+# MBLINFRA - MBL Infrastructure Limited
+# MCL - Madhav Copper Limited
+# MCLEODRUSS - Mcleod Russel India Limited
+# MCLOUD - Magellanic Cloud Limited
+# MCX - Multi Commodity Exchange of India Limited
+# MEDANTA - Global Health Limited
+# MEDIASSIST - Medi Assist Healthcare Services Limited
+# MEDICAMEQ - Medicamen Biotech Limited
+# MEDICO - Medico Remedies Limited
+# MEDPLUS - Medplus Health Services Limited
+# MEGASTAR - Megastar Foods Limited
+# MEIL - Mangal Electrical Industries Limited
+# MENONBE - Menon Bearings Limited
+# METROBRAND - Metro Brands Limited
+# METROPOLIS - Metropolis Healthcare Limited
+# MFSL - Max Financial Services Limited
+# MGEL - Mangalam Global Enterprise Limited
+# MGL - Mahanagar Gas Limited
+# MHLXMIRU - Mahalaxmi Rubtech Limited
+# MHRIL - Mahindra Holidays & Resorts India Limited
+# MICEL - MIC Electronics Limited
+# MIDHANI - Mishra Dhatu Nigam Limited
+# MINDACORP - Minda Corporation Limited
+# MIRZAINT - Mirza International Limited
+# MITCON - MITCON Consultancy & Engineering Services Limited
+# MITTAL - Mittal Life Style Limited
+# MMFL - MM Forgings Limited
+# MMP - MMP Industries Limited
+# MMTC - MMTC Limited
+# MOBIKWIK - One Mobikwik Systems Limited
+# MODIRUBBER - Modi Rubber Limited
+# MODISONLTD - MODISON LIMITED
+# MODTHREAD - Modern Threads (India) Limited
+# MOHITIND - Mohit Industries Limited
+# MOIL - MOIL Limited

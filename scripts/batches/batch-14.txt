@@ -1,0 +1,110 @@
+# Batch 14 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/HUBTOWN/
+https://www.screener.in/company/HUDCO/
+https://www.screener.in/company/HUHTAMAKI/
+https://www.screener.in/company/HYUNDAI/
+https://www.screener.in/company/ICEMAKE/
+https://www.screener.in/company/ICICIGI/
+https://www.screener.in/company/ICICIPRULI/
+https://www.screener.in/company/ICIL/
+https://www.screener.in/company/ICRA/
+https://www.screener.in/company/IDBI/
+https://www.screener.in/company/IDEA/
+https://www.screener.in/company/IDEAFORGE/
+https://www.screener.in/company/IDFCFIRSTB/
+https://www.screener.in/company/IEX/
+https://www.screener.in/company/IFBIND/
+https://www.screener.in/company/IFCI/
+https://www.screener.in/company/IFGLEXPOR/
+https://www.screener.in/company/IGARASHI/
+https://www.screener.in/company/IGCL/
+https://www.screener.in/company/IGIL/
+https://www.screener.in/company/IGL/
+https://www.screener.in/company/IGPL/
+https://www.screener.in/company/IIFL/
+https://www.screener.in/company/IIFLCAPS/
+https://www.screener.in/company/IKIO/
+https://www.screener.in/company/IKS/
+https://www.screener.in/company/IMAGICAA/
+https://www.screener.in/company/IMFA/
+https://www.screener.in/company/IMPAL/
+https://www.screener.in/company/INDBANK/
+https://www.screener.in/company/INDGN/
+https://www.screener.in/company/INDHOTEL/
+https://www.screener.in/company/INDIACEM/
+https://www.screener.in/company/INDIAGLYCO/
+https://www.screener.in/company/INDIAMART/
+https://www.screener.in/company/INDIANB/
+https://www.screener.in/company/INDIANCARD/
+https://www.screener.in/company/INDIANHUME/
+https://www.screener.in/company/INDIASHLTR/
+https://www.screener.in/company/INDIGO/
+https://www.screener.in/company/INDIGOPNTS/
+https://www.screener.in/company/INDIQUBE/
+https://www.screener.in/company/INDNIPPON/
+https://www.screener.in/company/INDOAMIN/
+https://www.screener.in/company/INDOCO/
+https://www.screener.in/company/INDOFARM/
+https://www.screener.in/company/INDOSTAR/
+https://www.screener.in/company/INDOTECH/
+https://www.screener.in/company/INDOUS/
+https://www.screener.in/company/INDOWIND/
+
+# Stock symbols for this batch:
+# HUBTOWN - Hubtown Limited
+# HUDCO - Housing & Urban Development Corporation Limited
+# HUHTAMAKI - Huhtamaki India Limited
+# HYUNDAI - Hyundai Motor India Limited
+# ICEMAKE - Ice Make Refrigeration Limited
+# ICICIGI - ICICI Lombard General Insurance Company Limited
+# ICICIPRULI - ICICI Prudential Life Insurance Company Limited
+# ICIL - Indo Count Industries Limited
+# ICRA - ICRA Limited
+# IDBI - IDBI Bank Limited
+# IDEA - Vodafone Idea Limited
+# IDEAFORGE - Ideaforge Technology Limited
+# IDFCFIRSTB - IDFC First Bank Limited
+# IEX - Indian Energy Exchange Limited
+# IFBIND - IFB Industries Limited
+# IFCI - IFCI Limited
+# IFGLEXPOR - IFGL Refractories Limited
+# IGARASHI - Igarashi Motors India Limited
+# IGCL - Indogulf Cropsciences Limited
+# IGIL - International Gemmological Institute (India) Limited
+# IGL - Indraprastha Gas Limited
+# IGPL - IG Petrochemicals Limited
+# IIFL - IIFL Finance Limited
+# IIFLCAPS - IIFL Capital Services Limited
+# IKIO - IKIO Technologies Limited
+# IKS - Inventurus Knowledge Solutions Limited
+# IMAGICAA - Imagicaaworld Entertainment Limited
+# IMFA - Indian Metals & Ferro Alloys Limited
+# IMPAL - India Motor Parts and Accessories Limited
+# INDBANK - Indbank Merchant Banking Services Limited
+# INDGN - Indegene Limited
+# INDHOTEL - The Indian Hotels Company Limited
+# INDIACEM - The India Cements Limited
+# INDIAGLYCO - India Glycols Limited
+# INDIAMART - Indiamart Intermesh Limited
+# INDIANB - Indian Bank
+# INDIANCARD - Indian Card Clothing Company Limited
+# INDIANHUME - Indian Hume Pipe Company Limited
+# INDIASHLTR - India Shelter Finance Corporation Limited
+# INDIGO - InterGlobe Aviation Limited
+# INDIGOPNTS - Indigo Paints Limited
+# INDIQUBE - Indiqube Spaces Limited
+# INDNIPPON - India Nippon Electricals Limited
+# INDOAMIN - Indo Amines Limited
+# INDOCO - Indoco Remedies Limited
+# INDOFARM - Indo Farm Equipment Limited
+# INDOSTAR - IndoStar Capital Finance Limited
+# INDOTECH - Indo Tech Transformers Limited
+# INDOUS - Indo Us Biotech Limited
+# INDOWIND - Indowind Energy Limited

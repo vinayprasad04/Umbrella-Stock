@@ -1,0 +1,110 @@
+# Batch 21 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/MOKSH/
+https://www.screener.in/company/MOL/
+https://www.screener.in/company/MOLDTECH/
+https://www.screener.in/company/MOLDTKPAC/
+https://www.screener.in/company/MONARCH/
+https://www.screener.in/company/MONTECARLO/
+https://www.screener.in/company/MOREPENLAB/
+https://www.screener.in/company/MOSCHIP/
+https://www.screener.in/company/MOTHERSON/
+https://www.screener.in/company/MOTILALOFS/
+https://www.screener.in/company/MOTISONS/
+https://www.screener.in/company/MOTOGENFIN/
+https://www.screener.in/company/MPHASIS/
+https://www.screener.in/company/MPSLTD/
+https://www.screener.in/company/MRF/
+https://www.screener.in/company/MRPL/
+https://www.screener.in/company/MSPL/
+https://www.screener.in/company/MSTCLTD/
+https://www.screener.in/company/MSUMI/
+https://www.screener.in/company/MTARTECH/
+https://www.screener.in/company/MTNL/
+https://www.screener.in/company/MUFIN/
+https://www.screener.in/company/MUFTI/
+https://www.screener.in/company/MUKANDLTD/
+https://www.screener.in/company/MUKKA/
+https://www.screener.in/company/MUKTAARTS/
+https://www.screener.in/company/MUNJALAU/
+https://www.screener.in/company/MUNJALSHOW/
+https://www.screener.in/company/MURUDCERA/
+https://www.screener.in/company/MUTHOOTCAP/
+https://www.screener.in/company/MUTHOOTFIN/
+https://www.screener.in/company/MUTHOOTMF/
+https://www.screener.in/company/MVGJL/
+https://www.screener.in/company/NAGAFERT/
+https://www.screener.in/company/NAGREEKCAP/
+https://www.screener.in/company/NAGREEKEXP/
+https://www.screener.in/company/NAHARSPING/
+https://www.screener.in/company/NAM-INDIA/
+https://www.screener.in/company/NARMADA/
+https://www.screener.in/company/NATCAPSUQ/
+https://www.screener.in/company/NATCOPHARM/
+https://www.screener.in/company/NATIONALUM/
+https://www.screener.in/company/NAUKRI/
+https://www.screener.in/company/NAVA/
+https://www.screener.in/company/NAVINFLUOR/
+https://www.screener.in/company/NAVKARCORP/
+https://www.screener.in/company/NAVNETEDUL/
+https://www.screener.in/company/NAZARA/
+https://www.screener.in/company/NBCC/
+https://www.screener.in/company/NBIFIN/
+
+# Stock symbols for this batch:
+# MOKSH - Moksh Ornaments Limited
+# MOL - Meghmani Organics Limited
+# MOLDTECH - Mold-Tek Technologies Limited
+# MOLDTKPAC - Mold-Tek Packaging Limited
+# MONARCH - Monarch Networth Capital Limited
+# MONTECARLO - Monte Carlo Fashions Limited
+# MOREPENLAB - Morepen Laboratories Limited
+# MOSCHIP - Moschip Technologies Limited
+# MOTHERSON - Samvardhana Motherson International Limited
+# MOTILALOFS - Motilal Oswal Financial Services Limited
+# MOTISONS - Motisons Jewellers Limited
+# MOTOGENFIN - The Motor & General Finance Limited
+# MPHASIS - MphasiS Limited
+# MPSLTD - MPS Limited
+# MRF - MRF Limited
+# MRPL - Mangalore Refinery and Petrochemicals Limited
+# MSPL - MSP Steel & Power Limited
+# MSTCLTD - Mstc Limited
+# MSUMI - Motherson Sumi Wiring India Limited
+# MTARTECH - Mtar Technologies Limited
+# MTNL - Mahanagar Telephone Nigam Limited
+# MUFIN - Mufin Green Finance Limited
+# MUFTI - Credo Brands Marketing Limited
+# MUKANDLTD - Mukand Limited
+# MUKKA - Mukka Proteins Limited
+# MUKTAARTS - Mukta Arts Limited
+# MUNJALAU - Munjal Auto Industries Limited
+# MUNJALSHOW - Munjal Showa Limited
+# MURUDCERA - Murudeshwar Ceramics Limited
+# MUTHOOTCAP - Muthoot Capital Services Limited
+# MUTHOOTFIN - Muthoot Finance Limited
+# MUTHOOTMF - Muthoot Microfin Limited
+# MVGJL - Manoj Vaibhav Gems N Jewellers Limited
+# NAGAFERT - Nagarjuna Fertilizers and Chemicals Limited
+# NAGREEKCAP - Nagreeka Capital & Infrastructure Limited
+# NAGREEKEXP - Nagreeka Exports Limited
+# NAHARSPING - Nahar Spinning Mills Limited
+# NAM-INDIA - Nippon Life India Asset Management Limited
+# NARMADA - Narmada Agrobase Limited
+# NATCAPSUQ - Natural Capsules Limited
+# NATCOPHARM - Natco Pharma Limited
+# NATIONALUM - National Aluminium Company Limited
+# NAUKRI - Info Edge (India) Limited
+# NAVA - NAVA LIMITED
+# NAVINFLUOR - Navin Fluorine International Limited
+# NAVKARCORP - Navkar Corporation Limited
+# NAVNETEDUL - Navneet Education Limited
+# NAZARA - Nazara Technologies Limited
+# NBCC - NBCC (India) Limited
+# NBIFIN - N. B. I. Industrial Finance Company Limited

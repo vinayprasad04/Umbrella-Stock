@@ -1,0 +1,110 @@
+# Batch 1 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/AHLADA/
+https://www.screener.in/company/AHLEAST/
+https://www.screener.in/company/AHLUCONT/
+https://www.screener.in/company/AIAENG/
+https://www.screener.in/company/AIIL/
+https://www.screener.in/company/AIRAN/
+https://www.screener.in/company/AIROLAM/
+https://www.screener.in/company/AJANTPHARM/
+https://www.screener.in/company/AJAXENGG/
+https://www.screener.in/company/AJMERA/
+https://www.screener.in/company/AJOONI/
+https://www.screener.in/company/AKASH/
+https://www.screener.in/company/AKG/
+https://www.screener.in/company/AKSHAR/
+https://www.screener.in/company/AKSHARCHEM/
+https://www.screener.in/company/AKSHOPTFBR/
+https://www.screener.in/company/AKUMS/
+https://www.screener.in/company/AKZOINDIA/
+https://www.screener.in/company/ALANKIT/
+https://www.screener.in/company/ALBERTDAVD/
+https://www.screener.in/company/ALEMBICLTD/
+https://www.screener.in/company/ALICON/
+https://www.screener.in/company/ALIVUS/
+https://www.screener.in/company/ALKALI/
+https://www.screener.in/company/ALKEM/
+https://www.screener.in/company/ALKYLAMINE/
+https://www.screener.in/company/ALLCARGO/
+https://www.screener.in/company/ALLDIGI/
+https://www.screener.in/company/ALLTIME/
+https://www.screener.in/company/ALMONDZ/
+https://www.screener.in/company/ALOKINDS/
+https://www.screener.in/company/ALPA/
+https://www.screener.in/company/ALPHAGEO/
+https://www.screener.in/company/AMBER/
+https://www.screener.in/company/AMBICAAGAR/
+https://www.screener.in/company/AMBIKCO/
+https://www.screener.in/company/AMBUJACEM/
+https://www.screener.in/company/AMDIND/
+https://www.screener.in/company/AMJLAND/
+https://www.screener.in/company/AMNPLST/
+https://www.screener.in/company/AMRUTANJAN/
+https://www.screener.in/company/ANANDRATHI/
+https://www.screener.in/company/ANANTRAJ/
+https://www.screener.in/company/ANDHRAPAP/
+https://www.screener.in/company/ANDHRSUGAR/
+https://www.screener.in/company/ANGELONE/
+https://www.screener.in/company/ANIKINDS/
+https://www.screener.in/company/ANMOL/
+https://www.screener.in/company/ANTGRAPHIC/
+https://www.screener.in/company/ANTHEM/
+
+# Stock symbols for this batch:
+# AHLADA - Ahlada Engineers Limited
+# AHLEAST - Asian Hotels (East) Limited
+# AHLUCONT - Ahluwalia Contracts (India) Limited
+# AIAENG - AIA Engineering Limited
+# AIIL - Authum Investment & Infrastructure Limited
+# AIRAN - Airan Limited
+# AIROLAM - Airo Lam limited
+# AJANTPHARM - Ajanta Pharma Limited
+# AJAXENGG - Ajax Engineering Limited
+# AJMERA - Ajmera Realty & Infra India Limited
+# AJOONI - Ajooni Biotech Limited
+# AKASH - Akash Infra-Projects Limited
+# AKG - Akg Exim Limited
+# AKSHAR - Akshar Spintex Limited
+# AKSHARCHEM - AksharChem India Limited
+# AKSHOPTFBR - Aksh Optifibre Limited
+# AKUMS - Akums Drugs and Pharmaceuticals Limited
+# AKZOINDIA - Akzo Nobel India Limited
+# ALANKIT - Alankit Limited
+# ALBERTDAVD - Albert David Limited
+# ALEMBICLTD - Alembic Limited
+# ALICON - Alicon Castalloy Limited
+# ALIVUS - Alivus Life Sciences Limited
+# ALKALI - Alkali Metals Limited
+# ALKEM - Alkem Laboratories Limited
+# ALKYLAMINE - Alkyl Amines Chemicals Limited
+# ALLCARGO - Allcargo Logistics Limited
+# ALLDIGI - Alldigi Tech Limited
+# ALLTIME - All Time Plastics Limited
+# ALMONDZ - Almondz Global Securities Limited
+# ALOKINDS - Alok Industries Limited
+# ALPA - Alpa Laboratories Limited
+# ALPHAGEO - Alphageo (India) Limited
+# AMBER - Amber Enterprises India Limited
+# AMBICAAGAR - Ambica Agarbathies & Aroma industries Limited
+# AMBIKCO - Ambika Cotton Mills Limited
+# AMBUJACEM - Ambuja Cements Limited
+# AMDIND - AMD Industries Limited
+# AMJLAND - Amj Land Holdings Limited
+# AMNPLST - Amines & Plasticizers Limited
+# AMRUTANJAN - Amrutanjan Health Care Limited
+# ANANDRATHI - Anand Rathi Wealth Limited
+# ANANTRAJ - Anant Raj Limited
+# ANDHRAPAP - ANDHRA PAPER LIMITED
+# ANDHRSUGAR - The Andhra Sugars Limited
+# ANGELONE - Angel One Limited
+# ANIKINDS - Anik Industries Limited
+# ANMOL - Anmol India Limited
+# ANTGRAPHIC - Antarctica Limited
+# ANTHEM - Anthem Biosciences Limited

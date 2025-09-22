@@ -1,0 +1,110 @@
+# Batch 27 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/RML/
+https://www.screener.in/company/ROHLTD/
+https://www.screener.in/company/ROLEXRINGS/
+https://www.screener.in/company/ROSSARI/
+https://www.screener.in/company/ROSSELLIND/
+https://www.screener.in/company/ROSSTECH/
+https://www.screener.in/company/ROTO/
+https://www.screener.in/company/ROUTE/
+https://www.screener.in/company/RPEL/
+https://www.screener.in/company/RPGLIFE/
+https://www.screener.in/company/RPPINFRA/
+https://www.screener.in/company/RPPL/
+https://www.screener.in/company/RPSGVENT/
+https://www.screener.in/company/RPTECH/
+https://www.screener.in/company/RRKABEL/
+https://www.screener.in/company/RSWM/
+https://www.screener.in/company/RSYSTEMS/
+https://www.screener.in/company/RTNINDIA/
+https://www.screener.in/company/RTNPOWER/
+https://www.screener.in/company/RUBFILA/
+https://www.screener.in/company/RUBYMILLS/
+https://www.screener.in/company/RUCHIRA/
+https://www.screener.in/company/RUPA/
+https://www.screener.in/company/RUSHIL/
+https://www.screener.in/company/RUSTOMJEE/
+https://www.screener.in/company/RVHL/
+https://www.screener.in/company/RVNL/
+https://www.screener.in/company/RVTH/
+https://www.screener.in/company/SADBHAV/
+https://www.screener.in/company/SAFARI/
+https://www.screener.in/company/SAGARDEEP/
+https://www.screener.in/company/SAGCEM/
+https://www.screener.in/company/SAGILITY/
+https://www.screener.in/company/SAHYADRI/
+https://www.screener.in/company/SAIL/
+https://www.screener.in/company/SAILIFE/
+https://www.screener.in/company/SAKHTISUG/
+https://www.screener.in/company/SAKSOFT/
+https://www.screener.in/company/SAKUMA/
+https://www.screener.in/company/SALASAR/
+https://www.screener.in/company/SALONA/
+https://www.screener.in/company/SALSTEEL/
+https://www.screener.in/company/SALZERELEC/
+https://www.screener.in/company/SAMBHAAV/
+https://www.screener.in/company/SAMBHV/
+https://www.screener.in/company/SAMHI/
+https://www.screener.in/company/SAMMAANCAP/
+https://www.screener.in/company/SAMPANN/
+https://www.screener.in/company/SANATHAN/
+https://www.screener.in/company/SANDESH/
+
+# Stock symbols for this batch:
+# RML - Rane (Madras) Limited
+# ROHLTD - Royal Orchid Hotels Limited
+# ROLEXRINGS - Rolex Rings Limited
+# ROSSARI - Rossari Biotech Limited
+# ROSSELLIND - Rossell India Limited
+# ROSSTECH - Rossell Techsys Limited
+# ROTO - Roto Pumps Limited
+# ROUTE - ROUTE MOBILE LIMITED
+# RPEL - Raghav Productivity Enhancers Limited
+# RPGLIFE - RPG Life Sciences Limited
+# RPPINFRA - R.P.P. Infra Projects Limited
+# RPPL - Rajshree Polypack Limited
+# RPSGVENT - RPSG VENTURES LIMITED
+# RPTECH - Rashi Peripherals Limited
+# RRKABEL - R R Kabel Limited
+# RSWM - RSWM Limited
+# RSYSTEMS - R Systems International Limited
+# RTNINDIA - RattanIndia Enterprises Limited
+# RTNPOWER - RattanIndia Power Limited
+# RUBFILA - Rubfila International Limited
+# RUBYMILLS - The Ruby Mills Limited
+# RUCHIRA - Ruchira Papers Limited
+# RUPA - Rupa & Company Limited
+# RUSHIL - Rushil Decor Limited
+# RUSTOMJEE - Keystone Realtors Limited
+# RVHL - Ravinder Heights Limited
+# RVNL - Rail Vikas Nigam Limited
+# RVTH - Revathi Equipment India Limited
+# SADBHAV - Sadbhav Engineering Limited
+# SAFARI - Safari Industries (India) Limited
+# SAGARDEEP - Sagardeep Alloys Limited
+# SAGCEM - Sagar Cements Limited
+# SAGILITY - Sagility India Limited
+# SAHYADRI - Sahyadri Industries Limited
+# SAIL - Steel Authority of India Limited
+# SAILIFE - Sai Life Sciences Limited
+# SAKHTISUG - Sakthi Sugars Limited
+# SAKSOFT - Saksoft Limited
+# SAKUMA - Sakuma Exports Limited
+# SALASAR - Salasar Techno Engineering Limited
+# SALONA - Salona Cotspin Limited
+# SALSTEEL - S.A.L. Steel Limited
+# SALZERELEC - Salzer Electronics Limited
+# SAMBHAAV - Sambhaav Media Limited
+# SAMBHV - Sambhv Steel Tubes Limited
+# SAMHI - Samhi Hotels Limited
+# SAMMAANCAP - Sammaan Capital Limited
+# SAMPANN - Sampann Utpadan India Limited
+# SANATHAN - Sanathan Textiles Limited
+# SANDESH - The Sandesh Limited

@@ -1,0 +1,110 @@
+# Batch 12 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/GOODLUCK/
+https://www.screener.in/company/GOPAL/
+https://www.screener.in/company/GOYALALUM/
+https://www.screener.in/company/GPIL/
+https://www.screener.in/company/GPPL/
+https://www.screener.in/company/GPTHEALTH/
+https://www.screener.in/company/GPTINFRA/
+https://www.screener.in/company/GRANULES/
+https://www.screener.in/company/GRAPHITE/
+https://www.screener.in/company/GRASIM/
+https://www.screener.in/company/GRAVITA/
+https://www.screener.in/company/GREAVESCOT/
+https://www.screener.in/company/GREENLAM/
+https://www.screener.in/company/GREENPANEL/
+https://www.screener.in/company/GREENPLY/
+https://www.screener.in/company/GREENPOWER/
+https://www.screener.in/company/GRINDWELL/
+https://www.screener.in/company/GRINFRA/
+https://www.screener.in/company/GRMOVER/
+https://www.screener.in/company/GRPLTD/
+https://www.screener.in/company/GRSE/
+https://www.screener.in/company/GRWRHITECH/
+https://www.screener.in/company/GSFC/
+https://www.screener.in/company/GSLSU/
+https://www.screener.in/company/GSPL/
+https://www.screener.in/company/GSS/
+https://www.screener.in/company/GTL/
+https://www.screener.in/company/GTLINFRA/
+https://www.screener.in/company/GTPL/
+https://www.screener.in/company/GUFICBIO/
+https://www.screener.in/company/GUJALKALI/
+https://www.screener.in/company/GUJAPOLLO/
+https://www.screener.in/company/GUJGASLTD/
+https://www.screener.in/company/GUJRAFFIA/
+https://www.screener.in/company/GUJTHEM/
+https://www.screener.in/company/GULFOILLUB/
+https://www.screener.in/company/GULFPETRO/
+https://www.screener.in/company/GULPOLY/
+https://www.screener.in/company/GVPIL/
+https://www.screener.in/company/GVPTECH/
+https://www.screener.in/company/GVT&D/
+https://www.screener.in/company/HAL/
+https://www.screener.in/company/HAPPSTMNDS/
+https://www.screener.in/company/HAPPYFORGE/
+https://www.screener.in/company/HARDWYN/
+https://www.screener.in/company/HARIOMPIPE/
+https://www.screener.in/company/HARRMALAYA/
+https://www.screener.in/company/HARSHA/
+https://www.screener.in/company/HATHWAY/
+https://www.screener.in/company/HATSUN/
+
+# Stock symbols for this batch:
+# GOODLUCK - Goodluck India Limited
+# GOPAL - Gopal Snacks Limited
+# GOYALALUM - Goyal Aluminiums Limited
+# GPIL - Godawari Power And Ispat limited
+# GPPL - Gujarat Pipavav Port Limited
+# GPTHEALTH - GPT Healthcare Limited
+# GPTINFRA - GPT Infraprojects Limited
+# GRANULES - Granules India Limited
+# GRAPHITE - Graphite India Limited
+# GRASIM - Grasim Industries Limited
+# GRAVITA - Gravita India Limited
+# GREAVESCOT - Greaves Cotton Limited
+# GREENLAM - Greenlam Industries Limited
+# GREENPANEL - Greenpanel Industries Limited
+# GREENPLY - Greenply Industries Limited
+# GREENPOWER - Orient Green Power Company Limited
+# GRINDWELL - Grindwell Norton Limited
+# GRINFRA - G R Infraprojects Limited
+# GRMOVER - GRM Overseas Limited
+# GRPLTD - GRP Limited
+# GRSE - Garden Reach Shipbuilders & Engineers Limited
+# GRWRHITECH - Garware Hi-Tech Films Limited
+# GSFC - Gujarat State Fertilizers & Chemicals Limited
+# GSLSU - Global Surfaces Limited
+# GSPL - Gujarat State Petronet Limited
+# GSS - GSS Infotech Limited
+# GTL - GTL Limited
+# GTLINFRA - GTL Infrastructure Limited
+# GTPL - GTPL Hathway Limited
+# GUFICBIO - Gufic Biosciences Limited
+# GUJALKALI - Gujarat Alkalies and Chemicals Limited
+# GUJAPOLLO - Gujarat Apollo Industries Limited
+# GUJGASLTD - Gujarat Gas Limited
+# GUJRAFFIA - Gujarat Raffia Industries Limited
+# GUJTHEM - Gujarat Themis Biosyn Limited
+# GULFOILLUB - Gulf Oil Lubricants India Limited
+# GULFPETRO - GP Petroleums Limited
+# GULPOLY - Gulshan Polyols Limited
+# GVPIL - GE Power India Limited
+# GVPTECH - GVP Infotech Limited
+# GVT&D - GE Vernova T&D India Limited
+# HAL - Hindustan Aeronautics Limited
+# HAPPSTMNDS - Happiest Minds Technologies Limited
+# HAPPYFORGE - Happy Forgings Limited
+# HARDWYN - Hardwyn India Limited
+# HARIOMPIPE - Hariom Pipe Industries Limited
+# HARRMALAYA - Harrisons  Malayalam Limited
+# HARSHA - Harsha Engineers International Limited
+# HATHWAY - Hathway Cable & Datacom Limited
+# HATSUN - Hatsun Agro Product Limited

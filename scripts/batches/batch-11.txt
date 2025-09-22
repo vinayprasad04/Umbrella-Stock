@@ -1,0 +1,110 @@
+# Batch 11 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/GARFIBRES/
+https://www.screener.in/company/GARUDA/
+https://www.screener.in/company/GATEWAY/
+https://www.screener.in/company/GEECEE/
+https://www.screener.in/company/GEEKAYWIRE/
+https://www.screener.in/company/GEMAROMA/
+https://www.screener.in/company/GENESYS/
+https://www.screener.in/company/GENUSPAPER/
+https://www.screener.in/company/GENUSPOWER/
+https://www.screener.in/company/GEOJITFSL/
+https://www.screener.in/company/GESHIP/
+https://www.screener.in/company/GFLLIMITED/
+https://www.screener.in/company/GHCL/
+https://www.screener.in/company/GHCLTEXTIL/
+https://www.screener.in/company/GICHSGFIN/
+https://www.screener.in/company/GICRE/
+https://www.screener.in/company/GILLANDERS/
+https://www.screener.in/company/GILLETTE/
+https://www.screener.in/company/GIPCL/
+https://www.screener.in/company/GKWLIMITED/
+https://www.screener.in/company/GLAND/
+https://www.screener.in/company/GLAXO/
+https://www.screener.in/company/GLENMARK/
+https://www.screener.in/company/GLOBALE/
+https://www.screener.in/company/GLOBALVECT/
+https://www.screener.in/company/GLOBE/
+https://www.screener.in/company/GLOBECIVIL/
+https://www.screener.in/company/GLOBUSSPR/
+https://www.screener.in/company/GLOSTERLTD/
+https://www.screener.in/company/GMBREW/
+https://www.screener.in/company/GMDCLTD/
+https://www.screener.in/company/GMMPFAUDLR/
+https://www.screener.in/company/GMRAIRPORT/
+https://www.screener.in/company/GMRP&UI/
+https://www.screener.in/company/GNA/
+https://www.screener.in/company/GNFC/
+https://www.screener.in/company/GOACARBON/
+https://www.screener.in/company/GOCLCORP/
+https://www.screener.in/company/GOCOLORS/
+https://www.screener.in/company/GODFRYPHLP/
+https://www.screener.in/company/GODIGIT/
+https://www.screener.in/company/GODREJAGRO/
+https://www.screener.in/company/GODREJCP/
+https://www.screener.in/company/GODREJIND/
+https://www.screener.in/company/GODREJPROP/
+https://www.screener.in/company/GOKEX/
+https://www.screener.in/company/GOKUL/
+https://www.screener.in/company/GOKULAGRO/
+https://www.screener.in/company/GOLDIAM/
+https://www.screener.in/company/GOLDTECH/
+
+# Stock symbols for this batch:
+# GARFIBRES - Garware Technical Fibres Limited
+# GARUDA - Garuda Construction and Engineering Limited
+# GATEWAY - Gateway Distriparks Limited
+# GEECEE - GeeCee Ventures Limited
+# GEEKAYWIRE - Geekay Wires Limited
+# GEMAROMA - Gem Aromatics Limited
+# GENESYS - Genesys International Corporation Limited
+# GENUSPAPER - Genus Paper & Boards Limited
+# GENUSPOWER - Genus Power Infrastructures Limited
+# GEOJITFSL - Geojit Financial Services Limited
+# GESHIP - The Great Eastern Shipping Company Limited
+# GFLLIMITED - GFL Limited
+# GHCL - GHCL Limited
+# GHCLTEXTIL - GHCL Textiles Limited
+# GICHSGFIN - GIC Housing Finance Limited
+# GICRE - General Insurance Corporation of India
+# GILLANDERS - Gillanders Arbuthnot & Company Limited
+# GILLETTE - Gillette India Limited
+# GIPCL - Gujarat Industries Power Company Limited
+# GKWLIMITED - GKW Limited
+# GLAND - Gland Pharma Limited
+# GLAXO - GlaxoSmithKline Pharmaceuticals Limited
+# GLENMARK - Glenmark Pharmaceuticals Limited
+# GLOBALE - Globale Tessile Limited
+# GLOBALVECT - Global Vectra Helicorp Limited
+# GLOBE - Globe Textiles (India) Limited
+# GLOBECIVIL - Globe Civil Projects Limited
+# GLOBUSSPR - Globus Spirits Limited
+# GLOSTERLTD - Gloster Limited
+# GMBREW - GM Breweries Limited
+# GMDCLTD - Gujarat Mineral Development Corporation Limited
+# GMMPFAUDLR - GMM Pfaudler Limited
+# GMRAIRPORT - GMR AIRPORTS LIMITED
+# GMRP&UI - GMR Power and Urban Infra Limited
+# GNA - GNA Axles Limited
+# GNFC - Gujarat Narmada Valley Fertilizers and Chemicals Limited
+# GOACARBON - Goa Carbon Limited
+# GOCLCORP - GOCL Corporation Limited
+# GOCOLORS - Go Fashion (India) Limited
+# GODFRYPHLP - Godfrey Phillips India Limited
+# GODIGIT - Go Digit General Insurance Limited
+# GODREJAGRO - Godrej Agrovet Limited
+# GODREJCP - Godrej Consumer Products Limited
+# GODREJIND - Godrej Industries Limited
+# GODREJPROP - Godrej Properties Limited
+# GOKEX - Gokaldas Exports Limited
+# GOKUL - Gokul Refoils and Solvent Limited
+# GOKULAGRO - Gokul Agro Resources Limited
+# GOLDIAM - Goldiam International Limited
+# GOLDTECH - AION-TECH SOLUTIONS LIMITED

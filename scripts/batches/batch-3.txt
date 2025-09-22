@@ -1,0 +1,110 @@
+# Batch 3 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/ASTRON/
+https://www.screener.in/company/ATAM/
+https://www.screener.in/company/ATGL/
+https://www.screener.in/company/ATHERENERG/
+https://www.screener.in/company/ATL/
+https://www.screener.in/company/ATLANTAA/
+https://www.screener.in/company/ATUL/
+https://www.screener.in/company/ATULAUTO/
+https://www.screener.in/company/AUBANK/
+https://www.screener.in/company/AURIONPRO/
+https://www.screener.in/company/AUROPHARMA/
+https://www.screener.in/company/AURUM/
+https://www.screener.in/company/AUTOAXLES/
+https://www.screener.in/company/AUTOIND/
+https://www.screener.in/company/AVADHSUGAR/
+https://www.screener.in/company/AVALON/
+https://www.screener.in/company/AVANTEL/
+https://www.screener.in/company/AVANTIFEED/
+https://www.screener.in/company/AVG/
+https://www.screener.in/company/AVL/
+https://www.screener.in/company/AVONMORE/
+https://www.screener.in/company/AVROIND/
+https://www.screener.in/company/AVTNPL/
+https://www.screener.in/company/AWFIS/
+https://www.screener.in/company/AWHCL/
+https://www.screener.in/company/AWL/
+https://www.screener.in/company/AXITA/
+https://www.screener.in/company/AYMSYNTEX/
+https://www.screener.in/company/AZAD/
+https://www.screener.in/company/BAFNAPH/
+https://www.screener.in/company/BAGFILMS/
+https://www.screener.in/company/BAIDFIN/
+https://www.screener.in/company/BAJAJ-AUTO/
+https://www.screener.in/company/BAJAJCON/
+https://www.screener.in/company/BAJAJELEC/
+https://www.screener.in/company/BAJAJFINSV/
+https://www.screener.in/company/BAJAJHCARE/
+https://www.screener.in/company/BAJAJHFL/
+https://www.screener.in/company/BAJAJHIND/
+https://www.screener.in/company/BAJAJHLDNG/
+https://www.screener.in/company/BAJAJINDEF/
+https://www.screener.in/company/BALAJEE/
+https://www.screener.in/company/BALAMINES/
+https://www.screener.in/company/BALAXI/
+https://www.screener.in/company/BALKRISHNA/
+https://www.screener.in/company/BALKRISIND/
+https://www.screener.in/company/BALMLAWRIE/
+https://www.screener.in/company/BALPHARMA/
+https://www.screener.in/company/BALRAMCHIN/
+https://www.screener.in/company/BANARBEADS/
+
+# Stock symbols for this batch:
+# ASTRON - Astron Paper & Board Mill Limited
+# ATAM - Atam Valves Limited
+# ATGL - Adani Total Gas Limited
+# ATHERENERG - Ather Energy Limited
+# ATL - Allcargo Terminals Limited
+# ATLANTAA - ATLANTAA LIMITED
+# ATUL - Atul Limited
+# ATULAUTO - Atul Auto Limited
+# AUBANK - AU Small Finance Bank Limited
+# AURIONPRO - Aurionpro Solutions Limited
+# AUROPHARMA - Aurobindo Pharma Limited
+# AURUM - Aurum PropTech Limited
+# AUTOAXLES - Automotive Axles Limited
+# AUTOIND - Autoline Industries Limited
+# AVADHSUGAR - Avadh Sugar & Energy Limited
+# AVALON - Avalon Technologies Limited
+# AVANTEL - Avantel Limited
+# AVANTIFEED - Avanti Feeds Limited
+# AVG - AVG Logistics Limited
+# AVL - Aditya Vision Limited
+# AVONMORE - Avonmore Capital & Management Services Limited
+# AVROIND - AVRO INDIA LIMITED
+# AVTNPL - AVT Natural Products Limited
+# AWFIS - Awfis Space Solutions Limited
+# AWHCL - Antony Waste Handling Cell Limited
+# AWL - AWL Agri Business Limited
+# AXITA - Axita Cotton Limited
+# AYMSYNTEX - AYM Syntex Limited
+# AZAD - Azad Engineering Limited
+# BAFNAPH - Bafna Pharmaceuticals Limited
+# BAGFILMS - B.A.G Films and Media Limited
+# BAIDFIN - Baid Finserv Limited
+# BAJAJ-AUTO - Bajaj Auto Limited
+# BAJAJCON - Bajaj Consumer Care Limited
+# BAJAJELEC - Bajaj Electricals Limited
+# BAJAJFINSV - Bajaj Finserv Limited
+# BAJAJHCARE - Bajaj Healthcare Limited
+# BAJAJHFL - Bajaj Housing Finance Limited
+# BAJAJHIND - Bajaj Hindusthan Sugar Limited
+# BAJAJHLDNG - Bajaj Holdings & Investment Limited
+# BAJAJINDEF - Indef Manufacturing Limited
+# BALAJEE - Shree Tirupati Balajee Agro Trading Company Limited
+# BALAMINES - Balaji Amines Limited
+# BALAXI - BALAXI PHARMACEUTICALS LIMITED
+# BALKRISHNA - Balkrishna Paper Mills Limited
+# BALKRISIND - Balkrishna Industries Limited
+# BALMLAWRIE - Balmer Lawrie & Company Limited
+# BALPHARMA - Bal Pharma Limited
+# BALRAMCHIN - Balrampur Chini Mills Limited
+# BANARBEADS - Banaras Beads Limited

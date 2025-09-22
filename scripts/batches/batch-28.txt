@@ -1,0 +1,110 @@
+# Batch 28 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/SANDHAR/
+https://www.screener.in/company/SANDUMA/
+https://www.screener.in/company/SANGAMIND/
+https://www.screener.in/company/SANGHIIND/
+https://www.screener.in/company/SANGHVIMOV/
+https://www.screener.in/company/SANGINITA/
+https://www.screener.in/company/SANOFI/
+https://www.screener.in/company/SANOFICONR/
+https://www.screener.in/company/SANSERA/
+https://www.screener.in/company/SANSTAR/
+https://www.screener.in/company/SAPPHIRE/
+https://www.screener.in/company/SARDAEN/
+https://www.screener.in/company/SAREGAMA/
+https://www.screener.in/company/SARLAPOLY/
+https://www.screener.in/company/SARVESHWAR/
+https://www.screener.in/company/SASKEN/
+https://www.screener.in/company/SASTASUNDR/
+https://www.screener.in/company/SATIA/
+https://www.screener.in/company/SATIN/
+https://www.screener.in/company/SAURASHCEM/
+https://www.screener.in/company/SBC/
+https://www.screener.in/company/SBCL/
+https://www.screener.in/company/SBFC/
+https://www.screener.in/company/SBGLP/
+https://www.screener.in/company/SBICARD/
+https://www.screener.in/company/SBILIFE/
+https://www.screener.in/company/SCHAEFFLER/
+https://www.screener.in/company/SCHAND/
+https://www.screener.in/company/SCI/
+https://www.screener.in/company/SCILAL/
+https://www.screener.in/company/SCODATUBES/
+https://www.screener.in/company/SCPL/
+https://www.screener.in/company/SDBL/
+https://www.screener.in/company/SEAMECLTD/
+https://www.screener.in/company/SECURKLOUD/
+https://www.screener.in/company/SELAN/
+https://www.screener.in/company/SELMC/
+https://www.screener.in/company/SENCO/
+https://www.screener.in/company/SENORES/
+https://www.screener.in/company/SEPC/
+https://www.screener.in/company/SEQUENT/
+https://www.screener.in/company/SERVOTECH/
+https://www.screener.in/company/SESHAPAPER/
+https://www.screener.in/company/SETCO/
+https://www.screener.in/company/SFL/
+https://www.screener.in/company/SGFIN/
+https://www.screener.in/company/SGIL/
+https://www.screener.in/company/SHAHALLOYS/
+https://www.screener.in/company/SHAILY/
+https://www.screener.in/company/SHAKTIPUMP/
+
+# Stock symbols for this batch:
+# SANDHAR - Sandhar Technologies Limited
+# SANDUMA - Sandur Manganese & Iron Ores Limited
+# SANGAMIND - Sangam (India) Limited
+# SANGHIIND - Sanghi Industries Limited
+# SANGHVIMOV - Sanghvi Movers Limited
+# SANGINITA - Sanginita Chemicals Limited
+# SANOFI - Sanofi India Limited
+# SANOFICONR - Sanofi Consumer Healthcare India Limited
+# SANSERA - Sansera Engineering Limited
+# SANSTAR - Sanstar Limited
+# SAPPHIRE - Sapphire Foods India Limited
+# SARDAEN - Sarda Energy & Minerals Limited
+# SAREGAMA - Saregama India Limited
+# SARLAPOLY - Sarla Performance Fibers Limited
+# SARVESHWAR - Sarveshwar Foods Limited
+# SASKEN - Sasken Technologies Limited
+# SASTASUNDR - Sastasundar Ventures Limited
+# SATIA - Satia Industries Limited
+# SATIN - Satin Creditcare Network Limited
+# SAURASHCEM - Saurashtra Cement Limited
+# SBC - SBC Exports Limited
+# SBCL - Shivalik Bimetal Controls Limited
+# SBFC - SBFC Finance Limited
+# SBGLP - Suratwwala Business Group Limited
+# SBICARD - SBI Cards and Payment Services Limited
+# SBILIFE - SBI Life Insurance Company Limited
+# SCHAEFFLER - Schaeffler India Limited
+# SCHAND - S Chand And Company Limited
+# SCI - Shipping Corporation Of India Limited
+# SCILAL - Shipping Corporation of India Land and Assets Limited
+# SCODATUBES - Scoda Tubes Limited
+# SCPL - Sheetal Cool Products Limited
+# SDBL - Som Distilleries & Breweries Limited
+# SEAMECLTD - Seamec Limited
+# SECURKLOUD - SECUREKLOUD TECHNOLOGIES LIMITED
+# SELAN - Selan Exploration Technology Limited
+# SELMC - SEL Manufacturing Company Limited
+# SENCO - Senco Gold Limited
+# SENORES - Senores Pharmaceuticals Limited
+# SEPC - SEPC Limited
+# SEQUENT - Sequent Scientific Limited
+# SERVOTECH - Servotech Renewable Power System Limited
+# SESHAPAPER - Seshasayee Paper and Boards Limited
+# SETCO - Setco Automotive Limited
+# SFL - Sheela Foam Limited
+# SGFIN - SG Finserve Limited
+# SGIL - Synergy Green Industries Limited
+# SHAHALLOYS - Shah Alloys Limited
+# SHAILY - Shaily Engineering Plastics Limited
+# SHAKTIPUMP - Shakti Pumps (India) Limited

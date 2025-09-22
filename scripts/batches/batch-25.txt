@@ -1,0 +1,110 @@
+# Batch 25 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/PRAKASH/
+https://www.screener.in/company/PRAKASHSTL/
+https://www.screener.in/company/PRECAM/
+https://www.screener.in/company/PRECWIRE/
+https://www.screener.in/company/PREMEXPLN/
+https://www.screener.in/company/PREMIERENE/
+https://www.screener.in/company/PREMIERPOL/
+https://www.screener.in/company/PRESTIGE/
+https://www.screener.in/company/PRICOLLTD/
+https://www.screener.in/company/PRIMESECU/
+https://www.screener.in/company/PRIMO/
+https://www.screener.in/company/PRINCEPIPE/
+https://www.screener.in/company/PRITI/
+https://www.screener.in/company/PRITIKAUTO/
+https://www.screener.in/company/PRIVISCL/
+https://www.screener.in/company/PROSTARM/
+https://www.screener.in/company/PROTEAN/
+https://www.screener.in/company/PROZONER/
+https://www.screener.in/company/PRSMJOHNSN/
+https://www.screener.in/company/PRUDENT/
+https://www.screener.in/company/PRUDMOULI/
+https://www.screener.in/company/PSB/
+https://www.screener.in/company/PSPPROJECT/
+https://www.screener.in/company/PTC/
+https://www.screener.in/company/PTCIL/
+https://www.screener.in/company/PTL/
+https://www.screener.in/company/PUNJABCHEM/
+https://www.screener.in/company/PURVA/
+https://www.screener.in/company/PVP/
+https://www.screener.in/company/PVRINOX/
+https://www.screener.in/company/PVSL/
+https://www.screener.in/company/PYRAMID/
+https://www.screener.in/company/QPOWER/
+https://www.screener.in/company/QUADFUTURE/
+https://www.screener.in/company/QUESS/
+https://www.screener.in/company/QUICKHEAL/
+https://www.screener.in/company/RACE/
+https://www.screener.in/company/RACLGEAR/
+https://www.screener.in/company/RADAAN/
+https://www.screener.in/company/RADHIKAJWE/
+https://www.screener.in/company/RADIANTCMS/
+https://www.screener.in/company/RADICO/
+https://www.screener.in/company/RADIOCITY/
+https://www.screener.in/company/RAILTEL/
+https://www.screener.in/company/RAIN/
+https://www.screener.in/company/RAINBOW/
+https://www.screener.in/company/RAJESHEXPO/
+https://www.screener.in/company/RAJMET/
+https://www.screener.in/company/RAJOOENG/
+https://www.screener.in/company/RAJRATAN/
+
+# Stock symbols for this batch:
+# PRAKASH - Prakash Industries Limited
+# PRAKASHSTL - Prakash Steelage Limited
+# PRECAM - Precision Camshafts Limited
+# PRECWIRE - Precision Wires India Limited
+# PREMEXPLN - Premier Explosives Limited
+# PREMIERENE - Premier Energies Limited
+# PREMIERPOL - Premier Polyfilm Limited
+# PRESTIGE - Prestige Estates Projects Limited
+# PRICOLLTD - Pricol Limited
+# PRIMESECU - Prime Securities Limited
+# PRIMO - Primo Chemicals Limited
+# PRINCEPIPE - Prince Pipes And Fittings Limited
+# PRITI - Priti International Limited
+# PRITIKAUTO - Pritika Auto Industries Limited
+# PRIVISCL - Privi Speciality Chemicals Limited
+# PROSTARM - Prostarm Info Systems Limited
+# PROTEAN - Protean eGov Technologies Limited
+# PROZONER - Prozone Realty Limited
+# PRSMJOHNSN - Prism Johnson Limited
+# PRUDENT - Prudent Corporate Advisory Services Limited
+# PRUDMOULI - Prudential Sugar Corporation Limited
+# PSB - Punjab & Sind Bank
+# PSPPROJECT - PSP Projects Limited
+# PTC - PTC India Limited
+# PTCIL - PTC Industries Limited
+# PTL - PTL Enterprises Limited
+# PUNJABCHEM - Punjab Chemicals & Crop Protection Limited
+# PURVA - Puravankara Limited
+# PVP - PVP Ventures Limited
+# PVRINOX - PVR INOX Limited
+# PVSL - Popular Vehicles and Services Limited
+# PYRAMID - Pyramid Technoplast Limited
+# QPOWER - Quality Power Electrical Equipments Limited
+# QUADFUTURE - Quadrant Future Tek Limited
+# QUESS - Quess Corp Limited
+# QUICKHEAL - Quick Heal Technologies Limited
+# RACE - Race Eco Chain Limited
+# RACLGEAR - RACL Geartech Limited
+# RADAAN - Radaan Mediaworks India Limited
+# RADHIKAJWE - Radhika Jeweltech Limited
+# RADIANTCMS - Radiant Cash Management Services Limited
+# RADICO - Radico Khaitan Limited
+# RADIOCITY - Music Broadcast Limited
+# RAILTEL - Railtel Corporation Of India Limited
+# RAIN - Rain Industries Limited
+# RAINBOW - Rainbow Childrens Medicare Limited
+# RAJESHEXPO - Rajesh Exports Limited
+# RAJMET - Rajnandini Metal Limited
+# RAJOOENG - Rajoo Engineers Limited
+# RAJRATAN - Rajratan Global Wire Limited

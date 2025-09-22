@@ -1,0 +1,110 @@
+# Batch 16 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/JETFREIGHT/
+https://www.screener.in/company/JGCHEM/
+https://www.screener.in/company/JHS/
+https://www.screener.in/company/JINDALPHOT/
+https://www.screener.in/company/JINDALPOLY/
+https://www.screener.in/company/JINDALSAW/
+https://www.screener.in/company/JINDALSTEL/
+https://www.screener.in/company/JINDRILL/
+https://www.screener.in/company/JINDWORLD/
+https://www.screener.in/company/JIOFIN/
+https://www.screener.in/company/JISLDVREQS/
+https://www.screener.in/company/JISLJALEQS/
+https://www.screener.in/company/JITFINFRA/
+https://www.screener.in/company/JKCEMENT/
+https://www.screener.in/company/JKIL/
+https://www.screener.in/company/JKLAKSHMI/
+https://www.screener.in/company/JKPAPER/
+https://www.screener.in/company/JKTYRE/
+https://www.screener.in/company/JLHL/
+https://www.screener.in/company/JMA/
+https://www.screener.in/company/JMFINANCIL/
+https://www.screener.in/company/JNKINDIA/
+https://www.screener.in/company/JOCIL/
+https://www.screener.in/company/JPOLYINVST/
+https://www.screener.in/company/JPPOWER/
+https://www.screener.in/company/JSFB/
+https://www.screener.in/company/JSL/
+https://www.screener.in/company/JSLL/
+https://www.screener.in/company/JSWCEMENT/
+https://www.screener.in/company/JSWENERGY/
+https://www.screener.in/company/JSWHL/
+https://www.screener.in/company/JSWINFRA/
+https://www.screener.in/company/JSWSTEEL/
+https://www.screener.in/company/JTEKTINDIA/
+https://www.screener.in/company/JTLIND/
+https://www.screener.in/company/JUBLCPL/
+https://www.screener.in/company/JUBLFOOD/
+https://www.screener.in/company/JUBLINGREA/
+https://www.screener.in/company/JUBLPHARMA/
+https://www.screener.in/company/JUNIPER/
+https://www.screener.in/company/JUSTDIAL/
+https://www.screener.in/company/JWL/
+https://www.screener.in/company/JYOTHYLAB/
+https://www.screener.in/company/JYOTICNC/
+https://www.screener.in/company/JYOTISTRUC/
+https://www.screener.in/company/KABRAEXTRU/
+https://www.screener.in/company/KAJARIACER/
+https://www.screener.in/company/KAKATCEM/
+https://www.screener.in/company/KALAMANDIR/
+https://www.screener.in/company/KALPATARU/
+
+# Stock symbols for this batch:
+# JETFREIGHT - Jet Freight Logistics Limited
+# JGCHEM - J.G.Chemicals Limited
+# JHS - JHS Svendgaard Laboratories Limited
+# JINDALPHOT - Jindal Photo Limited
+# JINDALPOLY - Jindal Poly Films Limited
+# JINDALSAW - Jindal Saw Limited
+# JINDALSTEL - JINDAL STEEL LIMITED
+# JINDRILL - Jindal Drilling And Industries Limited
+# JINDWORLD - Jindal Worldwide Limited
+# JIOFIN - Jio Financial Services Limited
+# JISLDVREQS - Jain Irrigation Systems Limited
+# JISLJALEQS - Jain Irrigation Systems Limited
+# JITFINFRA - JITF Infralogistics Limited
+# JKCEMENT - JK Cement Limited
+# JKIL - J.Kumar Infraprojects Limited
+# JKLAKSHMI - JK Lakshmi Cement Limited
+# JKPAPER - JK Paper Limited
+# JKTYRE - JK Tyre & Industries Limited
+# JLHL - Jupiter Life Line Hospitals Limited
+# JMA - Jullundur Motor Agency (Delhi) Limited
+# JMFINANCIL - JM Financial Limited
+# JNKINDIA - JNK India Limited
+# JOCIL - Jocil Limited
+# JPOLYINVST - Jindal Poly Investment and Finance Company Limited
+# JPPOWER - Jaiprakash Power Ventures Limited
+# JSFB - Jana Small Finance Bank Limited
+# JSL - Jindal Stainless Limited
+# JSLL - Jeena Sikho Lifecare Limited
+# JSWCEMENT - JSW Cement Limited
+# JSWENERGY - JSW Energy Limited
+# JSWHL - JSW Holdings Limited
+# JSWINFRA - JSW Infrastructure Limited
+# JSWSTEEL - JSW Steel Limited
+# JTEKTINDIA - Jtekt India Limited
+# JTLIND - JTL INDUSTRIES LIMITED
+# JUBLCPL - Jubilant Agri and Consumer Products Limited
+# JUBLFOOD - Jubilant Foodworks Limited
+# JUBLINGREA - Jubilant Ingrevia Limited
+# JUBLPHARMA - Jubilant Pharmova Limited
+# JUNIPER - Juniper Hotels Limited
+# JUSTDIAL - Just Dial Limited
+# JWL - Jupiter Wagons Limited
+# JYOTHYLAB - Jyothy Labs Limited
+# JYOTICNC - Jyoti CNC Automation Limited
+# JYOTISTRUC - Jyoti Structures Limited
+# KABRAEXTRU - Kabra Extrusion Technik Limited
+# KAJARIACER - Kajaria Ceramics Limited
+# KAKATCEM - Kakatiya Cement Sugar & Industries Limited
+# KALAMANDIR - Sai Silks (Kalamandir) Limited
+# KALPATARU - Kalpataru Limited

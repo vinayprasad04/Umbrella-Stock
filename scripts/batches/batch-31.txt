@@ -1,0 +1,110 @@
+# Batch 31 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/STYLAMIND/
+https://www.screener.in/company/STYLEBAAZA/
+https://www.screener.in/company/STYRENIX/
+https://www.screener.in/company/SUBROS/
+https://www.screener.in/company/SUDARSCHEM/
+https://www.screener.in/company/SUKHJITS/
+https://www.screener.in/company/SULA/
+https://www.screener.in/company/SUMICHEM/
+https://www.screener.in/company/SUMIT/
+https://www.screener.in/company/SUMMITSEC/
+https://www.screener.in/company/SUNCLAY/
+https://www.screener.in/company/SUNDARAM/
+https://www.screener.in/company/SUNDARMFIN/
+https://www.screener.in/company/SUNDARMHLD/
+https://www.screener.in/company/SUNDRMBRAK/
+https://www.screener.in/company/SUNDRMFAST/
+https://www.screener.in/company/SUNDROP/
+https://www.screener.in/company/SUNFLAG/
+https://www.screener.in/company/SUNTECK/
+https://www.screener.in/company/SUNTV/
+https://www.screener.in/company/SUPERHOUSE/
+https://www.screener.in/company/SUPERSPIN/
+https://www.screener.in/company/SUPRAJIT/
+https://www.screener.in/company/SUPREME/
+https://www.screener.in/company/SUPREMEIND/
+https://www.screener.in/company/SUPRIYA/
+https://www.screener.in/company/SURAJEST/
+https://www.screener.in/company/SURAJLTD/
+https://www.screener.in/company/SURAKSHA/
+https://www.screener.in/company/SURANASOL/
+https://www.screener.in/company/SURANAT&P/
+https://www.screener.in/company/SURYALAXMI/
+https://www.screener.in/company/SURYAROSNI/
+https://www.screener.in/company/SURYODAY/
+https://www.screener.in/company/SUTLEJTEX/
+https://www.screener.in/company/SUYOG/
+https://www.screener.in/company/SUZLON/
+https://www.screener.in/company/SVPGLOB/
+https://www.screener.in/company/SWANENERGY/
+https://www.screener.in/company/SWARAJENG/
+https://www.screener.in/company/SWELECTES/
+https://www.screener.in/company/SWIGGY/
+https://www.screener.in/company/SWSOLAR/
+https://www.screener.in/company/SYMPHONY/
+https://www.screener.in/company/SYNGENE/
+https://www.screener.in/company/SYRMA/
+https://www.screener.in/company/TAINWALCHM/
+https://www.screener.in/company/TAJGVK/
+https://www.screener.in/company/TALBROAUTO/
+https://www.screener.in/company/TANLA/
+
+# Stock symbols for this batch:
+# STYLAMIND - Stylam Industries Limited
+# STYLEBAAZA - Baazar Style Retail Limited
+# STYRENIX - Styrenix Performance Materials Limited
+# SUBROS - Subros Limited
+# SUDARSCHEM - Sudarshan Chemical Industries Limited
+# SUKHJITS - Sukhjit Starch & Chemicals Limited
+# SULA - Sula Vineyards Limited
+# SUMICHEM - Sumitomo Chemical India Limited
+# SUMIT - Sumit Woods Limited
+# SUMMITSEC - Summit Securities Limited
+# SUNCLAY - Sundaram Clayton Limited
+# SUNDARAM - Sundaram Multi Pap Limited
+# SUNDARMFIN - Sundaram Finance Limited
+# SUNDARMHLD - Sundaram Finance Holdings Limited
+# SUNDRMBRAK - Sundaram Brake Linings Limited
+# SUNDRMFAST - Sundram Fasteners Limited
+# SUNDROP - Sundrop Brands Limited
+# SUNFLAG - Sunflag Iron And Steel Company Limited
+# SUNTECK - Sunteck Realty Limited
+# SUNTV - Sun TV Network Limited
+# SUPERHOUSE - Superhouse Limited
+# SUPERSPIN - Super Spinning Mills Limited
+# SUPRAJIT - Suprajit Engineering Limited
+# SUPREME - Supreme Holdings & Hospitality (India) Limited
+# SUPREMEIND - Supreme Industries Limited
+# SUPRIYA - Supriya Lifescience Limited
+# SURAJEST - Suraj Estate Developers Limited
+# SURAJLTD - Suraj Limited
+# SURAKSHA - Suraksha Diagnostic Limited
+# SURANASOL - Surana Solar Limited
+# SURANAT&P - Surana Telecom and Power Limited
+# SURYALAXMI - Suryalakshmi Cotton Mills Limited
+# SURYAROSNI - Surya Roshni Limited
+# SURYODAY - Suryoday Small Finance Bank Limited
+# SUTLEJTEX - Sutlej Textiles and Industries Limited
+# SUYOG - Suyog Telematics Limited
+# SUZLON - Suzlon Energy Limited
+# SVPGLOB - SVP GLOBAL TEXTILES LIMITED
+# SWANENERGY - Swan Energy Limited
+# SWARAJENG - Swaraj Engines Limited
+# SWELECTES - Swelect Energy Systems Limited
+# SWIGGY - Swiggy Limited
+# SWSOLAR - Sterling and Wilson Renewable Energy Limited
+# SYMPHONY - Symphony Limited
+# SYNGENE - Syngene International Limited
+# SYRMA - Syrma SGS Technology Limited
+# TAINWALCHM - Tainwala Chemical and Plastic (I) Limited
+# TAJGVK - Taj GVK Hotels & Resorts Limited
+# TALBROAUTO - Talbros Automotive Components Limited
+# TANLA - Tanla Platforms Limited

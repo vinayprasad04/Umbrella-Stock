@@ -1,0 +1,110 @@
+# Batch 13 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/HAVELLS/
+https://www.screener.in/company/HBLENGINE/
+https://www.screener.in/company/HCG/
+https://www.screener.in/company/HDBFS/
+https://www.screener.in/company/HDFCAMC/
+https://www.screener.in/company/HDFCLIFE/
+https://www.screener.in/company/HEADSUP/
+https://www.screener.in/company/HEG/
+https://www.screener.in/company/HEIDELBERG/
+https://www.screener.in/company/HEMIPROP/
+https://www.screener.in/company/HERANBA/
+https://www.screener.in/company/HERITGFOOD/
+https://www.screener.in/company/HEROMOTOCO/
+https://www.screener.in/company/HESTERBIO/
+https://www.screener.in/company/HEUBACHIND/
+https://www.screener.in/company/HEXATRADEX/
+https://www.screener.in/company/HEXT/
+https://www.screener.in/company/HFCL/
+https://www.screener.in/company/HGINFRA/
+https://www.screener.in/company/HGS/
+https://www.screener.in/company/HIKAL/
+https://www.screener.in/company/HILINFRA/
+https://www.screener.in/company/HIMATSEIDE/
+https://www.screener.in/company/HINDALCO/
+https://www.screener.in/company/HINDCOMPOS/
+https://www.screener.in/company/HINDCON/
+https://www.screener.in/company/HINDCOPPER/
+https://www.screener.in/company/HINDNATGLS/
+https://www.screener.in/company/HINDOILEXP/
+https://www.screener.in/company/HINDPETRO/
+https://www.screener.in/company/HINDUNILVR/
+https://www.screener.in/company/HINDWAREAP/
+https://www.screener.in/company/HINDZINC/
+https://www.screener.in/company/HIRECT/
+https://www.screener.in/company/HISARMETAL/
+https://www.screener.in/company/HITECH/
+https://www.screener.in/company/HITECHCORP/
+https://www.screener.in/company/HLEGLAS/
+https://www.screener.in/company/HLVLTD/
+https://www.screener.in/company/HMAAGRO/
+https://www.screener.in/company/HMVL/
+https://www.screener.in/company/HNDFDS/
+https://www.screener.in/company/HOMEFIRST/
+https://www.screener.in/company/HONASA/
+https://www.screener.in/company/HONAUT/
+https://www.screener.in/company/HONDAPOWER/
+https://www.screener.in/company/HPAL/
+https://www.screener.in/company/HPIL/
+https://www.screener.in/company/HPL/
+https://www.screener.in/company/HSCL/
+
+# Stock symbols for this batch:
+# HAVELLS - Havells India Limited
+# HBLENGINE - HBL Engineering Limited
+# HCG - Healthcare Global Enterprises Limited
+# HDBFS - HDB Financial Services Limited
+# HDFCAMC - HDFC Asset Management Company Limited
+# HDFCLIFE - HDFC Life Insurance Company Limited
+# HEADSUP - Heads UP Ventures Limited
+# HEG - HEG Limited
+# HEIDELBERG - HeidelbergCement India Limited
+# HEMIPROP - Hemisphere Properties India Limited
+# HERANBA - Heranba Industries Limited
+# HERITGFOOD - Heritage Foods Limited
+# HEROMOTOCO - Hero MotoCorp Limited
+# HESTERBIO - Hester Biosciences Limited
+# HEUBACHIND - Heubach Colorants India Limited
+# HEXATRADEX - Hexa Tradex Limited
+# HEXT - Hexaware Technologies Limited
+# HFCL - HFCL Limited
+# HGINFRA - H.G. Infra Engineering Limited
+# HGS - Hinduja Global Solutions Limited
+# HIKAL - Hikal Limited
+# HILINFRA - Highway Infrastructure Limited
+# HIMATSEIDE - Himatsingka Seide Limited
+# HINDALCO - Hindalco Industries Limited
+# HINDCOMPOS - Hindustan Composites Limited
+# HINDCON - Hindcon Chemicals Limited
+# HINDCOPPER - Hindustan Copper Limited
+# HINDNATGLS - Hindusthan National Glass & Industries Limited
+# HINDOILEXP - Hindustan Oil Exploration Company Limited
+# HINDPETRO - Hindustan Petroleum Corporation Limited
+# HINDUNILVR - Hindustan Unilever Limited
+# HINDWAREAP - Hindware Home Innovation Limited
+# HINDZINC - Hindustan Zinc Limited
+# HIRECT - Hind Rectifiers Limited
+# HISARMETAL - Hisar Metal Industries Limited
+# HITECH - Hi-Tech Pipes Limited
+# HITECHCORP - Hitech Corporation Limited
+# HLEGLAS - HLE Glascoat Limited
+# HLVLTD - HLV LIMITED
+# HMAAGRO - HMA Agro Industries Limited
+# HMVL - Hindustan Media Ventures Limited
+# HNDFDS - Hindustan Foods Limited
+# HOMEFIRST - Home First Finance Company India Limited
+# HONASA - Honasa Consumer Limited
+# HONAUT - Honeywell Automation India Limited
+# HONDAPOWER - Honda India Power Products Limited
+# HPAL - HP Adhesives Limited
+# HPIL - Hindprakash Industries Limited
+# HPL - HPL Electric & Power Limited
+# HSCL - Himadri Speciality Chemical Limited

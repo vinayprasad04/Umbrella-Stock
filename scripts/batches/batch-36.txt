@@ -1,0 +1,38 @@
+# Batch 36 of 36
+# 14 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/ZAGGLE/
+https://www.screener.in/company/ZEEL/
+https://www.screener.in/company/ZEEMEDIA/
+https://www.screener.in/company/ZENITHEXPO/
+https://www.screener.in/company/ZENSARTECH/
+https://www.screener.in/company/ZENTEC/
+https://www.screener.in/company/ZFCVINDIA/
+https://www.screener.in/company/ZIMLAB/
+https://www.screener.in/company/ZODIACLOTH/
+https://www.screener.in/company/ZOTA/
+https://www.screener.in/company/ZUARI/
+https://www.screener.in/company/ZUARIIND/
+https://www.screener.in/company/ZYDUSLIFE/
+https://www.screener.in/company/ZYDUSWELL/
+
+# Stock symbols for this batch:
+# ZAGGLE - Zaggle Prepaid Ocean Services Limited
+# ZEEL - Zee Entertainment Enterprises Limited
+# ZEEMEDIA - Zee Media Corporation Limited
+# ZENITHEXPO - Zenith Exports Limited
+# ZENSARTECH - Zensar Technologies Limited
+# ZENTEC - Zen Technologies Limited
+# ZFCVINDIA - ZF Commercial Vehicle Control Systems India Limited
+# ZIMLAB - Zim Laboratories Limited
+# ZODIACLOTH - Zodiac Clothing Company Limited
+# ZOTA - Zota Health Care LImited
+# ZUARI - Zuari Agro Chemicals Limited
+# ZUARIIND - ZUARI INDUSTRIES LIMITED
+# ZYDUSLIFE - Zydus Lifesciences Limited
+# ZYDUSWELL - Zydus Wellness Limited

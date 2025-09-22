@@ -1,0 +1,21 @@
+{
+  "name": "stock-automation-scripts",
+  "version": "1.0.0",
+  "description": "Automation scripts for stock data processing",
+  "main": "automate-stock-data.js",
+  "scripts": {
+    "bulk-manual": "node bulk-manual-helper.js",
+    "quick-batch": "node quick-batch-opener.js",
+    "upload-any": "node upload-any-files.js",
+    "get-token": "node get-fresh-token.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "form-data": "^4.0.0",
+    "mongoose": "^8.0.0",
+    "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

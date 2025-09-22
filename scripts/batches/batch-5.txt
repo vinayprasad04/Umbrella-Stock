@@ -1,0 +1,110 @@
+# Batch 5 of 36
+# 50 stocks
+# Instructions:
+# 1. Open each URL
+# 2. Click "Export to Excel"
+# 3. Save as {SYMBOL}.xlsx in downloads folder
+# 4. Run: npm run automate-all when batch is complete
+
+https://www.screener.in/company/BLACKBUCK/
+https://www.screener.in/company/BLAL/
+https://www.screener.in/company/BLBLIMITED/
+https://www.screener.in/company/BLISSGVS/
+https://www.screener.in/company/BLKASHYAP/
+https://www.screener.in/company/BLS/
+https://www.screener.in/company/BLUEDART/
+https://www.screener.in/company/BLUEJET/
+https://www.screener.in/company/BLUESTARCO/
+https://www.screener.in/company/BLUESTONE/
+https://www.screener.in/company/BLUSPRING/
+https://www.screener.in/company/BODALCHEM/
+https://www.screener.in/company/BOHRAIND/
+https://www.screener.in/company/BOMDYEING/
+https://www.screener.in/company/BORANA/
+https://www.screener.in/company/BOROLTD/
+https://www.screener.in/company/BORORENEW/
+https://www.screener.in/company/BOROSCI/
+https://www.screener.in/company/BOSCHLTD/
+https://www.screener.in/company/BPCL/
+https://www.screener.in/company/BPL/
+https://www.screener.in/company/BRIGADE/
+https://www.screener.in/company/BRIGHOTEL/
+https://www.screener.in/company/BRITANNIA/
+https://www.screener.in/company/BRNL/
+https://www.screener.in/company/BSE/
+https://www.screener.in/company/BSHSL/
+https://www.screener.in/company/BSOFT/
+https://www.screener.in/company/BTML/
+https://www.screener.in/company/BUTTERFLY/
+https://www.screener.in/company/BVCL/
+https://www.screener.in/company/CAMPUS/
+https://www.screener.in/company/CAMS/
+https://www.screener.in/company/CANBK/
+https://www.screener.in/company/CANFINHOME/
+https://www.screener.in/company/CANTABIL/
+https://www.screener.in/company/CAPACITE/
+https://www.screener.in/company/CAPITALSFB/
+https://www.screener.in/company/CAPLIPOINT/
+https://www.screener.in/company/CARBORUNIV/
+https://www.screener.in/company/CARERATING/
+https://www.screener.in/company/CARRARO/
+https://www.screener.in/company/CARTRADE/
+https://www.screener.in/company/CARYSIL/
+https://www.screener.in/company/CASTROLIND/
+https://www.screener.in/company/CCCL/
+https://www.screener.in/company/CCHHL/
+https://www.screener.in/company/CCL/
+https://www.screener.in/company/CDSL/
+https://www.screener.in/company/CEATLTD/
+
+# Stock symbols for this batch:
+# BLACKBUCK - Zinka Logistics Solutions Limited
+# BLAL - BEML Land Assets Limited
+# BLBLIMITED - BLB Limited
+# BLISSGVS - Bliss GVS Pharma Limited
+# BLKASHYAP - B. L. Kashyap and Sons Limited
+# BLS - BLS International Services Limited
+# BLUEDART - Blue Dart Express Limited
+# BLUEJET - Blue Jet Healthcare Limited
+# BLUESTARCO - Blue Star Limited
+# BLUESTONE - BlueStone Jewellery and Lifestyle Limited
+# BLUSPRING - Bluspring Enterprises Limited
+# BODALCHEM - Bodal Chemicals Limited
+# BOHRAIND - Bohra Industries Limited
+# BOMDYEING - Bombay Dyeing & Mfg Company Limited
+# BORANA - Borana Weaves Limited
+# BOROLTD - Borosil Limited
+# BORORENEW - BOROSIL RENEWABLES LIMITED
+# BOROSCI - Borosil Scientific Limited
+# BOSCHLTD - Bosch Limited
+# BPCL - Bharat Petroleum Corporation Limited
+# BPL - BPL Limited
+# BRIGADE - Brigade Enterprises Limited
+# BRIGHOTEL - Brigade Hotel Ventures Limited
+# BRITANNIA - Britannia Industries Limited
+# BRNL - Bharat Road Network Limited
+# BSE - BSE Limited
+# BSHSL - Bombay Super Hybrid Seeds Limited
+# BSOFT - BIRLASOFT LIMITED
+# BTML - Bodhi Tree Multimedia Limited
+# BUTTERFLY - Butterfly Gandhimathi Appliances Limited
+# BVCL - Barak Valley Cements Limited
+# CAMPUS - Campus Activewear Limited
+# CAMS - Computer Age Management Services Limited
+# CANBK - Canara Bank
+# CANFINHOME - Can Fin Homes Limited
+# CANTABIL - Cantabil Retail India Limited
+# CAPACITE - Capacit'e Infraprojects Limited
+# CAPITALSFB - Capital Small Finance Bank Limited
+# CAPLIPOINT - Caplin Point Laboratories Limited
+# CARBORUNIV - Carborundum Universal Limited
+# CARERATING - CARE Ratings Limited
+# CARRARO - Carraro India Limited
+# CARTRADE - Cartrade Tech Limited
+# CARYSIL - CARYSIL LIMITED
+# CASTROLIND - Castrol India Limited
+# CCCL - Consolidated Construction Consortium Limited
+# CCHHL - Country Club Hospitality & Holidays Limited
+# CCL - CCL Products (India) Limited
+# CDSL - Central Depository Services (India) Limited
+# CEATLTD - CEAT Limited
