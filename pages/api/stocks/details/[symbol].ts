@@ -3,6 +3,7 @@ import connectDB from '@/lib/mongodb';
 import Stock from '@/models/Stock';
 import StockHistory from '@/models/StockHistory';
 import { fetchSingleStock, fetchStockChart } from '@/lib/yahoo-finance-api';
+import { fetchScreenerChart, getCurrentStockPrice, isSymbolSupported } from '@/lib/screener-api';
 import { getNifty50StockBySymbol } from '@/lib/nifty50-symbols';
 import { APIResponse } from '@/types';
 
@@ -30,21 +31,80 @@ export default async function handler(
     }
 
     const yahooSymbol = symbol.includes('.NS') ? symbol : `${symbol}.NS`;
-    
-    const [stockData, chartData] = await Promise.all([
-      fetchSingleStock(yahooSymbol),
-      fetchStockChart(yahooSymbol, '1d', '1y')
-    ]);
-    
+
+    // Try screener.in API first (more reliable and current data)
+    let stockData = null;
+    let chartData: any = null;
+    let dailyPrices: any[] = [];
+
+    if (isSymbolSupported(symbol)) {
+      try {
+        console.log(`Fetching data for ${symbol} from screener.in`);
+
+        const [screenerChart, currentPrice] = await Promise.all([
+          fetchScreenerChart(symbol, 365),
+          getCurrentStockPrice(symbol)
+        ]);
+
+        if (currentPrice && screenerChart.length > 0) {
+          // Use screener.in data
+          const niftyStock = getNifty50StockBySymbol(yahooSymbol);
+
+          stockData = {
+            symbol: yahooSymbol,
+            shortName: niftyStock?.name || symbol,
+            longName: niftyStock?.name || symbol,
+            regularMarketPrice: currentPrice.price,
+            regularMarketChange: currentPrice.change,
+            regularMarketChangePercent: currentPrice.changePercent,
+            regularMarketVolume: screenerChart[screenerChart.length - 1]?.volume || 0,
+            marketCap: 0,
+            trailingPE: 0,
+            dividendYield: 0,
+            fiftyTwoWeekHigh: Math.max(...screenerChart.map(d => d.price)),
+            fiftyTwoWeekLow: Math.min(...screenerChart.map(d => d.price)),
+            currency: 'INR',
+            exchange: 'NSI',
+            regularMarketTime: Math.floor(new Date(currentPrice.date).getTime() / 1000)
+          };
+
+          // Convert screener data to chart format
+          dailyPrices = screenerChart.slice(-100).map(item => ({
+            date: item.date,
+            open: item.price, // Approximation
+            high: item.price, // Approximation
+            low: item.price,  // Approximation
+            close: item.price,
+            volume: item.volume || 0
+          }));
+        }
+      } catch (error) {
+        console.warn(`Screener.in failed for ${symbol}, falling back to Yahoo Finance:`, error);
+      }
+    }
+
+    // Fallback to Yahoo Finance if screener.in fails or symbol not supported
     if (!stockData) {
-      return res.status(404).json({
-        success: false,
-        error: 'Stock not found'
-      });
+      console.log(`Fetching data for ${symbol} from Yahoo Finance (fallback)`);
+
+      const [yahooStockData, yahooChartData] = await Promise.all([
+        fetchSingleStock(yahooSymbol),
+        fetchStockChart(yahooSymbol, '1d', '1y')
+      ]);
+
+      if (!yahooStockData) {
+        return res.status(404).json({
+          success: false,
+          error: 'Stock not found'
+        });
+      }
+
+      stockData = yahooStockData;
+      chartData = yahooChartData;
     }
     
     const niftyStock = getNifty50StockBySymbol(yahooSymbol);
-    
+
     const overview = {
       symbol: stockData.symbol.replace('.NS', ''),
       name: stockData.shortName || stockData.longName || stockData.symbol,
@@ -63,20 +123,20 @@ export default async function handler(
       exchange: stockData.exchange || 'NSI',
       description: `${stockData.shortName || stockData.longName} is listed on the National Stock Exchange of India.`
     };
-    
-    let dailyPrices: any[] = [];
-    if (chartData?.indicators?.quote?.[0]) {
+
+    // Process Yahoo Finance chart data if available and screener.in data not used
+    if (dailyPrices.length === 0 && chartData?.indicators?.quote?.[0]) {
       const quote = chartData.indicators.quote[0];
       const timestamps = chartData.timestamp || [];
-      
-      dailyPrices = timestamps.map((timestamp, index) => ({
+
+      dailyPrices = timestamps.map((timestamp: number, index: number) => ({
         date: new Date(timestamp * 1000).toISOString().split('T')[0],
         open: quote.open[index] || 0,
         high: quote.high[index] || 0,
         low: quote.low[index] || 0,
         close: quote.close[index] || 0,
         volume: quote.volume[index] || 0
-      })).filter(price => price.close > 0);
+      })).filter((price: any) => price.close > 0);
     }
 
     await Stock.findOneAndUpdate(

@@ -1,29 +1,104 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { 
-  ComposedChart, 
-  Line, 
+import React, { useState, useMemo, useEffect } from 'react';
+import {
+  ComposedChart,
+  Line,
   Bar,
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   ReferenceLine
 } from 'recharts';
 import { StockHistory } from '@/types';
 
+interface ChartData {
+  date: string;
+  price: number;
+  dma50?: number | null;
+  dma200?: number | null;
+  volume?: number;
+  close: number;
+  open: number;
+  high: number;
+  low: number;
+}
+
+interface ChartResponse {
+  source: string;
+  period: string;
+  data: ChartData[];
+}
+
 interface AdvancedStockChartProps {
-  data: StockHistory[];
+  data?: StockHistory[];
   symbol: string;
 }
+
+const TIME_PERIODS = [
+  { key: '1W', label: '1 Week' },
+  { key: '1M', label: '1 Month' },
+  { key: '3M', label: '3 Months' },
+  { key: '6M', label: '6 Months' },
+  { key: '1Y', label: '1 Year' },
+  { key: '5Y', label: '5 Years' },
+  { key: 'MAX', label: 'Max' }
+];
 
 export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartProps) {
   const [showVolume, setShowVolume] = useState(true);
   const [showSMA, setShowSMA] = useState(false);
   const [showEMA, setShowEMA] = useState(false);
+  const [showDMA, setShowDMA] = useState(true);
+  const [selectedPeriod, setSelectedPeriod] = useState('1Y');
+  const [chartData, setChartData] = useState<ChartResponse | null>(null);
+  const [loading, setLoading] = useState(false);
   const [chartType, setChartType] = useState<'line' | 'candle'>('line');
+
+  // Fetch enhanced chart data from new API
+  const fetchChartData = async (period: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/stocks/chart/${symbol}?period=${period}`);
+      const result = await response.json();
+
+      if (result.success) {
+        setChartData(result.data);
+      } else {
+        console.error('Failed to fetch chart data:', result.error);
+        // Fallback to basic data if available
+        if (data && data.length > 0) {
+          setChartData({
+            source: 'fallback',
+            period,
+            data: data.map(item => ({
+              date: new Date(item.date).toISOString().split('T')[0],
+              price: item.close,
+              close: item.close,
+              open: item.open,
+              high: item.high,
+              low: item.low,
+              volume: item.volume,
+              dma50: null,
+              dma200: null
+            }))
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching chart data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (symbol) {
+      fetchChartData(selectedPeriod);
+    }
+  }, [symbol, selectedPeriod]);
 
   // Calculate Simple Moving Average
   const calculateSMA = (prices: number[], period: number = 20): (number | null)[] => {
@@ -55,10 +130,22 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
     return result;
   };
 
-  const chartData = useMemo(() => {
-    if (!data || data.length === 0) return [];
+  const processedChartData = useMemo(() => {
+    const dataSource = chartData?.data || (data ? data.map(item => ({
+      date: new Date(item.date).toISOString().split('T')[0],
+      price: item.close,
+      close: item.close,
+      open: item.open,
+      high: item.high,
+      low: item.low,
+      volume: item.volume,
+      dma50: null,
+      dma200: null
+    })) : []);
 
-    const sortedData = [...data].sort((a, b) => 
+    if (dataSource.length === 0) return [];
+
+    const sortedData = [...dataSource].sort((a, b) =>
       new Date(a.date).getTime() - new Date(b.date).getTime()
     );
 
@@ -67,9 +154,9 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
     const emaValues = showEMA ? calculateEMA(prices, 12) : [];
 
     return sortedData.map((item, index) => ({
-      date: new Date(item.date).toLocaleDateString('en-IN', { 
-        day: '2-digit', 
-        month: 'short' 
+      date: new Date(item.date).toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: 'short'
       }),
       fullDate: new Date(item.date),
       price: item.close,
@@ -77,6 +164,8 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
       high: item.high,
       low: item.low,
       volume: item.volume,
+      dma50: item.dma50,
+      dma200: item.dma200,
       sma: showSMA ? smaValues[index] : null,
       ema: showEMA ? emaValues[index] : null,
       // Calculate candle body for visualization
@@ -85,7 +174,7 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
       // Volume color based on price movement
       volumeColor: item.close >= item.open ? '#10b981' : '#ef4444',
     }));
-  }, [data, showSMA, showEMA]);
+  }, [chartData, data, showSMA, showEMA]);
 
   const formatTooltip = (value: any, name: string, props: any) => {
     if (name === 'price') {
@@ -96,6 +185,12 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
     }
     if (name === 'ema') {
       return [`₹${Number(value).toFixed(2)}`, 'EMA(12)'];
+    }
+    if (name === 'dma50') {
+      return [`₹${Number(value).toFixed(2)}`, '50 DMA'];
+    }
+    if (name === 'dma200') {
+      return [`₹${Number(value).toFixed(2)}`, '200 DMA'];
     }
     if (name === 'volume') {
       return [Number(value).toLocaleString(), 'Volume'];
@@ -130,16 +225,28 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
               <span className="text-gray-600">Volume:</span>
               <span className="font-medium">{data.volume?.toLocaleString()}</span>
             </div>
+            {showDMA && data.dma50 && (
+              <div className="flex justify-between gap-4">
+                <span className="text-gray-600">50 DMA:</span>
+                <span className="font-medium text-orange-600">₹{data.dma50.toFixed(2)}</span>
+              </div>
+            )}
+            {showDMA && data.dma200 && (
+              <div className="flex justify-between gap-4">
+                <span className="text-gray-600">200 DMA:</span>
+                <span className="font-medium text-purple-600">₹{data.dma200.toFixed(2)}</span>
+              </div>
+            )}
             {showSMA && data.sma && (
               <div className="flex justify-between gap-4">
                 <span className="text-gray-600">SMA(20):</span>
-                <span className="font-medium text-orange-600">₹{data.sma.toFixed(2)}</span>
+                <span className="font-medium text-blue-600">₹{data.sma.toFixed(2)}</span>
               </div>
             )}
             {showEMA && data.ema && (
               <div className="flex justify-between gap-4">
                 <span className="text-gray-600">EMA(12):</span>
-                <span className="font-medium text-purple-600">₹{data.ema.toFixed(2)}</span>
+                <span className="font-medium text-indigo-600">₹{data.ema.toFixed(2)}</span>
               </div>
             )}
           </div>
@@ -149,7 +256,7 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
     return null;
   };
 
-  const toggleIndicator = (indicator: 'volume' | 'sma' | 'ema') => {
+  const toggleIndicator = (indicator: 'volume' | 'sma' | 'ema' | 'dma') => {
     switch (indicator) {
       case 'volume':
         setShowVolume(!showVolume);
@@ -160,10 +267,13 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
       case 'ema':
         setShowEMA(!showEMA);
         break;
+      case 'dma':
+        setShowDMA(!showDMA);
+        break;
     }
   };
 
-  if (!data || data.length === 0) {
+  if ((!data || data.length === 0) && !chartData && !loading) {
     return (
       <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
         <div className="text-center py-12">
@@ -173,8 +283,8 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
     );
   }
 
-  const currentPrice = chartData.length > 0 ? chartData[chartData.length - 1]?.price : 0;
-  const previousPrice = chartData.length > 1 ? chartData[chartData.length - 2]?.price : 0;
+  const currentPrice = processedChartData.length > 0 ? processedChartData[processedChartData.length - 1]?.price : 0;
+  const previousPrice = processedChartData.length > 1 ? processedChartData[processedChartData.length - 2]?.price : 0;
   const priceChange = currentPrice - previousPrice;
   const priceChangePercent = previousPrice ? (priceChange / previousPrice) * 100 : 0;
   const isPositive = priceChange >= 0;
@@ -207,18 +317,28 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
           <button
             onClick={() => toggleIndicator('volume')}
             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-              showVolume 
-                ? 'bg-blue-500 text-white' 
+              showVolume
+                ? 'bg-blue-500 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
             Volume
           </button>
           <button
+            onClick={() => toggleIndicator('dma')}
+            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+              showDMA
+                ? 'bg-green-500 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            DMA Lines
+          </button>
+          <button
             onClick={() => toggleIndicator('sma')}
             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-              showSMA 
-                ? 'bg-orange-500 text-white' 
+              showSMA
+                ? 'bg-orange-500 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
@@ -227,8 +347,8 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
           <button
             onClick={() => toggleIndicator('ema')}
             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-              showEMA 
-                ? 'bg-purple-500 text-white' 
+              showEMA
+                ? 'bg-purple-500 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
@@ -237,10 +357,36 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
         </div>
       </div>
 
+      {/* Period Selection */}
+      <div className="flex gap-1 mb-4 overflow-x-auto">
+        {TIME_PERIODS.map((period) => (
+          <button
+            key={period.key}
+            onClick={() => setSelectedPeriod(period.key)}
+            disabled={loading}
+            className={`px-3 py-1 text-sm rounded whitespace-nowrap ${
+              selectedPeriod === period.key
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+          >
+            {period.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Loading State */}
+      {loading && (
+        <div className="flex items-center justify-center h-64">
+          <div className="text-gray-500">Loading chart data...</div>
+        </div>
+      )}
+
       {/* Main Chart */}
-      <div className="h-[400px] mb-4">
-        <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+      {!loading && (
+        <div className="h-[400px] mb-4">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={processedChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis 
               dataKey="date"
@@ -319,9 +465,38 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
                 strokeDasharray="3 3"
               />
             )}
+
+            {/* DMA50 line */}
+            {showDMA && (
+              <Line
+                yAxisId="price"
+                type="monotone"
+                dataKey="dma50"
+                stroke="#f59e0b"
+                strokeWidth={2}
+                dot={false}
+                connectNulls={false}
+                strokeDasharray="5 5"
+              />
+            )}
+
+            {/* DMA200 line */}
+            {showDMA && (
+              <Line
+                yAxisId="price"
+                type="monotone"
+                dataKey="dma200"
+                stroke="#8b5cf6"
+                strokeWidth={2}
+                dot={false}
+                connectNulls={false}
+                strokeDasharray="8 4"
+              />
+            )}
           </ComposedChart>
         </ResponsiveContainer>
-      </div>
+        </div>
+      )}
 
       {/* Legend */}
       <div className="mb-4 flex flex-wrap gap-4 text-sm">
@@ -347,28 +522,46 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
             <span className="text-gray-600">EMA(12)</span>
           </div>
         )}
+        {showDMA && (
+          <>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-1 bg-orange-500" style={{ borderTop: '2px dashed #f59e0b' }}></div>
+              <span className="text-gray-600">50 DMA</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-1 bg-purple-600" style={{ borderTop: '2px dashed #8b5cf6' }}></div>
+              <span className="text-gray-600">200 DMA</span>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Market Summary */}
-      {chartData.length > 0 && (
+      {processedChartData.length > 0 && (
         <div className="pt-4 border-t border-gray-200">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
               <p className="text-xs text-gray-500 uppercase">Open</p>
-              <p className="font-semibold">₹{chartData[chartData.length - 1]?.open.toFixed(2)}</p>
+              <p className="font-semibold">₹{processedChartData[processedChartData.length - 1]?.open.toFixed(2)}</p>
             </div>
             <div>
               <p className="text-xs text-gray-500 uppercase">High</p>
-              <p className="font-semibold text-green-600">₹{chartData[chartData.length - 1]?.high.toFixed(2)}</p>
+              <p className="font-semibold text-green-600">₹{processedChartData[processedChartData.length - 1]?.high.toFixed(2)}</p>
             </div>
             <div>
               <p className="text-xs text-gray-500 uppercase">Low</p>
-              <p className="font-semibold text-red-600">₹{chartData[chartData.length - 1]?.low.toFixed(2)}</p>
+              <p className="font-semibold text-red-600">₹{processedChartData[processedChartData.length - 1]?.low.toFixed(2)}</p>
             </div>
             <div>
               <p className="text-xs text-gray-500 uppercase">Volume</p>
-              <p className="font-semibold">{chartData[chartData.length - 1]?.volume.toLocaleString()}</p>
+              <p className="font-semibold">{processedChartData[processedChartData.length - 1]?.volume?.toLocaleString()}</p>
             </div>
+          </div>
+
+          {/* Data Source Info */}
+          <div className="mt-4 text-xs text-gray-500">
+            Data source: {chartData?.source === 'screener' ? 'Screener.in (with DMA indicators)' : chartData?.source === 'yahoo' ? 'Yahoo Finance' : 'Database'}
+            {processedChartData.length > 0 && ` • ${processedChartData.length} data points • Period: ${selectedPeriod}`}
           </div>
         </div>
       )}
