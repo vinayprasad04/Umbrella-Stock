@@ -56,6 +56,7 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
   const [chartData, setChartData] = useState<ChartResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [chartType, setChartType] = useState<'line' | 'candle'>('line');
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   // Fetch enhanced chart data from new API
   const fetchChartData = async (period: string) => {
@@ -273,6 +274,31 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
     }
   };
 
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
+  };
+
+  // Handle escape key to exit fullscreen
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isFullscreen) {
+        setIsFullscreen(false);
+      }
+    };
+
+    if (isFullscreen) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isFullscreen]);
+
   if ((!data || data.length === 0) && !chartData && !loading) {
     return (
       <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
@@ -289,8 +315,8 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
   const priceChangePercent = previousPrice ? (priceChange / previousPrice) * 100 : 0;
   const isPositive = priceChange >= 0;
 
-  return (
-    <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+  const ChartContent = () => (
+    <>
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <div className="mb-4 sm:mb-0">
@@ -302,8 +328,8 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
               ₹{currentPrice.toFixed(2)}
             </span>
             <span className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
-              isPositive 
-                ? 'bg-green-100 text-green-800' 
+              isPositive
+                ? 'bg-green-100 text-green-800'
                 : 'bg-red-100 text-red-800'
             }`}>
               {isPositive ? '↗' : '↘'}
@@ -354,6 +380,22 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
           >
             EMA(12)
           </button>
+          <button
+            onClick={toggleFullscreen}
+            className="px-3 py-1.5 text-xs font-medium rounded-lg transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 flex items-center gap-1"
+            title={isFullscreen ? "Exit Fullscreen (Esc)" : "Enter Fullscreen"}
+          >
+            {isFullscreen ? (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 9V4.5M9 9H4.5M9 9L3.5 3.5m11 5.5V4.5M15 9h4.5M15 9l5.5-5.5M9 15v4.5M9 15H4.5M9 15l-5.5 5.5m11-5.5v4.5m0-4.5h4.5m0 0l5.5 5.5" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5.5 5.5M20 8V4m0 0h-4m4 0l-5.5 5.5M4 16v4m0 0h4m-4 0l5.5-5.5M20 16v4m0 0h-4m4 0l-5.5-5.5" />
+              </svg>
+            )}
+            {isFullscreen ? 'Exit' : 'Fullscreen'}
+          </button>
         </div>
       </div>
 
@@ -384,17 +426,17 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
 
       {/* Main Chart */}
       {!loading && (
-        <div className="h-[400px] mb-4">
+        <div className={isFullscreen ? "flex-1 min-h-0" : "h-[400px]"} mb-4>
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={processedChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis 
+            <XAxis
               dataKey="date"
               tick={{ fontSize: 11 }}
               axisLine={false}
               tickLine={false}
             />
-            <YAxis 
+            <YAxis
               yAxisId="price"
               tick={{ fontSize: 11 }}
               axisLine={false}
@@ -403,7 +445,7 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
               tickFormatter={(value) => `₹${value.toFixed(0)}`}
             />
             {showVolume && (
-              <YAxis 
+              <YAxis
                 yAxisId="volume"
                 orientation="right"
                 tick={{ fontSize: 11 }}
@@ -413,9 +455,9 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
                 tickFormatter={(value) => `${(value / 1000).toFixed(0)}K`}
               />
             )}
-            
+
             <Tooltip content={<CustomTooltip />} />
-            
+
             {/* Volume bars */}
             {showVolume && (
               <Bar
@@ -426,7 +468,7 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
                 radius={[1, 1, 0, 0]}
               />
             )}
-            
+
             {/* Price line */}
             <Line
               yAxisId="price"
@@ -437,7 +479,7 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
               dot={false}
               activeDot={{ r: 4, fill: isPositive ? '#10b981' : '#ef4444' }}
             />
-            
+
             {/* SMA line */}
             {showSMA && (
               <Line
@@ -451,7 +493,7 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
                 strokeDasharray="5 5"
               />
             )}
-            
+
             {/* EMA line */}
             {showEMA && (
               <Line
@@ -560,11 +602,25 @@ export default function AdvancedStockChart({ data, symbol }: AdvancedStockChartP
 
           {/* Data Source Info */}
           <div className="mt-4 text-xs text-gray-500">
-            Data source: {chartData?.source === 'screener' ? 'Screener.in (with DMA indicators)' : chartData?.source === 'yahoo' ? 'Yahoo Finance' : 'Database'}
+            Data source: {chartData?.source === 'screener' ? 'Market Data (with DMA indicators)' : chartData?.source === 'yahoo' ? 'Yahoo Finance' : 'Database'}
             {processedChartData.length > 0 && ` • ${processedChartData.length} data points • Period: ${selectedPeriod}`}
           </div>
         </div>
       )}
+    </>
+  );
+
+  if (isFullscreen) {
+    return (
+      <div className="fixed inset-0 bg-white z-[9999] p-6 overflow-hidden flex flex-col">
+        <ChartContent />
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+      <ChartContent />
     </div>
   );
 }
