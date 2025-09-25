@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
+import Link from "next/link";
 import { formatCurrency, formatPercentage } from '@/lib/api-utils';
 
 // Custom styles for new design
@@ -35,109 +36,151 @@ const customStyles = `
 `;
 
 interface StockData {
-  id: number;
+  id: string;
+  symbol: string;
   name: string;
-  subSector: string;
+  sector: string;
+  industry: string;
+  currentPrice: number;
   marketCap: number;
-  closePrice: number;
-  peRatio: number;
-  oneMonthReturn: number;
-  tenDayReturn: number;
-  returnOnEquity: number;
+  marketCapFormatted: string;
+  faceValue: number;
+  peRatio: number | null;
+  oneMonthReturn: number | null;
+  tenDayReturn: number | null;
+  returnOnEquity: number | null;
+  pbRatio: number | null;
+  dataQuality: string;
+  lastUpdated: string;
 }
 
-// Sample data - replace with actual API call
-const sampleStocks: StockData[] = [
-  {
-    id: 1,
-    name: "Reliance Industries Ltd",
-    subSector: "Oil & Gas - Refining & Marketing",
-    marketCap: 1871540.97,
-    closePrice: 1383.00,
-    peRatio: 26.87,
-    oneMonthReturn: -1.66,
-    tenDayReturn: -0.49,
-    returnOnEquity: 7.20
-  },
-  {
-    id: 2,
-    name: "HDFC Bank Ltd",
-    subSector: "Private Banks",
-    marketCap: 1460844.27,
-    closePrice: 951.05,
-    peRatio: 20.64,
-    oneMonthReturn: -2.35,
-    tenDayReturn: -0.64,
-    returnOnEquity: 14.05
-  },
-  {
-    id: 3,
-    name: "Bharti Airtel Ltd",
-    subSector: "Telecom Services",
-    marketCap: 1157763.73,
-    closePrice: 1931.10,
-    peRatio: 34.50,
-    oneMonthReturn: 0.53,
-    tenDayReturn: -0.39,
-    returnOnEquity: 25.91
-  },
-  {
-    id: 4,
-    name: "Tata Consultancy Services Ltd",
-    subSector: "IT Services & Consulting",
-    marketCap: 1098234.29,
-    closePrice: 3035.40,
-    peRatio: 22.62,
-    oneMonthReturn: -0.87,
-    tenDayReturn: -0.88,
-    returnOnEquity: 51.90
-  },
-  {
-    id: 5,
-    name: "ICICI Bank Ltd",
-    subSector: "Private Banks",
-    marketCap: 987231.99,
-    closePrice: 1382.70,
-    peRatio: 19.35,
-    oneMonthReturn: -2.37,
-    tenDayReturn: -0.83,
-    returnOnEquity: 17.04
-  }
-];
+interface PaginationInfo {
+  currentPage: number;
+  totalPages: number;
+  totalRecords: number;
+  limit: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
+}
+
+interface ApiResponse {
+  success: boolean;
+  data: {
+    stocks: StockData[];
+    pagination: PaginationInfo;
+  };
+  message?: string;
+}
+
+// API URL for fetching stocks
+const API_URL = '/api/scanner/stocks';
 
 export default function ScannerPage() {
-  const [stocks, setStocks] = useState<StockData[]>(sampleStocks);
-  const [filteredStocks, setFilteredStocks] = useState<StockData[]>(sampleStocks);
-  const [sortConfig, setSortConfig] = useState<{ key: keyof StockData; direction: 'asc' | 'desc' } | null>(null);
+  // Data states
+  const [stocks, setStocks] = useState<StockData[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>('');
+
+  // Pagination states
+  const [pagination, setPagination] = useState<PaginationInfo>({
+    currentPage: 1,
+    totalPages: 0,
+    totalRecords: 0,
+    limit: 20,
+    hasNext: false,
+    hasPrevious: false
+  });
 
   // Filter states
-  const [marketCapFilter, setMarketCapFilter] = useState<[number, number]>([0, 1871540.97]);
-  const [selectedSector, setSelectedSector] = useState<string>('');
-  const [selectedCapSize, setSelectedCapSize] = useState<string>('');
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 4000]);
-  const [peRatioRange, setPeRatioRange] = useState<[number, number]>([0, 100]);
-  const [oneMonthReturnRange, setOneMonthReturnRange] = useState<[number, number]>([-10, 20]);
-  const [tenDayReturnRange, setTenDayReturnRange] = useState<[number, number]>([-5, 5]);
-  const [roeRange, setRoeRange] = useState<[number, number]>([0, 60]);
-  const [pbRatioRange, setPbRatioRange] = useState<[number, number]>([0, 10]);
+  const [filters, setFilters] = useState({
+    search: '',
+    sector: '',
+    industry: '',
+    minMarketCap: '',
+    maxMarketCap: '',
+    minPrice: '',
+    maxPrice: '',
+    sortBy: 'meta.marketCapitalization',
+    sortOrder: 'desc' as 'asc' | 'desc'
+  });
 
-  const handleSort = (key: keyof StockData) => {
-    let direction: 'asc' | 'desc' = 'asc';
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
+  // UI states
+  const [selectedLimit, setSelectedLimit] = useState<number>(20);
+
+  // Fetch stocks from API
+  const fetchStocks = async (page: number = 1, limit: number = 20) => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        ...(filters.search && { search: filters.search }),
+        ...(filters.sector && { sector: filters.sector }),
+        ...(filters.industry && { industry: filters.industry }),
+        ...(filters.minMarketCap && { minMarketCap: filters.minMarketCap }),
+        ...(filters.maxMarketCap && { maxMarketCap: filters.maxMarketCap }),
+        ...(filters.minPrice && { minPrice: filters.minPrice }),
+        ...(filters.maxPrice && { maxPrice: filters.maxPrice }),
+        sortBy: filters.sortBy,
+        sortOrder: filters.sortOrder
+      });
+
+      const response = await fetch(`${API_URL}?${queryParams}`);
+      const result: ApiResponse = await response.json();
+
+      if (result.success) {
+        setStocks(result.data.stocks);
+        setPagination(result.data.pagination);
+      } else {
+        setError(result.message || 'Failed to fetch stocks');
+      }
+    } catch (err) {
+      setError('An error occurred while fetching stocks');
+      console.error('Fetch error:', err);
+    } finally {
+      setLoading(false);
     }
-    setSortConfig({ key, direction });
-
-    const sortedData = [...filteredStocks].sort((a, b) => {
-      if (a[key] < b[key]) return direction === 'asc' ? -1 : 1;
-      if (a[key] > b[key]) return direction === 'asc' ? 1 : -1;
-      return 0;
-    });
-    setFilteredStocks(sortedData);
   };
 
-  const getSortIcon = (columnName: keyof StockData) => {
-    if (!sortConfig || sortConfig.key !== columnName) {
+  // Load initial data
+  useEffect(() => {
+    fetchStocks(1, selectedLimit);
+  }, []);
+
+  // Handle pagination
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      fetchStocks(newPage, selectedLimit);
+    }
+  };
+
+  // Handle limit change
+  const handleLimitChange = (newLimit: number) => {
+    setSelectedLimit(newLimit);
+    fetchStocks(1, newLimit); // Reset to page 1 when changing limit
+  };
+
+  // Handle filters
+  const applyFilters = () => {
+    fetchStocks(1, selectedLimit); // Reset to page 1 when applying filters
+  };
+
+  const handleSort = (key: string) => {
+    const newDirection = filters.sortOrder === 'asc' ? 'desc' : 'asc';
+    setFilters(prev => ({
+      ...prev,
+      sortBy: key,
+      sortOrder: newDirection
+    }));
+
+    // Re-fetch data with new sort
+    fetchStocks(1, selectedLimit);
+  };
+
+  const getSortIcon = (columnName: string) => {
+    if (filters.sortBy !== columnName) {
       return (
         <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
@@ -145,7 +188,7 @@ export default function ScannerPage() {
       );
     }
 
-    if (sortConfig.direction === 'asc') {
+    if (filters.sortOrder === 'asc') {
       return (
         <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
@@ -161,42 +204,18 @@ export default function ScannerPage() {
   };
 
   const resetAllFilters = () => {
-    setMarketCapFilter([0, 1871540.97]);
-    setSelectedSector('');
-    setSelectedCapSize('');
-    setPriceRange([0, 4000]);
-    setPeRatioRange([0, 100]);
-    setOneMonthReturnRange([-10, 20]);
-    setTenDayReturnRange([-5, 5]);
-    setRoeRange([0, 60]);
-    setPbRatioRange([0, 10]);
-    setFilteredStocks(stocks);
-  };
-
-  // Quick filter functions
-  const applyLargeCapFilter = () => {
-    const filtered = stocks.filter(stock => stock.marketCap > 200000); // Large cap > 20,000 Cr
-    setFilteredStocks(filtered);
-    setSelectedCapSize('largecap');
-  };
-
-  const applyLowPEFilter = () => {
-    const filtered = stocks.filter(stock => stock.peRatio < 20);
-    setFilteredStocks(filtered);
-  };
-
-  const applyHighROEFilter = () => {
-    const filtered = stocks.filter(stock => stock.returnOnEquity > 15);
-    setFilteredStocks(filtered);
-  };
-
-  const applyBankingSectorFilter = () => {
-    const filtered = stocks.filter(stock =>
-      stock.subSector.toLowerCase().includes('bank') ||
-      stock.subSector.toLowerCase().includes('private banks')
-    );
-    setFilteredStocks(filtered);
-    setSelectedSector('banking');
+    setFilters({
+      search: '',
+      sector: '',
+      industry: '',
+      minMarketCap: '',
+      maxMarketCap: '',
+      minPrice: '',
+      maxPrice: '',
+      sortBy: 'meta.marketCapitalization',
+      sortOrder: 'desc'
+    });
+    fetchStocks(1, selectedLimit);
   };
 
   return (
@@ -204,18 +223,18 @@ export default function ScannerPage() {
       <style dangerouslySetInnerHTML={{ __html: customStyles }} />
       <Header />
 
-      <main className="pt-[120px] md:pt-[140px] lg:pt-[90px] pb-8">
+      <main className="pt-[120px] md:pt-[140px] lg:pt-[90px] pb-4">
         {/* Top Header Section */}
-        <div className="px-6 mb-8">
+        <div className="px-6 mb-4">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-4xl font-bold text-slate-900 mb-2">Stock Screener</h1>
+              <h1 className="text-2xl font-bold text-slate-900 ">Stock Screener</h1>
               <p className="text-slate-600">Find the perfect stocks with advanced filtering</p>
             </div>
             <div className="flex items-center gap-3">
-              <button className="px-4 py-2 text-slate-600 hover:text-slate-900 hover:bg-white rounded-lg transition-all">
+              {/* <button className="px-4 py-2 text-slate-600 hover:text-slate-900 hover:bg-white rounded-lg transition-all">
                 Save Screen
-              </button>
+              </button> */}
               <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all">
                 Export Results
               </button>
@@ -242,15 +261,16 @@ export default function ScannerPage() {
 
                 {/* Filter Categories */}
                 <div className="space-y-4">
-                  {/* Stock Universe */}
+                  {/* Search */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Stock Universe</label>
-                    <select className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                      <option>All Stocks</option>
-                      <option>NSE 500</option>
-                      <option>BSE 500</option>
-                      <option>Large Cap</option>
-                    </select>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Search</label>
+                    <input
+                      type="text"
+                      placeholder="Search by company name or symbol..."
+                      value={filters.search}
+                      onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    />
                   </div>
 
                   {/* Sector */}
@@ -258,48 +278,52 @@ export default function ScannerPage() {
                     <label className="block text-sm font-medium text-slate-700 mb-2">Sector</label>
                     <select
                       className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      value={selectedSector}
-                      onChange={(e) => setSelectedSector(e.target.value)}
+                      value={filters.sector}
+                      onChange={(e) => setFilters(prev => ({ ...prev, sector: e.target.value }))}
                     >
                       <option value="">All Sectors</option>
-                      <option value="banking">Banking</option>
-                      <option value="it">Information Technology</option>
-                      <option value="energy">Energy</option>
-                      <option value="telecom">Telecommunications</option>
+                      <option value="Banking">Banking</option>
+                      <option value="Technology">Technology</option>
+                      <option value="Energy">Energy</option>
+                      <option value="Healthcare">Healthcare</option>
+                      <option value="FMCG">FMCG</option>
+                      <option value="Auto">Auto</option>
+                      <option value="Telecom">Telecom</option>
+                      <option value="Infrastructure">Infrastructure</option>
+                      <option value="Real Estate">Real Estate</option>
                     </select>
+                  </div>
+
+                  {/* Industry */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Industry</label>
+                    <input
+                      type="text"
+                      placeholder="Enter industry (e.g., IT Services, Banking)"
+                      value={filters.industry}
+                      onChange={(e) => setFilters(prev => ({ ...prev, industry: e.target.value }))}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    />
                   </div>
 
                   {/* Market Cap */}
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Market Cap</label>
-                    <div className="space-y-3">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Market Cap (₹ Cr)</label>
+                    <div className="flex gap-2">
                       <input
-                        type="range"
-                        min="0"
-                        max="1871540.97"
-                        value={marketCapFilter[1]}
-                        onChange={(e) => setMarketCapFilter([0, parseFloat(e.target.value)])}
-                        className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+                        type="number"
+                        placeholder="Min"
+                        value={filters.minMarketCap}
+                        onChange={(e) => setFilters(prev => ({ ...prev, minMarketCap: e.target.value }))}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       />
-                      <div className="flex justify-between text-xs text-slate-500">
-                        <span>₹0</span>
-                        <span>₹{(marketCapFilter[1]/100000).toFixed(0)}L Cr</span>
-                      </div>
-                      <div className="flex gap-2">
-                        {['Small', 'Mid', 'Large'].map((size) => (
-                          <button
-                            key={size}
-                            onClick={() => setSelectedCapSize(size.toLowerCase() + 'cap')}
-                            className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                              selectedCapSize === size.toLowerCase() + 'cap'
-                                ? 'bg-indigo-600 text-white'
-                                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                            }`}
-                          >
-                            {size}
-                          </button>
-                        ))}
-                      </div>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={filters.maxMarketCap}
+                        onChange={(e) => setFilters(prev => ({ ...prev, maxMarketCap: e.target.value }))}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      />
                     </div>
                   </div>
 
@@ -310,11 +334,15 @@ export default function ScannerPage() {
                       <input
                         type="number"
                         placeholder="Min"
+                        value={filters.minPrice}
+                        onChange={(e) => setFilters(prev => ({ ...prev, minPrice: e.target.value }))}
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       />
                       <input
                         type="number"
                         placeholder="Max"
+                        value={filters.maxPrice}
+                        onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
                         className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       />
                     </div>
@@ -355,7 +383,10 @@ export default function ScannerPage() {
 
                 {/* Apply Button */}
                 <div className="mt-6 pt-4 border-t border-slate-200">
-                  <button className="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm">
+                  <button
+                    onClick={applyFilters}
+                    className="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm"
+                  >
                     Apply Filters
                   </button>
                 </div>
@@ -365,19 +396,33 @@ export default function ScannerPage() {
             {/* Results Section */}
             <div className="col-span-12 lg:col-span-9">
               {/* Results Summary */}
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6">
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-3 mb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <div className={`w-2 h-2 ${loading ? 'bg-orange-500' : error ? 'bg-red-500' : 'bg-green-500'} rounded-full`}></div>
                       <span className="text-lg font-semibold text-slate-900">
-                        {filteredStocks.length} stocks found
+                        {loading ? 'Loading...' : `${pagination.totalRecords} stocks found`}
                       </span>
                     </div>
-                    <span className="text-sm text-slate-500">Showing 1-20</span>
+                    {!loading && !error && (
+                      <span className="text-sm text-slate-500">
+                        Showing {((pagination.currentPage - 1) * pagination.limit) + 1}-{Math.min(pagination.currentPage * pagination.limit, pagination.totalRecords)} of {pagination.totalRecords}
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-slate-500">Updated 9:45 PM IST</span>
+                    <span className="text-xs text-slate-500">Per Page:</span>
+                    <select
+                      value={selectedLimit}
+                      onChange={(e) => handleLimitChange(Number(e.target.value))}
+                      className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    >
+                      <option value={10}>10</option>
+                      <option value={20}>20</option>
+                      <option value={30}>30</option>
+                      <option value={50}>50</option>
+                    </select>
                     <button className="px-3 py-1.5 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all text-sm">
                       Export
                     </button>
@@ -387,26 +432,26 @@ export default function ScannerPage() {
 
               {/* Stock Cards Grid */}
               <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="overflow-auto scrollbar-thin" style={{maxHeight: '600px'}}>
+                <div className="overflow-auto scrollbar-thin" style={{maxHeight: '575px'}}>
                   <table className="w-full">
                     <thead className="bg-slate-50 sticky top-0">
                       <tr>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                          <button onClick={() => handleSort('name')} className="flex items-center gap-1 hover:text-indigo-600">
-                            Company {getSortIcon('name')}
+                          <button onClick={() => handleSort('companyName')} className="flex items-center gap-1 hover:text-indigo-600">
+                            Company {getSortIcon('companyName')}
                           </button>
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
                           Sector
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                          <button onClick={() => handleSort('marketCap')} className="flex items-center gap-1 hover:text-indigo-600">
-                            Market Cap {getSortIcon('marketCap')}
+                          <button onClick={() => handleSort('meta.marketCapitalization')} className="flex items-center gap-1 hover:text-indigo-600">
+                            Market Cap {getSortIcon('meta.marketCapitalization')}
                           </button>
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                          <button onClick={() => handleSort('closePrice')} className="flex items-center gap-1 hover:text-indigo-600">
-                            Price {getSortIcon('closePrice')}
+                          <button onClick={() => handleSort('meta.currentPrice')} className="flex items-center gap-1 hover:text-indigo-600">
+                            Price {getSortIcon('meta.currentPrice')}
                           </button>
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
@@ -432,76 +477,184 @@ export default function ScannerPage() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {filteredStocks.slice(0, 20).map((stock, index) => (
-                        <tr key={stock.id} className="hover:bg-slate-50 transition-colors">
-                          <td className="px-4 py-4">
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 bg-indigo-600 text-white rounded-lg flex items-center justify-center text-xs font-bold">
-                                {index + 1}
-                              </div>
-                              <div>
-                                <div className="font-semibold text-slate-900 hover:text-indigo-600 cursor-pointer">
-                                  {stock.name}
-                                </div>
-                                <div className="text-xs text-slate-500">Listed Stock</div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-4 py-4">
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
-                              {stock.subSector}
-                            </span>
-                          </td>
-                          <td className="px-4 py-4">
-                            <div className="text-sm font-semibold text-slate-900">
-                              ₹{(stock.marketCap/100000).toFixed(2)}L Cr
-                            </div>
-                          </td>
-                          <td className="px-4 py-4">
-                            <div className="text-sm font-semibold text-slate-900">
-                              ₹{stock.closePrice.toFixed(2)}
-                            </div>
-                          </td>
-                          <td className="px-4 py-4">
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-orange-100 text-orange-800">
-                              {stock.peRatio.toFixed(2)}x
-                            </span>
-                          </td>
-                          <td className="px-4 py-4">
-                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                              stock.oneMonthReturn >= 0
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-red-100 text-red-800'
-                            }`}>
-                              {stock.oneMonthReturn >= 0 ? '+' : ''}{stock.oneMonthReturn.toFixed(2)}%
-                            </span>
-                          </td>
-                          <td className="px-4 py-4">
-                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                              stock.tenDayReturn >= 0
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-red-100 text-red-800'
-                            }`}>
-                              {stock.tenDayReturn >= 0 ? '+' : ''}{stock.tenDayReturn.toFixed(2)}%
-                            </span>
-                          </td>
-                          <td className="px-4 py-4">
-                            <div className="flex items-center gap-2">
-                              <div className="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                                <div
-                                  className="h-full bg-indigo-500 rounded-full"
-                                  style={{ width: `${Math.min(stock.returnOnEquity * 1.67, 100)}%` }}
-                                ></div>
-                              </div>
-                              <span className="text-sm font-medium text-slate-900">{stock.returnOnEquity.toFixed(1)}%</span>
+                      {loading ? (
+                        <tr>
+                          <td colSpan={8} className="px-4 py-8 text-center text-slate-500">
+                            <div className="flex items-center justify-center gap-2">
+                              <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                              Loading stocks...
                             </div>
                           </td>
                         </tr>
-                      ))}
+                      ) : error ? (
+                        <tr>
+                          <td colSpan={8} className="px-4 py-8 text-center text-red-500">
+                            {error}
+                          </td>
+                        </tr>
+                      ) : stocks.length === 0 ? (
+                        <tr>
+                          <td colSpan={8} className="px-4 py-8 text-center text-slate-500">
+                            No stocks found matching your criteria
+                          </td>
+                        </tr>
+                      ) : (
+                        stocks.map((stock, index) => (
+                          <tr key={stock.id} className="hover:bg-slate-50 transition-colors">
+                            <td className="px-4 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-indigo-600 text-white rounded-lg flex items-center justify-center text-xs font-bold">
+                                  {((pagination.currentPage - 1) * pagination.limit) + index + 1}
+                                </div>
+                                <div>
+                                   <Link
+                                    href={`/stocks/${stock.symbol}`}
+                                     target="_blank"
+                                      rel="noopener noreferrer"
+                                    className="font-semibold text-slate-900 hover:text-indigo-600 cursor-pointer"
+                                  >
+                                    {stock.name}
+                                  </Link>
+                                 
+                                  <div className="text-xs text-slate-500">{stock.symbol}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-4 py-4">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
+                                {stock.sector}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4">
+                              <div className="text-sm font-semibold text-slate-900">
+                                {stock.marketCapFormatted}
+                              </div>
+                            </td>
+                            <td className="px-4 py-4">
+                              <div className="text-sm font-semibold text-slate-900">
+                                ₹{stock.currentPrice.toFixed(2)}
+                              </div>
+                            </td>
+                            <td className="px-4 py-4">
+                              {stock.peRatio ? (
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-orange-100 text-orange-800">
+                                  {stock.peRatio.toFixed(2)}x
+                                </span>
+                              ) : (
+                                <span className="text-xs text-slate-400">N/A</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-4">
+                              {stock.oneMonthReturn !== null ? (
+                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                  stock.oneMonthReturn >= 0
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-red-100 text-red-800'
+                                }`}>
+                                  {stock.oneMonthReturn >= 0 ? '+' : ''}{stock.oneMonthReturn.toFixed(2)}%
+                                </span>
+                              ) : (
+                                <span className="text-xs text-slate-400">N/A</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-4">
+                              {stock.tenDayReturn !== null ? (
+                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                  stock.tenDayReturn >= 0
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-red-100 text-red-800'
+                                }`}>
+                                  {stock.tenDayReturn >= 0 ? '+' : ''}{stock.tenDayReturn.toFixed(2)}%
+                                </span>
+                              ) : (
+                                <span className="text-xs text-slate-400">N/A</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-4">
+                              {stock.returnOnEquity !== null ? (
+                                <div className="flex items-center gap-2">
+                                  <div className="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-indigo-500 rounded-full"
+                                      style={{ width: `${Math.min(stock.returnOnEquity * 1.67, 100)}%` }}
+                                    ></div>
+                                  </div>
+                                  <span className="text-sm font-medium text-slate-900">{stock.returnOnEquity.toFixed(1)}%</span>
+                                </div>
+                              ) : (
+                                <span className="text-xs text-slate-400">N/A</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
               </div>
+
+              {/* Pagination Controls */}
+              {!loading && !error && pagination.totalPages > 1 && (
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-3 mt-4">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-slate-600">
+                      Page {pagination.currentPage} of {pagination.totalPages}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handlePageChange(1)}
+                        disabled={!pagination.hasPrevious}
+                        className="px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        First
+                      </button>
+                      <button
+                        onClick={() => handlePageChange(pagination.currentPage - 1)}
+                        disabled={!pagination.hasPrevious}
+                        className="px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Previous
+                      </button>
+
+                      {/* Page numbers */}
+                      {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                        const startPage = Math.max(1, pagination.currentPage - 2);
+                        const pageNumber = startPage + i;
+                        if (pageNumber > pagination.totalPages) return null;
+
+                        return (
+                          <button
+                            key={pageNumber}
+                            onClick={() => handlePageChange(pageNumber)}
+                            className={`px-3 py-2 text-sm font-medium rounded-lg ${
+                              pageNumber === pagination.currentPage
+                                ? 'bg-indigo-600 text-white'
+                                : 'text-slate-600 bg-white border border-slate-300 hover:bg-slate-50'
+                            }`}
+                          >
+                            {pageNumber}
+                          </button>
+                        );
+                      })}
+
+                      <button
+                        onClick={() => handlePageChange(pagination.currentPage + 1)}
+                        disabled={!pagination.hasNext}
+                        className="px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Next
+                      </button>
+                      <button
+                        onClick={() => handlePageChange(pagination.totalPages)}
+                        disabled={!pagination.hasNext}
+                        className="px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Last
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
