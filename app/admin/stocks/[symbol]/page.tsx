@@ -90,6 +90,9 @@ export default function StockEditPage() {
     managementTeam: []
   });
 
+  // Company name editing state
+  const [editableCompanyName, setEditableCompanyName] = useState('');
+
   // Ratios state
   const [ratiosJson, setRatiosJson] = useState('');
   const [parsedRatios, setParsedRatios] = useState<any>(null);
@@ -110,6 +113,7 @@ export default function StockEditPage() {
       const response = await ApiClient.get(`/admin/stock-details/${symbol}`);
       if (response.success) {
         setStock(response.data.stock);
+        setEditableCompanyName(response.data.stock?.companyName || '');
 
         // Handle new parsed stock detail data
         if (response.data.parsedStockDetail) {
@@ -344,6 +348,7 @@ export default function StockEditPage() {
       formDataToSend.append('sector', formData.sector || '');
       formDataToSend.append('industry', formData.industry || '');
       formDataToSend.append('dataQuality', formData.dataQuality);
+      formDataToSend.append('companyName', editableCompanyName);
 
       // Add management team
       if (formData.managementTeam) {
@@ -373,6 +378,12 @@ export default function StockEditPage() {
 
       if (result.success) {
         alert(result.message);
+
+        // Update local company name if it was changed
+        if (result.data?.companyNameUpdated && stock) {
+          setStock({ ...stock, companyName: editableCompanyName });
+        }
+
         // Refresh the data without reloading the entire page
         await fetchStockData();
       } else {
@@ -468,7 +479,10 @@ export default function StockEditPage() {
                 {isEdit ? 'Edit' : 'Add'} Stock Data
               </h1>
               <p className="text-gray-600 mt-2">
-                {stock.symbol} - {stock.companyName}
+                {stock.symbol} - {editableCompanyName || stock.companyName}
+                {editableCompanyName !== stock.companyName && (
+                  <span className="text-orange-600 text-sm ml-2">(Modified)</span>
+                )}
               </p>
             </div>
             <button
@@ -500,10 +514,16 @@ export default function StockEditPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
                   <input
                     type="text"
-                    value={stock.companyName}
-                    disabled
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                    value={editableCompanyName}
+                    onChange={(e) => setEditableCompanyName(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="Enter company name"
                   />
+                  {editableCompanyName !== stock.companyName && (
+                    <p className="text-xs text-orange-600 mt-1">
+                      ⚠️ Company name has been modified. Save to apply changes.
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">ISIN Number</label>

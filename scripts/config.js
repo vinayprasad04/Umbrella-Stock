@@ -5,7 +5,7 @@ module.exports = {
   adminBaseUrl: 'http://localhost:3000/api/admin/stock-details/',
 
   // Authentication
-  adminToken: process.env.ADMIN_TOKEN || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGJkOThkY2JiM2I3MjE3ZDYzNDcwMjEiLCJlbWFpbCI6InZpbmF5LnFzc0BnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzU4NDQ4MzU2LCJleHAiOjE3NTg0NDkyNTZ9.0-gYQvZJoMbHVHq2RzkuwS6jNVCqzNIjbCd43RuHMHA',
+  adminToken: process.env.ADMIN_TOKEN || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGJkOThkY2JiM2I3MjE3ZDYzNDcwMjEiLCJlbWFpbCI6InZpbmF5LnFzc0BnbWFpbC5jb20iLCJyb2xlIjoiQURNSU4iLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzU4OTg2MjcyLCJleHAiOjE3NTg5ODcxNzJ9.qy23SBuB2CEVGTd6z9h110_2DcnSH_uffy9suPqncZI',
 
   // Directories
   downloadPath: './downloads',

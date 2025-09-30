@@ -90,6 +90,10 @@ export default async function handler(
         : []
     };
 
+    // Get editable company name from form fields
+    const editableCompanyName = Array.isArray(fields.companyName) ? fields.companyName[0] : fields.companyName;
+    const updatedCompanyName = editableCompanyName || stock.companyName;
+
 
     const dataQuality = (Array.isArray(fields.dataQuality) ? fields.dataQuality[0] : fields.dataQuality) || 'PENDING_VERIFICATION';
 
@@ -151,7 +155,7 @@ export default async function handler(
     // Prepare data for saving - use the status selected by the user
     const stockDetailData = {
       symbol: symbol.toUpperCase(),
-      companyName: stock.companyName,
+      companyName: updatedCompanyName,
       additionalInfo,
       dataQuality: dataQuality as 'PENDING_VERIFICATION' | 'VERIFIED' | 'EXCELLENT' | 'GOOD',
       enteredBy: decoded.email,
@@ -194,23 +198,33 @@ export default async function handler(
 
     // Update the EquityStock record to mark it as having actual data
     if (savedData) {
+      const updateData: any = {
+        hasActualData: true,
+        lastUpdated: new Date()
+      };
+
+      // Update company name in EquityStock if it was changed
+      if (editableCompanyName && editableCompanyName !== stock.companyName) {
+        updateData.companyName = editableCompanyName;
+      }
+
       await EquityStock.findOneAndUpdate(
         { symbol: symbol.toUpperCase(), isActive: true },
-        {
-          hasActualData: true,
-          lastUpdated: new Date()
-        }
+        updateData
       );
     }
+
+    const companyNameUpdated = editableCompanyName && editableCompanyName !== stock.companyName;
 
     return res.status(200).json({
       success: true,
       data: {
         stockDetail: savedData,
         parsedExcelData: parsedData ? true : false,
-        uploadedFiles: uploadedFileInfo.length
+        uploadedFiles: uploadedFileInfo.length,
+        companyNameUpdated
       },
-      message: `Stock data ${existingRecord ? 'updated' : 'created'} successfully${parsedData ? ' with Excel data parsed' : ''}`
+      message: `Stock data ${existingRecord ? 'updated' : 'created'} successfully${parsedData ? ' with Excel data parsed' : ''}${companyNameUpdated ? '. Company name updated' : ''}`
     });
 
   } catch (error: any) {

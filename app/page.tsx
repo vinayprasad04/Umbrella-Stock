@@ -140,7 +140,7 @@ export default function HomePage() {
         <StockTicker />
 
       {/* Hero Section */}
-      <section className="w-full max-w-[1400px] mx-auto px-3 md:px-6 py-6 md:py-12">
+      <section className="w-full max-w-[1600px] mx-auto px-3 md:px-6 py-6 md:py-12">
         <div className="text-center mb-6 md:mb-12">
           <div className="inline-flex items-center px-3 md:px-4 py-2 bg-gradient-to-r from-[#FF6B2C]/10 to-blue-600/10 rounded-full text-xs md:text-sm font-medium text-gray-700 mb-4 md:mb-6 backdrop-blur-sm border border-white/50">
             <div className={`w-2 h-2 rounded-full mr-2 ${marketOpen ? 'bg-green-400' : 'bg-red-400'}`}></div>
@@ -195,7 +195,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <main className="w-full max-w-[1400px] mx-auto px-3 md:px-6 pb-6 md:pb-12">
+      <main className="w-full max-w-[1600px] mx-auto px-3 md:px-6 pb-6 md:pb-12">
 
         {/* Market Movers Section */}
         <section className="mb-8 md:mb-12">

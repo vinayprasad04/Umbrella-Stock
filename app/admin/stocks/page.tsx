@@ -540,7 +540,7 @@ export default function StocksDashboard() {
                       <td className="px-6 py-4 text-sm text-gray-900">
                         <div className="max-w-xs truncate" title={stock.companyName}>
                           <Link
-                            href={`/stocks/${stock.symbol}`}
+                            href={`https://www.screener.in/company/${stock.symbol}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:text-blue-800 hover:underline"

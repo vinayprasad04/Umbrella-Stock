@@ -109,7 +109,7 @@ export default function Header() {
 
   return (
     <header className="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 py-1 md:py-2 shadow-xl border-b border-blue-800/50 fixed top-0 left-0 right-0 z-[1000] backdrop-blur-md">
-      <div className="w-full max-w-[1400px] mx-auto px-3 md:px-6 flex justify-between items-center">
+      <div className="w-full max-w-[1600px] mx-auto px-3 md:px-6 flex justify-between items-center">
         {/* Dual Logo Section */}
         <div className="flex items-center gap-2 md:gap-4">
           {/* Main Logo */}
@@ -150,25 +150,25 @@ export default function Header() {
         </div>
         
         {/* Navigation Menu */}
-        <nav className="hidden md:flex items-center gap-1 lg:gap-2">
+        <nav className="hidden md:flex items-center gap-1">
           {sharesTradingMenu.map((item, index) => (
             <Link
               key={index}
               href={item.href}
-              className={`no-underline font-medium px-2 lg:px-4 py-1 lg:py-2 rounded-lg transition-all duration-200 flex items-center gap-1 text-sm lg:text-base ${
+              className={`no-underline font-medium px-2 lg:px-2 py-1 lg:py-1 rounded-lg transition-all duration-200 flex items-center gap-1 text-sm lg:text-sm ${
                 (pathname === item.href || 
                  (item.label === 'Stock' && pathname.startsWith('/stocks')))
                   ? 'text-[#FF6B2C] bg-[#FF6B2C]/10 shadow-sm border border-[#FF6B2C]/20' 
                   : 'text-gray-200 hover:text-white hover:bg-white/10 border border-transparent'
               }`}
             >
-              <span className="text-xs lg:text-sm">
+              {/* <span className="text-xs lg:text-sm">
                 {item.label === 'Home' && '🏠'}
                 {item.label === 'Stock' && '📊'}
                 {item.label === 'Sectors' && '🏢'}
                 {item.label === 'Mutual Fund' && '📈'}
                 {item.label === 'Scanner' && '🔍'}
-              </span>
+              </span> */}
               <span className="hidden lg:inline ml-1">{item.label}</span>
             </Link>
           ))}
@@ -179,14 +179,14 @@ export default function Header() {
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center gap-2 px-3 lg:px-4 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+                  className="flex items-center gap-2 px-2 lg:px-2 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
                 >
-                  <div className="w-6 h-6 lg:w-8 lg:h-8 bg-white/20 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs lg:text-sm font-semibold">
+                  <div className="w-4 h-4 lg:w-6 lg:h-6 bg-white/20 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs lg:text-xs">
                       {user.name.charAt(0).toUpperCase()}
                     </span>
-                  </div>
-                  <span className="text-white font-medium text-sm lg:text-base hidden lg:block">
+                  </div>]
+                  <span className="text-white text-sm lg:text-sm hidden lg:block">
                     {user.name}
                   </span>
                   <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -245,16 +245,16 @@ export default function Header() {
               <div className="flex items-center gap-2">
                 <Link
                   href="/login"
-                  className="px-3 lg:px-4 py-2 text-sm lg:text-base text-gray-300 hover:text-white border border-gray-600 hover:border-gray-400 rounded-lg transition-all duration-200 font-medium"
+                  className="px-3 lg:px-4 py-2 text-sm lg:text-sm bg-gradient-to-r from-[#FF6B2C] to-[#FF8A50] text-white rounded-lg hover:shadow-lg transition-all duration-200 "
                 >
                   Sign In
                 </Link>
-                <Link
+                {/* <Link
                   href="/signup"
                   className="px-3 lg:px-4 py-2 text-sm lg:text-base bg-gradient-to-r from-[#FF6B2C] to-[#FF8A50] text-white rounded-lg hover:shadow-lg transition-all duration-200 font-medium"
                 >
                   Sign Up
-                </Link>
+                </Link> */}
               </div>
             )}
           </div>
