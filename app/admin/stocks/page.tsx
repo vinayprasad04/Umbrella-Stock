@@ -27,6 +27,7 @@ interface EquityStock {
   enteredBy?: string;
   currentPrice?: number;
   exchange?: string;
+  hasRatios?: boolean;
 }
 
 interface DashboardData {
@@ -50,6 +51,7 @@ export default function StocksDashboard() {
   const [exchangeFilter, setExchangeFilter] = useState('');
   const [dataFilter, setDataFilter] = useState('all');
   const [dataQualityFilter, setDataQualityFilter] = useState('all');
+  const [ratiosFilter, setRatiosFilter] = useState('all');
   const [selectedStocks, setSelectedStocks] = useState<string[]>([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
   const [bulkUpdating, setBulkUpdating] = useState(false);
@@ -66,6 +68,7 @@ export default function StocksDashboard() {
         ...(sectorFilter && { sector: sectorFilter }),
         ...(exchangeFilter && { exchange: exchangeFilter }),
         ...(dataFilter && dataFilter !== 'all' && { hasActualData: dataFilter }),
+        ...(ratiosFilter && ratiosFilter !== 'all' && { hasRatios: ratiosFilter }),
         sortBy: sortBy,
         sortOrder: sortOrder
       });
@@ -103,7 +106,7 @@ export default function StocksDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, sectorFilter, exchangeFilter, dataFilter, dataQualityFilter, perPage, sortBy, sortOrder]);
+  }, [page, search, sectorFilter, exchangeFilter, dataFilter, dataQualityFilter, ratiosFilter, perPage, sortBy, sortOrder]);
 
   useEffect(() => {
     fetchData();
@@ -360,6 +363,7 @@ export default function StocksDashboard() {
                   setExchangeFilter('');
                   setDataFilter('all');
                   setDataQualityFilter('PENDING_VERIFICATION');
+                  setRatiosFilter('all');
                   setSortBy('symbol');
                   setSortOrder('asc');
                   setPage(1);
@@ -372,7 +376,7 @@ export default function StocksDashboard() {
                 <span>Show Pending Verification</span>
               </button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
                 <input
@@ -402,6 +406,20 @@ export default function StocksDashboard() {
               />
 
               <CustomSelect
+                label="Ratios"
+                value={ratiosFilter}
+                onValueChange={setRatiosFilter}
+                options={[
+                  { value: 'all', label: 'All Stocks' },
+                  { value: 'true', label: 'Has Ratios' },
+                  { value: 'false', label: 'No Ratios' }
+                ]}
+                placeholder="All Stocks"
+                triggerClassName="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
+              />
+
+              <CustomSelect
                 label="Per Page"
                 value={perPage.toString()}
                 onValueChange={(value) => {
@@ -425,6 +443,7 @@ export default function StocksDashboard() {
                   onClick={() => {
                     setSearch('');
                     setDataQualityFilter('all');
+                    setRatiosFilter('all');
                     setSortBy('symbol');
                     setSortOrder('asc');
                     setPage(1);
@@ -514,6 +533,9 @@ export default function StocksDashboard() {
                     <SortableHeader column="dataQuality">
                       Status
                     </SortableHeader>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Ratios
+                    </th>
                     <SortableHeader column="lastUpdated">
                       Last Updated
                     </SortableHeader>
@@ -561,6 +583,17 @@ export default function StocksDashboard() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         {getStatusBadge(stock)}
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {stock.hasRatios ? (
+                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                            ✓ Has Ratios
+                          </span>
+                        ) : (
+                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                            ✗ No Ratios
+                          </span>
+                        )}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <div>{formatDate(stock.lastUpdated)}</div>
                         {stock.enteredBy && (
@@ -585,7 +618,7 @@ export default function StocksDashboard() {
                     </tr>
                   )) : (
                     <tr>
-                      <td colSpan={8} className="px-6 py-8 text-center text-sm text-gray-500">
+                      <td colSpan={9} className="px-6 py-8 text-center text-sm text-gray-500">
                         {dataQualityFilter === 'PENDING_VERIFICATION' ?
                           'No stocks found with Pending Verification status.' :
                           'No stocks found matching your filters.'

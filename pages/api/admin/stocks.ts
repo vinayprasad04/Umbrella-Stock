@@ -17,6 +17,7 @@ interface EquityStockListItem {
   enteredBy?: string;
   currentPrice?: number;
   exchange?: string;
+  hasRatios?: boolean;
 }
 
 export default async function handler(
@@ -70,6 +71,7 @@ export default async function handler(
     const exchange = req.query.exchange as string || '';
     const hasActualData = req.query.hasActualData as string || '';
     const dataQuality = req.query.dataQuality as string || '';
+    const hasRatios = req.query.hasRatios as string || '';
     const sortBy = req.query.sortBy as string || 'symbol';
     const sortOrder = req.query.sortOrder as string || 'asc';
 
@@ -78,7 +80,7 @@ export default async function handler(
     const needsActualDataSort = actualDataSortFields.includes(sortBy);
 
     console.log('📥 API Received parameters:', {
-      page, limit, search, sector, exchange, hasActualData, dataQuality, sortBy, sortOrder
+      page, limit, search, sector, exchange, hasActualData, dataQuality, hasRatios, sortBy, sortOrder
     });
 
     // Build filter
@@ -115,18 +117,31 @@ export default async function handler(
       ];
     }
 
-    // Handle dataQuality and hasActualData filtering
+    // Handle dataQuality, hasActualData and hasRatios filtering
     let stocks: any[];
     let actualData: any[];
+
+    // Build ActualStockDetail filter for ratios
+    const actualDataFilter: any = { isActive: true };
+    if (dataQuality) {
+      actualDataFilter.dataQuality = dataQuality;
+    }
+    if (hasRatios === 'true') {
+      actualDataFilter.ratios = { $exists: true, $ne: null };
+    } else if (hasRatios === 'false') {
+      actualDataFilter.$or = [
+        { ratios: { $exists: false } },
+        { ratios: null },
+        { ratios: {} }
+      ];
+    }
 
     if (dataQuality) {
       // When filtering by dataQuality, start with ActualEquityStockDetails
       console.log('🎯 Filtering by dataQuality, starting with ActualData...');
 
-      actualData = await ActualStockDetail.find({
-        dataQuality: dataQuality,
-        isActive: true
-      }).select('symbol additionalInfo meta dataQuality lastUpdated enteredBy').lean();
+      actualData = await ActualStockDetail.find(actualDataFilter)
+        .select('symbol additionalInfo meta dataQuality lastUpdated enteredBy ratios').lean();
 
       console.log('📋 Found ActualData with quality', dataQuality + ':', actualData.length, 'records');
 
@@ -179,6 +194,35 @@ export default async function handler(
 
       // No actual data needed since these stocks don't have any
       actualData = [];
+    } else if (hasRatios === 'true' || hasRatios === 'false') {
+      // When filtering by ratios, start with ActualStockDetail
+      console.log('🎯 Filtering by ratios, starting with ActualData...');
+
+      actualData = await ActualStockDetail.find(actualDataFilter)
+        .select('symbol additionalInfo meta dataQuality lastUpdated enteredBy ratios').lean();
+
+      console.log('📋 Found ActualData with ratios filter:', actualData.length, 'records');
+
+      const qualifiedSymbols = actualData.map(a => a.symbol);
+
+      if (qualifiedSymbols.length === 0) {
+        // No stocks with this ratios filter
+        stocks = [];
+      } else {
+        // Add symbol filter to main filter
+        filter.symbol = { $in: qualifiedSymbols };
+
+        // For search queries with relevance, we need to get more results first, then sort and paginate
+        const searchLimit = search ? Math.max(limit * 3, 150) : limit;
+        const skip = search ? 0 : (page - 1) * limit;
+
+        stocks = await EquityStock.find(filter)
+          .select('symbol companyName series dateOfListing isinNumber hasActualData lastUpdated')
+          .sort(search || needsActualDataSort ? { symbol: 1 } : { [sortBy]: sortOrder === 'asc' ? 1 : -1 })
+          .skip(needsActualDataSort ? 0 : skip)
+          .limit(needsActualDataSort ? 0 : searchLimit)
+          .lean();
+      }
     } else {
       // Normal flow when not filtering by dataQuality or hasActualData=false
       // For search queries with relevance, we need to get more results first, then sort and paginate
@@ -198,7 +242,7 @@ export default async function handler(
       actualData = await ActualStockDetail.find({
         symbol: { $in: symbols },
         isActive: true
-      }).select('symbol additionalInfo meta dataQuality lastUpdated enteredBy').lean();
+      }).select('symbol additionalInfo meta dataQuality lastUpdated enteredBy ratios').lean();
     }
 
     // Debug: Show what actual data we found
@@ -222,6 +266,9 @@ export default async function handler(
     // Combine data
     const result: EquityStockListItem[] = stocks.map(stock => {
       const actual = actualDataMap.get(stock.symbol);
+      const hasRatiosData = actual?.ratios &&
+        typeof actual.ratios === 'object' &&
+        Object.keys(actual.ratios).length > 0;
       return {
         symbol: stock.symbol,
         companyName: stock.companyName,
@@ -233,7 +280,8 @@ export default async function handler(
         lastUpdated: actual?.lastUpdated?.toISOString(),
         enteredBy: actual?.enteredBy,
         currentPrice: actual?.meta?.currentPrice,
-        exchange: actual?.additionalInfo?.exchange
+        exchange: actual?.additionalInfo?.exchange,
+        hasRatios: hasRatiosData
       };
     });
 
@@ -368,6 +416,10 @@ export default async function handler(
       const totalStocksCount = await EquityStock.countDocuments({ isActive: true });
       total = totalStocksCount - stocksWithDataCount;
       console.log('📊 Total calculation for No Data:', { totalStocksCount, stocksWithDataCount, total });
+    } else if (hasRatios === 'true' || hasRatios === 'false') {
+      // For ratios filter, count stocks that match the ratios criteria
+      total = await ActualStockDetail.countDocuments(actualDataFilter);
+      console.log('📊 Total calculation for Ratios filter:', { hasRatios, total });
     } else {
       total = await EquityStock.countDocuments(filter);
     }
