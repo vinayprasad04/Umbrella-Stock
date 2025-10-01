@@ -18,6 +18,8 @@ interface EquityStockListItem {
   currentPrice?: number;
   exchange?: string;
   hasRatios?: boolean;
+  niftyIndex?: string;
+  niftyIndices?: string[];
 }
 
 export default async function handler(
@@ -72,6 +74,8 @@ export default async function handler(
     const hasActualData = req.query.hasActualData as string || '';
     const dataQuality = req.query.dataQuality as string || '';
     const hasRatios = req.query.hasRatios as string || '';
+    const niftyIndex = req.query.niftyIndex as string || '';
+    const niftyIndices = req.query.niftyIndices as string || '';
     const sortBy = req.query.sortBy as string || 'symbol';
     const sortOrder = req.query.sortOrder as string || 'asc';
 
@@ -80,7 +84,7 @@ export default async function handler(
     const needsActualDataSort = actualDataSortFields.includes(sortBy);
 
     console.log('📥 API Received parameters:', {
-      page, limit, search, sector, exchange, hasActualData, dataQuality, hasRatios, sortBy, sortOrder
+      page, limit, search, sector, exchange, hasActualData, dataQuality, hasRatios, niftyIndex, niftyIndices, sortBy, sortOrder
     });
 
     // Build filter
@@ -121,7 +125,7 @@ export default async function handler(
     let stocks: any[];
     let actualData: any[];
 
-    // Build ActualStockDetail filter for ratios
+    // Build ActualStockDetail filter for ratios and nifty index
     const actualDataFilter: any = { isActive: true };
     if (dataQuality) {
       actualDataFilter.dataQuality = dataQuality;
@@ -134,6 +138,27 @@ export default async function handler(
         { ratios: null },
         { ratios: {} }
       ];
+    }
+    if (niftyIndex) {
+      // Handle cumulative Nifty filtering (legacy single select)
+      if (niftyIndex === 'NIFTY_50') {
+        actualDataFilter['additionalInfo.niftyIndex'] = 'NIFTY_50';
+      } else if (niftyIndex === 'NIFTY_100') {
+        actualDataFilter['additionalInfo.niftyIndex'] = { $in: ['NIFTY_50', 'NIFTY_100'] };
+      } else if (niftyIndex === 'NIFTY_200') {
+        actualDataFilter['additionalInfo.niftyIndex'] = { $in: ['NIFTY_50', 'NIFTY_100', 'NIFTY_200'] };
+      } else if (niftyIndex === 'NIFTY_500') {
+        actualDataFilter['additionalInfo.niftyIndex'] = { $in: ['NIFTY_50', 'NIFTY_100', 'NIFTY_200', 'NIFTY_500'] };
+      } else {
+        actualDataFilter['additionalInfo.niftyIndex'] = niftyIndex;
+      }
+    }
+    if (niftyIndices) {
+      // Handle multi-select Nifty filtering using the new niftyIndices array field
+      const selectedIndices = niftyIndices.split(',').filter(index => index.trim());
+      if (selectedIndices.length > 0) {
+        actualDataFilter['additionalInfo.niftyIndices'] = { $in: selectedIndices };
+      }
     }
 
     if (dataQuality) {
@@ -194,19 +219,19 @@ export default async function handler(
 
       // No actual data needed since these stocks don't have any
       actualData = [];
-    } else if (hasRatios === 'true' || hasRatios === 'false') {
-      // When filtering by ratios, start with ActualStockDetail
-      console.log('🎯 Filtering by ratios, starting with ActualData...');
+    } else if (hasRatios === 'true' || hasRatios === 'false' || niftyIndex || niftyIndices) {
+      // When filtering by ratios or nifty index, start with ActualStockDetail
+      console.log('🎯 Filtering by ratios/nifty index, starting with ActualData...');
 
       actualData = await ActualStockDetail.find(actualDataFilter)
         .select('symbol additionalInfo meta dataQuality lastUpdated enteredBy ratios').lean();
 
-      console.log('📋 Found ActualData with ratios filter:', actualData.length, 'records');
+      console.log('📋 Found ActualData with ratios/nifty filter:', actualData.length, 'records');
 
       const qualifiedSymbols = actualData.map(a => a.symbol);
 
       if (qualifiedSymbols.length === 0) {
-        // No stocks with this ratios filter
+        // No stocks with this filter
         stocks = [];
       } else {
         // Add symbol filter to main filter
@@ -281,7 +306,9 @@ export default async function handler(
         enteredBy: actual?.enteredBy,
         currentPrice: actual?.meta?.currentPrice,
         exchange: actual?.additionalInfo?.exchange,
-        hasRatios: hasRatiosData
+        hasRatios: hasRatiosData,
+        niftyIndex: actual?.additionalInfo?.niftyIndex,
+        niftyIndices: actual?.additionalInfo?.niftyIndices || []
       };
     });
 
@@ -416,10 +443,10 @@ export default async function handler(
       const totalStocksCount = await EquityStock.countDocuments({ isActive: true });
       total = totalStocksCount - stocksWithDataCount;
       console.log('📊 Total calculation for No Data:', { totalStocksCount, stocksWithDataCount, total });
-    } else if (hasRatios === 'true' || hasRatios === 'false') {
-      // For ratios filter, count stocks that match the ratios criteria
+    } else if (hasRatios === 'true' || hasRatios === 'false' || niftyIndex || niftyIndices) {
+      // For ratios or nifty filter, count stocks that match the criteria
       total = await ActualStockDetail.countDocuments(actualDataFilter);
-      console.log('📊 Total calculation for Ratios filter:', { hasRatios, total });
+      console.log('📊 Total calculation for filter:', { hasRatios, niftyIndex, niftyIndices, total });
     } else {
       total = await EquityStock.countDocuments(filter);
     }

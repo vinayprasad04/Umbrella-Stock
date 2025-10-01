@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import AdminDashboardLayout from '@/components/layouts/AdminDashboardLayout';
 import Link from 'next/link';
 import { CustomSelect } from '@/components/ui/custom-select';
+import { MultiSelect } from '@/components/ui/multi-select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ApiClient } from '@/lib/apiClient';
 
@@ -28,6 +29,8 @@ interface EquityStock {
   currentPrice?: number;
   exchange?: string;
   hasRatios?: boolean;
+  niftyIndex?: string;
+  niftyIndices?: string[];
 }
 
 interface DashboardData {
@@ -52,6 +55,7 @@ export default function StocksDashboard() {
   const [dataFilter, setDataFilter] = useState('all');
   const [dataQualityFilter, setDataQualityFilter] = useState('all');
   const [ratiosFilter, setRatiosFilter] = useState('all');
+  const [niftyIndicesFilter, setNiftyIndicesFilter] = useState<string[]>([]);
   const [selectedStocks, setSelectedStocks] = useState<string[]>([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
   const [bulkUpdating, setBulkUpdating] = useState(false);
@@ -69,6 +73,7 @@ export default function StocksDashboard() {
         ...(exchangeFilter && { exchange: exchangeFilter }),
         ...(dataFilter && dataFilter !== 'all' && { hasActualData: dataFilter }),
         ...(ratiosFilter && ratiosFilter !== 'all' && { hasRatios: ratiosFilter }),
+        ...(niftyIndicesFilter.length > 0 && { niftyIndices: niftyIndicesFilter.join(',') }),
         sortBy: sortBy,
         sortOrder: sortOrder
       });
@@ -106,7 +111,7 @@ export default function StocksDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, sectorFilter, exchangeFilter, dataFilter, dataQualityFilter, ratiosFilter, perPage, sortBy, sortOrder]);
+  }, [page, search, sectorFilter, exchangeFilter, dataFilter, dataQualityFilter, ratiosFilter, niftyIndicesFilter, perPage, sortBy, sortOrder]);
 
   useEffect(() => {
     fetchData();
@@ -225,6 +230,107 @@ export default function StocksDashboard() {
   const formatPrice = (price?: number) => {
     if (!price) return 'N/A';
     return `₹${price.toFixed(2)}`;
+  };
+
+  const formatNiftyIndices = (indices?: string[]) => {
+    if (!indices || indices.length === 0) return 'Not Listed';
+
+    // Sort indices by priority: 50 > 100 > 200 > 500 > others
+    const priorityOrder = ['NIFTY_50', 'NIFTY_100', 'NIFTY_200', 'NIFTY_500'];
+    const sortedIndices = [...indices].sort((a, b) => {
+      const aIndex = priorityOrder.indexOf(a);
+      const bIndex = priorityOrder.indexOf(b);
+      if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+      if (aIndex !== -1) return -1;
+      if (bIndex !== -1) return 1;
+      return a.localeCompare(b);
+    });
+
+    const getIndexColor = (index: string) => {
+      switch (index) {
+        case 'NIFTY_50': return 'bg-blue-100 text-blue-800';
+        case 'NIFTY_100': return 'bg-indigo-100 text-indigo-800';
+        case 'NIFTY_200': return 'bg-violet-100 text-violet-800';
+        case 'NIFTY_500': return 'bg-purple-100 text-purple-800';
+        case 'NIFTY_BANK': return 'bg-green-100 text-green-800';
+        case 'NIFTY_FINANCIAL_SERVICES': return 'bg-emerald-100 text-emerald-800';
+        case 'NIFTY_MIDCAP_SELECT': return 'bg-yellow-100 text-yellow-800';
+        case 'NIFTY_MIDCAP_50': return 'bg-orange-100 text-orange-800';
+        case 'NIFTY_MIDCAP_100': return 'bg-amber-100 text-amber-800';
+        case 'NIFTY_MIDCAP_150': return 'bg-lime-100 text-lime-800';
+        case 'NIFTY_SMALLCAP_50': return 'bg-pink-100 text-pink-800';
+        case 'NIFTY_SMALLCAP_100': return 'bg-rose-100 text-rose-800';
+        case 'NIFTY_SMALLCAP_250': return 'bg-red-100 text-red-800';
+        case 'NIFTY_AUTO': return 'bg-cyan-100 text-cyan-800';
+        case 'NIFTY_FINANCIAL_SERVICES_25_50': return 'bg-teal-100 text-teal-800';
+        case 'NIFTY_FMCG': return 'bg-sky-100 text-sky-800';
+        case 'NIFTY_IT': return 'bg-blue-100 text-blue-800';
+        case 'NIFTY_MEDIA': return 'bg-purple-100 text-purple-800';
+        case 'NIFTY_METAL': return 'bg-slate-100 text-slate-800';
+        case 'NIFTY_PHARMA': return 'bg-green-100 text-green-800';
+        case 'NIFTY_PSU_BANK': return 'bg-lime-100 text-lime-800';
+        case 'NIFTY_REALTY': return 'bg-orange-100 text-orange-800';
+        case 'NIFTY_PRIVATE_BANK': return 'bg-emerald-100 text-emerald-800';
+        case 'NIFTY_HEALTHCARE_INDEX': return 'bg-red-100 text-red-800';
+        case 'NIFTY_CONSUMER_DURABLES': return 'bg-yellow-100 text-yellow-800';
+        case 'NIFTY_OIL_GAS': return 'bg-amber-100 text-amber-800';
+        case 'NIFTY_MIDSMALL_HEALTHCARE': return 'bg-pink-100 text-pink-800';
+        case 'NIFTY_FINANCIAL_SERVICES_EX_BANK': return 'bg-indigo-100 text-indigo-800';
+        case 'NIFTY_MIDSMALL_FINANCIAL_SERVICES': return 'bg-violet-100 text-violet-800';
+        case 'NIFTY_MIDSMALL_IT_TELECOM': return 'bg-sky-100 text-sky-800';
+        default: return 'bg-gray-100 text-gray-800';
+      }
+    };
+
+    const getIndexLabel = (index: string) => {
+      const labels: { [key: string]: string } = {
+        'NIFTY_50': 'N50',
+        'NIFTY_100': 'N100',
+        'NIFTY_200': 'N200',
+        'NIFTY_500': 'N500',
+        'NIFTY_BANK': 'Bank',
+        'NIFTY_FINANCIAL_SERVICES': 'Fin',
+        'NIFTY_MIDCAP_SELECT': 'MC-S',
+        'NIFTY_MIDCAP_50': 'MC50',
+        'NIFTY_MIDCAP_100': 'MC100',
+        'NIFTY_MIDCAP_150': 'MC150',
+        'NIFTY_SMALLCAP_50': 'SC50',
+        'NIFTY_SMALLCAP_100': 'SC100',
+        'NIFTY_SMALLCAP_250': 'SC250',
+        'NIFTY_AUTO': 'Auto',
+        'NIFTY_FINANCIAL_SERVICES_25_50': 'Fin25/50',
+        'NIFTY_FMCG': 'FMCG',
+        'NIFTY_IT': 'IT',
+        'NIFTY_MEDIA': 'Media',
+        'NIFTY_METAL': 'Metal',
+        'NIFTY_PHARMA': 'Pharma',
+        'NIFTY_PSU_BANK': 'PSU-Bank',
+        'NIFTY_REALTY': 'Realty',
+        'NIFTY_PRIVATE_BANK': 'Pvt-Bank',
+        'NIFTY_HEALTHCARE_INDEX': 'Health',
+        'NIFTY_CONSUMER_DURABLES': 'Cons-Dur',
+        'NIFTY_OIL_GAS': 'Oil&Gas',
+        'NIFTY_MIDSMALL_HEALTHCARE': 'MS-Health',
+        'NIFTY_FINANCIAL_SERVICES_EX_BANK': 'Fin-ExBank',
+        'NIFTY_MIDSMALL_FINANCIAL_SERVICES': 'MS-Fin',
+        'NIFTY_MIDSMALL_IT_TELECOM': 'MS-IT'
+      };
+      return labels[index] || index;
+    };
+
+    return (
+      <div className="flex flex-wrap gap-1">
+        {sortedIndices.map((index, i) => (
+          <span
+            key={i}
+            className={`inline-flex px-1.5 py-0.5 text-xs font-semibold rounded ${getIndexColor(index)}`}
+            title={index.replace('NIFTY_', 'Nifty ').replace('_', ' ')}
+          >
+            {getIndexLabel(index)}
+          </span>
+        ))}
+      </div>
+    );
   };
 
   const PaginationComponent = () => {
@@ -364,6 +470,7 @@ export default function StocksDashboard() {
                   setDataFilter('all');
                   setDataQualityFilter('PENDING_VERIFICATION');
                   setRatiosFilter('all');
+                  setNiftyIndicesFilter([]);
                   setSortBy('symbol');
                   setSortOrder('asc');
                   setPage(1);
@@ -376,8 +483,8 @@ export default function StocksDashboard() {
                 <span>Show Pending Verification</span>
               </button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              <div>
+            <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-9 gap-3">
+              <div className="md:col-span-2 lg:col-span-2 xl:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
                 <input
                   type="text"
@@ -388,67 +495,115 @@ export default function StocksDashboard() {
                 />
               </div>
 
-              <CustomSelect
-                label="Status"
-                value={dataQualityFilter}
-                onValueChange={setDataQualityFilter}
-                options={[
-                  { value: 'all', label: 'All Status' },
-                  { value: 'PENDING_VERIFICATION', label: 'Pending Verification' },
-                  { value: 'VERIFIED', label: 'Verified' },
-                  { value: 'EXCELLENT', label: 'Excellent' },
-                  { value: 'GOOD', label: 'Good' },
-                  { value: 'NO_DATA', label: 'No Data' }
-                ]}
-                placeholder="All Status"
-                triggerClassName="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
-              />
+              <div className="lg:col-span-1 xl:col-span-1">
+                <CustomSelect
+                  label="Status"
+                  value={dataQualityFilter}
+                  onValueChange={setDataQualityFilter}
+                  options={[
+                    { value: 'all', label: 'All Status' },
+                    { value: 'PENDING_VERIFICATION', label: 'Pending' },
+                    { value: 'VERIFIED', label: 'Verified' },
+                    { value: 'EXCELLENT', label: 'Excellent' },
+                    { value: 'GOOD', label: 'Good' },
+                    { value: 'NO_DATA', label: 'No Data' }
+                  ]}
+                  placeholder="All Status"
+                  triggerClassName="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
+                />
+              </div>
 
-              <CustomSelect
-                label="Ratios"
-                value={ratiosFilter}
-                onValueChange={setRatiosFilter}
-                options={[
-                  { value: 'all', label: 'All Stocks' },
-                  { value: 'true', label: 'Has Ratios' },
-                  { value: 'false', label: 'No Ratios' }
-                ]}
-                placeholder="All Stocks"
-                triggerClassName="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
-              />
+              <div className="lg:col-span-1 xl:col-span-1">
+                <CustomSelect
+                  label="Ratios"
+                  value={ratiosFilter}
+                  onValueChange={setRatiosFilter}
+                  options={[
+                    { value: 'all', label: 'All' },
+                    { value: 'true', label: 'Has Ratios' },
+                    { value: 'false', label: 'No Ratios' }
+                  ]}
+                  placeholder="All"
+                  triggerClassName="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
+                />
+              </div>
 
-              <CustomSelect
-                label="Per Page"
-                value={perPage.toString()}
-                onValueChange={(value) => {
-                  setPerPage(parseInt(value));
-                  setPage(1); // Reset to first page when changing per page
-                }}
-                options={[
-                  { value: '10', label: '10 per page' },
-                  { value: '20', label: '20 per page' },
-                  { value: '50', label: '50 per page' },
-                  { value: '100', label: '100 per page' },
-                  { value: '200', label: '200 per page' }
-                ]}
-                placeholder="50 per page"
-                triggerClassName="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
-              />
+              <div className="md:col-span-2 lg:col-span-2 xl:col-span-3">
+                <MultiSelect
+                  label="Nifty Indices"
+                  options={[
+                    { value: 'NIFTY_50', label: 'Nifty 50' },
+                    { value: 'NIFTY_100', label: 'Nifty 100' },
+                    { value: 'NIFTY_200', label: 'Nifty 200' },
+                    { value: 'NIFTY_500', label: 'Nifty 500' },
+                    { value: 'NIFTY_BANK', label: 'Nifty Bank' },
+                    { value: 'NIFTY_FINANCIAL_SERVICES', label: 'Nifty Financial Services' },
+                    { value: 'NIFTY_MIDCAP_SELECT', label: 'Nifty Midcap Select' },
+                    { value: 'NIFTY_MIDCAP_50', label: 'Nifty Midcap 50' },
+                    { value: 'NIFTY_MIDCAP_100', label: 'Nifty Midcap 100' },
+                    { value: 'NIFTY_MIDCAP_150', label: 'Nifty Midcap 150' },
+                    { value: 'NIFTY_SMALLCAP_50', label: 'Nifty Smallcap 50' },
+                    { value: 'NIFTY_SMALLCAP_100', label: 'Nifty Smallcap 100' },
+                    { value: 'NIFTY_SMALLCAP_250', label: 'Nifty Smallcap 250' },
+                    { value: 'NIFTY_AUTO', label: 'Nifty Auto' },
+                    { value: 'NIFTY_FINANCIAL_SERVICES_25_50', label: 'Nifty Financial Services 25/50' },
+                    { value: 'NIFTY_FMCG', label: 'Nifty FMCG' },
+                    { value: 'NIFTY_IT', label: 'Nifty IT' },
+                    { value: 'NIFTY_MEDIA', label: 'Nifty Media' },
+                    { value: 'NIFTY_METAL', label: 'Nifty Metal' },
+                    { value: 'NIFTY_PHARMA', label: 'Nifty Pharma' },
+                    { value: 'NIFTY_PSU_BANK', label: 'Nifty PSU Bank' },
+                    { value: 'NIFTY_REALTY', label: 'Nifty Realty' },
+                    { value: 'NIFTY_PRIVATE_BANK', label: 'Nifty Private Bank' },
+                    { value: 'NIFTY_HEALTHCARE_INDEX', label: 'Nifty Healthcare Index' },
+                    { value: 'NIFTY_CONSUMER_DURABLES', label: 'Nifty Consumer Durables' },
+                    { value: 'NIFTY_OIL_GAS', label: 'Nifty Oil & Gas' },
+                    { value: 'NIFTY_MIDSMALL_HEALTHCARE', label: 'Nifty MidSmall Healthcare' },
+                    { value: 'NIFTY_FINANCIAL_SERVICES_EX_BANK', label: 'Nifty Financial Services Ex-Bank' },
+                    { value: 'NIFTY_MIDSMALL_FINANCIAL_SERVICES', label: 'Nifty MidSmall Financial Services' },
+                    { value: 'NIFTY_MIDSMALL_IT_TELECOM', label: 'Nifty MidSmall IT & Telecom' }
+                  ]}
+                  value={niftyIndicesFilter}
+                  onChange={setNiftyIndicesFilter}
+                  placeholder="Select indices..."
+                />
+              </div>
 
-              <div className="flex items-end">
+              <div className="lg:col-span-1 xl:col-span-1">
+                <CustomSelect
+                  label="Per Page"
+                  value={perPage.toString()}
+                  onValueChange={(value) => {
+                    setPerPage(parseInt(value));
+                    setPage(1); // Reset to first page when changing per page
+                  }}
+                  options={[
+                    { value: '10', label: '10' },
+                    { value: '20', label: '20' },
+                    { value: '50', label: '50' },
+                    { value: '100', label: '100' },
+                    { value: '200', label: '200' }
+                  ]}
+                  placeholder="50"
+                  triggerClassName="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
+                />
+              </div>
+
+              <div className="flex items-end lg:col-span-1 xl:col-span-1">
                 <button
                   onClick={() => {
                     setSearch('');
                     setDataQualityFilter('all');
                     setRatiosFilter('all');
+                    setNiftyIndicesFilter([]);
                     setSortBy('symbol');
                     setSortOrder('asc');
                     setPage(1);
                   }}
-                  className="w-full bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-200"
+                  className="w-full bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700 transition duration-200 text-sm"
                 >
                   Clear Filters
                 </button>
@@ -509,7 +664,7 @@ export default function StocksDashboard() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           checked={data?.stocks && selectedStocks.length === data.stocks.length && data.stocks.length > 0}
@@ -533,13 +688,16 @@ export default function StocksDashboard() {
                     <SortableHeader column="dataQuality">
                       Status
                     </SortableHeader>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Ratios
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Nifty Indices
                     </th>
                     <SortableHeader column="lastUpdated">
                       Last Updated
                     </SortableHeader>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -547,19 +705,19 @@ export default function StocksDashboard() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {data?.stocks && data.stocks.length > 0 ? data.stocks.map((stock) => (
                     <tr key={stock.symbol} className={`hover:bg-gray-50 ${selectedStocks.includes(stock.symbol) ? 'bg-blue-50' : ''}`}>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-2 whitespace-nowrap">
                         <Checkbox
                           checked={selectedStocks.includes(stock.symbol)}
                           onCheckedChange={() => handleSelectStock(stock.symbol)}
                         />
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
                         {stock.symbol}
                         {stock.exchange && (
                           <div className="text-xs text-gray-500">{stock.exchange}</div>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
+                      <td className="px-4 py-2 text-sm text-gray-900" style={{ maxWidth: '150px' }}>
                         <div className="max-w-xs truncate" title={stock.companyName}>
                           <Link
                             href={`https://www.screener.in/company/${stock.symbol}`}
@@ -574,16 +732,16 @@ export default function StocksDashboard() {
                           <div className="text-xs text-gray-500">{stock.industry}</div>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                         {formatMarketCap(stock.marketCap)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                         {formatPrice(stock.currentPrice)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-2 whitespace-nowrap">
                         {getStatusBadge(stock)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-2 whitespace-nowrap">
                         {stock.hasRatios ? (
                           <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                             ✓ Has Ratios
@@ -594,13 +752,16 @@ export default function StocksDashboard() {
                           </span>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-4 py-2">
+                        {formatNiftyIndices(stock.niftyIndices)}
+                      </td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                         <div>{formatDate(stock.lastUpdated)}</div>
                         {stock.enteredBy && (
                           <div className="text-xs text-gray-500">by {stock.enteredBy}</div>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <td className="px-4 py-2 whitespace-nowrap text-sm font-medium">
                         <Link
                           href={`/admin/stocks/${stock.symbol}`}
                           className="text-purple-600 hover:text-purple-900 mr-4"
@@ -618,7 +779,7 @@ export default function StocksDashboard() {
                     </tr>
                   )) : (
                     <tr>
-                      <td colSpan={9} className="px-6 py-8 text-center text-sm text-gray-500">
+                      <td colSpan={10} className="px-6 py-8 text-center text-sm text-gray-500">
                         {dataQualityFilter === 'PENDING_VERIFICATION' ?
                           'No stocks found with Pending Verification status.' :
                           'No stocks found matching your filters.'
