@@ -1,9 +1,8 @@
 import sys
 
 SCRAPERS = {
-    "site1": "scrapers.site1_scraper",
-    "site2": "scrapers.site2_scraper",
-    "dynamic": "scrapers.site_dynamic"
+    "dummy": "scrapers.site1_scraper",
+    "stock_ratio": "scrapers.site_dynamic"
 }
 
 if len(sys.argv) < 2:

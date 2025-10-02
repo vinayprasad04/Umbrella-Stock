@@ -11,107 +11,84 @@ AUTH_TOKEN = os.getenv("AUTH_TOKEN")  # your JWT token
 POST_API = os.getenv("POST_API")      # e.g., http://localhost:3000/api/admin/stock-details
 DELAY = float(os.getenv("DELAY", 1.5))
 
-HEADERS = {
-    "Authorization": f"Bearer {AUTH_TOKEN}",
-    "Accept": "*/*",
-    "Content-Type": "application/json",
-    "User-Agent": "Mozilla/5.0",
-    "Referer": "http://localhost:3000/admin/stocks",
-    "Origin": "http://localhost:3000",
-}
+# ===== CONFIGURATION =====
+POST_API_TEMPLATE = "http://localhost:3000/api/admin/stock-details/{symbol}/ratios"
 
+
+# Screener login cookies
 COOKIES = {
-    "next-auth.csrf-token": os.getenv("CSRF_TOKEN", ""),
-    "next-auth.callback-url": "http%3A%2F%2Flocalhost%3A3000"
+    "sessionid": "jcnlwstd2m83epb6bungcsdv1vws70f3",
+    "csrftoken": "P26rOqposaoKXjQHxp4dt1KwjevtJeTJ",
+    "ext_name": "ojplmecpdpgccookcobabopnaifgidhf"
 }
 
-def get_stock_list(page=1, limit=100):
-    """Fetch stock list from API"""
-    params = {
-        "page": page,
-        "limit": limit,
-        "sortBy": "symbol",
-        "sortOrder": "asc"
-    }
-    r = requests.get(SOURCE_API, headers=HEADERS, cookies=COOKIES, params=params, timeout=15)
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+    "Authorization": f"Bearer {AUTH_TOKEN}",
+    "Content-Type": "application/json"
+}
+
+# ===== FUNCTIONS =====
+def get_stock_list(page=1, limit=100, sortBy="symbol", sortOrder="asc"):
+    params = {"page": page, "limit": limit, "sortBy": sortBy, "sortOrder": sortOrder}
+    r = requests.get(SOURCE_API, headers=HEADERS, params=params, timeout=15)
     r.raise_for_status()
     data = r.json()
     return data.get("data", {}).get("stocks", [])
 
-def fetch_html(url):
-    """Fetch HTML of a stock page"""
-    r = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+def scrape_ratios(symbol):
+    url = f"https://www.screener.in/company/{symbol}/"
+    r = requests.get(url, headers={"User-Agent": HEADERS["User-Agent"]}, cookies=COOKIES)
     r.raise_for_status()
-    return r.text
-
-def scrape_stock(stock):
-    url = f"https://www.screener.in/company/{stock['symbol']}/"
-    html = fetch_html(url)
-    soup = BeautifulSoup(html, "html.parser")
-
+    soup = BeautifulSoup(r.text, "html.parser")
     ratios = {}
-    ratio_list = soup.select("#top-ratios li.flex.flex-space-between")
     for li in soup.select("#top-ratios li.flex.flex-space-between"):
-        # Key
-        key_tag = li.select_one("span.name")
-        if not key_tag:
-            continue
-        key = key_tag.get_text(strip=True)
-
-        # All numbers in this li
-        number_tags = li.select("span.value .number")
-        if not number_tags:
-            continue
-
-        # Combine multiple numbers with " / "
-        if len(number_tags) > 1:
-            values = [nt.get_text(strip=True).replace(",", "") for nt in number_tags]
-            ratios[key] = " / ".join(values)
+        key = li.select_one("span.name").get_text(strip=True)
+        numbers = [n.get_text(strip=True) for n in li.select("span.number")]
+        if " / " in li.get_text():
+            value = " / ".join(numbers)
+        elif len(numbers) == 1:
+            value = numbers[0]
         else:
-            value_tag = number_tags[0]
-            parent_text = li.select_one("span.value").get_text(strip=True)
-            value_text = value_tag.get_text(strip=True).replace(",", "").replace("₹", "")
-            if "%" in parent_text:
-                ratios[key] = float(value_text)  # Keep % as float
-            else:
-                try:
-                    ratios[key] = float(value_text)
-                except:
-                    ratios[key] = value_text
+            value = numbers
+        ratios[key] = value
     return ratios
 
-def post_stock_ratios(symbol, ratios):
-    """Send scraped ratios to API"""
-    url = f"{POST_API}/{symbol}/ratios"
+def send_ratios(symbol, ratios):
+    url = POST_API_TEMPLATE.format(symbol=symbol)
     payload = {"ratios": ratios}
-    r = requests.post(url, json=payload, headers=HEADERS, cookies=COOKIES)
-    return r.status_code, r.text
+    r = requests.post(url, headers=HEADERS, json=payload, timeout=15)
+    r.raise_for_status()
+    return r.status_code == 200
 
+# ===== MAIN =====
 def main():
     page = 1
     limit = 100
-    stocks = get_stock_list(page=page, limit=limit)
-
     success_count = 0
-    fail_count = 0
+    failed_count = 0
+
+    stocks = get_stock_list(page=page, limit=limit)
+    print(f"Total stocks fetched: {len(stocks)}")
 
     for stock in stocks:
-        symbol = stock["symbol"]
+        symbol = stock.get("symbol")
         try:
-            ratios = scrape_stock(stock)
-            code, resp = post_stock_ratios(symbol, ratios)
-            if code == 200:
+            ratios = scrape_ratios(symbol)
+            if send_ratios(symbol, ratios):
                 print(f"[SUCCESS] {symbol} saved")
                 success_count += 1
             else:
-                print(f"[FAIL] {symbol} status={code} resp={resp}")
-                fail_count += 1
+                print(f"[FAILED] {symbol} not saved")
+                failed_count += 1
         except Exception as e:
-            print(f"[ERROR] {symbol} exception={e}")
-            fail_count += 1
-        time.sleep(DELAY)
+            print(f"[ERROR] {symbol}: {e}")
+            failed_count += 1
 
-    print(f"\nCompleted. Success: {success_count}, Fail: {fail_count}")
+        time.sleep(1)  # delay between requests
 
+    print(f"\nCompleted: {success_count} success, {failed_count} failed")
+
+# ===== ENTRY POINT =====
 if __name__ == "__main__":
     main()
