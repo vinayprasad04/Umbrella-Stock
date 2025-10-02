@@ -6,12 +6,24 @@ interface QueryParams {
   page?: string;
   limit?: string;
   search?: string;
-  sector?: string;
-  industry?: string;
+  sector?: string | string[];
+  niftyIndices?: string | string[];
   minMarketCap?: string;
   maxMarketCap?: string;
   minPrice?: string;
   maxPrice?: string;
+  minPE?: string;
+  maxPE?: string;
+  minROCE?: string;
+  maxROCE?: string;
+  minROE?: string;
+  maxROE?: string;
+  minDebtToEquity?: string;
+  maxDebtToEquity?: string;
+  minPB?: string;
+  maxPB?: string;
+  minDividendYield?: string;
+  maxDividendYield?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
 }
@@ -54,11 +66,23 @@ export default async function handler(
       limit = '20',
       search,
       sector,
-      industry,
+      niftyIndices,
       minMarketCap,
       maxMarketCap,
       minPrice,
       maxPrice,
+      minPE,
+      maxPE,
+      minROCE,
+      maxROCE,
+      minROE,
+      maxROE,
+      minDebtToEquity,
+      maxDebtToEquity,
+      minPB,
+      maxPB,
+      minDividendYield,
+      maxDividendYield,
       sortBy = 'meta.marketCapitalization',
       sortOrder = 'desc'
     }: QueryParams = req.query;
@@ -81,14 +105,26 @@ export default async function handler(
       ];
     }
 
-    // Sector filter
+    // Sector filter - handle both single and multiple sectors
     if (sector) {
-      filterQuery['additionalInfo.sector'] = { $regex: sector, $options: 'i' };
+      if (Array.isArray(sector)) {
+        // Multiple sectors - use $in operator
+        filterQuery['additionalInfo.sector'] = { $in: sector };
+      } else {
+        // Single sector - use regex for partial matching
+        filterQuery['additionalInfo.sector'] = { $regex: sector, $options: 'i' };
+      }
     }
 
-    // Industry filter
-    if (industry) {
-      filterQuery['additionalInfo.industry'] = { $regex: industry, $options: 'i' };
+    // Nifty Indices filter - handle both single and multiple indices
+    if (niftyIndices) {
+      if (Array.isArray(niftyIndices)) {
+        // Multiple indices - stocks must be in at least one of the selected indices
+        filterQuery['additionalInfo.niftyIndices'] = { $in: niftyIndices };
+      } else {
+        // Single index
+        filterQuery['additionalInfo.niftyIndices'] = niftyIndices;
+      }
     }
 
     // Market Cap range filter
@@ -110,6 +146,67 @@ export default async function handler(
       }
       if (maxPrice) {
         filterQuery['meta.currentPrice'].$lte = parseFloat(maxPrice);
+      }
+    }
+
+    // Ratio filters - using exact field names from ratios object
+    if (minPE || maxPE) {
+      filterQuery['ratios.Stock P/E'] = {};
+      if (minPE) {
+        filterQuery['ratios.Stock P/E'].$gte = parseFloat(minPE);
+      }
+      if (maxPE) {
+        filterQuery['ratios.Stock P/E'].$lte = parseFloat(maxPE);
+      }
+    }
+
+    if (minROCE || maxROCE) {
+      filterQuery['ratios.ROCE'] = {};
+      if (minROCE) {
+        filterQuery['ratios.ROCE'].$gte = parseFloat(minROCE);
+      }
+      if (maxROCE) {
+        filterQuery['ratios.ROCE'].$lte = parseFloat(maxROCE);
+      }
+    }
+
+    if (minROE || maxROE) {
+      filterQuery['ratios.Return on equity'] = {};
+      if (minROE) {
+        filterQuery['ratios.Return on equity'].$gte = parseFloat(minROE);
+      }
+      if (maxROE) {
+        filterQuery['ratios.Return on equity'].$lte = parseFloat(maxROE);
+      }
+    }
+
+    if (minDebtToEquity || maxDebtToEquity) {
+      filterQuery['ratios.Debt to equity'] = {};
+      if (minDebtToEquity) {
+        filterQuery['ratios.Debt to equity'].$gte = parseFloat(minDebtToEquity);
+      }
+      if (maxDebtToEquity) {
+        filterQuery['ratios.Debt to equity'].$lte = parseFloat(maxDebtToEquity);
+      }
+    }
+
+    if (minPB || maxPB) {
+      filterQuery['ratios.Price to book value'] = {};
+      if (minPB) {
+        filterQuery['ratios.Price to book value'].$gte = parseFloat(minPB);
+      }
+      if (maxPB) {
+        filterQuery['ratios.Price to book value'].$lte = parseFloat(maxPB);
+      }
+    }
+
+    if (minDividendYield || maxDividendYield) {
+      filterQuery['ratios.Dividend Yield'] = {};
+      if (minDividendYield) {
+        filterQuery['ratios.Dividend Yield'].$gte = parseFloat(minDividendYield);
+      }
+      if (maxDividendYield) {
+        filterQuery['ratios.Dividend Yield'].$lte = parseFloat(maxDividendYield);
       }
     }
 
@@ -149,6 +246,7 @@ export default async function handler(
         'additionalInfo.description': 1,
         dataQuality: 1,
         lastUpdated: 1,
+        ratios: 1, // Include ratios data
         // Include some recent financial data for ratios calculation
         'profitAndLoss.sales': { $slice: -2 }, // Last 2 years
         'profitAndLoss.netProfit': { $slice: -2 },
@@ -161,17 +259,13 @@ export default async function handler(
 
     // Transform data to include calculated metrics
     const transformedStocks = stocks.map((stock: any) => {
-      // Calculate basic ratios if data is available
-      let peRatio = null;
       let marketCapInCrores = stock.meta?.marketCapitalization || 0;
 
-      // Calculate P/E ratio if we have net profit data
-      if (stock.profitAndLoss?.netProfit && stock.profitAndLoss.netProfit.length > 0) {
-        const latestNetProfit = stock.profitAndLoss.netProfit[stock.profitAndLoss.netProfit.length - 1]?.value;
-        if (latestNetProfit && latestNetProfit > 0) {
-          peRatio = (marketCapInCrores / latestNetProfit).toFixed(2);
-        }
-      }
+      // Extract ratios from the ratios object if available
+      const ratios = stock.ratios || {};
+
+      // Use Stock P/E from ratios object (actual stock data), not calculated
+      const peRatio = ratios['Stock P/E'] ? parseFloat(ratios['Stock P/E']) : null;
 
       return {
         id: stock._id,
@@ -183,14 +277,16 @@ export default async function handler(
         marketCap: marketCapInCrores,
         marketCapFormatted: `₹${(marketCapInCrores / 100).toFixed(2)}L Cr`,
         faceValue: stock.meta?.faceValue || 0,
-        peRatio: peRatio ? parseFloat(peRatio) : null,
+        peRatio: peRatio,
         dataQuality: stock.dataQuality,
         lastUpdated: stock.lastUpdated,
-        // Placeholder values for missing financial ratios - can be calculated later
-        oneMonthReturn: null,
-        tenDayReturn: null,
-        returnOnEquity: null,
-        pbRatio: null
+        // Include ratios from database
+        oneMonthReturn: ratios['1M Return'] ? parseFloat(ratios['1M Return']) : null,
+        tenDayReturn: ratios['1D Return'] ? parseFloat(ratios['1D Return']) : null,
+        returnOnEquity: ratios['ROE'] ? parseFloat(ratios['ROE']) : null,
+        pbRatio: ratios['P/B'] ? parseFloat(ratios['P/B']) : null,
+        // Include all available ratios
+        allRatios: ratios
       };
     });
 

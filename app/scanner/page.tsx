@@ -33,6 +33,46 @@ const customStyles = `
     backdrop-filter: blur(20px);
     background: rgba(255, 255, 255, 0.85);
   }
+
+  /* Range slider styles */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    outline: none;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #6366f1;
+    cursor: pointer;
+    border-radius: 50%;
+    pointer-events: auto;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #6366f1;
+    cursor: pointer;
+    border-radius: 50%;
+    pointer-events: auto;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    border: none;
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    background: #4f46e5;
+  }
+
+  input[type="range"]::-moz-range-thumb:hover {
+    background: #4f46e5;
+  }
 `;
 
 interface StockData {
@@ -52,6 +92,7 @@ interface StockData {
   pbRatio: number | null;
   dataQuality: string;
   lastUpdated: string;
+  allRatios?: { [key: string]: any };
 }
 
 interface PaginationInfo {
@@ -94,18 +135,137 @@ export default function ScannerPage() {
   // Filter states
   const [filters, setFilters] = useState({
     search: '',
-    sector: '',
-    industry: '',
+    sector: [] as string[],
+    niftyIndices: [] as string[],
     minMarketCap: '',
     maxMarketCap: '',
     minPrice: '',
     maxPrice: '',
+    minPE: '',
+    maxPE: '',
+    minROCE: '',
+    maxROCE: '',
+    minROE: '',
+    maxROE: '',
+    minDebtToEquity: '',
+    maxDebtToEquity: '',
+    minPB: '',
+    maxPB: '',
+    minDividendYield: '',
+    maxDividendYield: '',
     sortBy: 'meta.marketCapitalization',
     sortOrder: 'desc' as 'asc' | 'desc'
   });
 
   // UI states
   const [selectedLimit, setSelectedLimit] = useState<number>(20);
+  const [sectorSearch, setSectorSearch] = useState<string>('');
+  const [niftyIndicesSearch, setNiftyIndicesSearch] = useState<string>('');
+  const [expandedFilters, setExpandedFilters] = useState<{ [key: string]: boolean }>({
+    search: true,
+    sector: false,
+    niftyIndices: false,
+    marketCap: false,
+    priceRange: false,
+    peRatio: false,
+    roce: false,
+    roe: false,
+    debtToEquity: false,
+    pbRatio: false,
+    dividendYield: false
+  });
+
+  const toggleFilter = (filterName: string) => {
+    setExpandedFilters(prev => ({
+      ...prev,
+      [filterName]: !prev[filterName]
+    }));
+  };
+
+  // All available sectors
+  const allSectors = [
+    'Automobile',
+    'Banks',
+    'Consumer Durables',
+    'Financial Services',
+    'FMCG',
+    'Healthcare',
+    'IT',
+    'IT & Telecom',
+    'Media',
+    'Metals',
+    'Oil & Gas',
+    'Pharma',
+    'Private Banks',
+    'PSU Banks',
+    'Realty'
+  ];
+
+  // Filter sectors based on search
+  const filteredSectors = allSectors.filter(sector =>
+    sector.toLowerCase().includes(sectorSearch.toLowerCase())
+  );
+
+  // Toggle sector selection
+  const toggleSector = (sector: string) => {
+    setFilters(prev => ({
+      ...prev,
+      sector: prev.sector.includes(sector)
+        ? prev.sector.filter(s => s !== sector)
+        : [...prev.sector, sector]
+    }));
+  };
+
+  // All available Nifty indices
+  const allNiftyIndices = [
+    { value: 'NIFTY_50', label: 'Nifty 50' },
+    { value: 'NIFTY_100', label: 'Nifty 100' },
+    { value: 'NIFTY_200', label: 'Nifty 200' },
+    { value: 'NIFTY_500', label: 'Nifty 500' },
+    { value: 'NIFTY_NEXT_50', label: 'Nifty Next 50' },
+    { value: 'NIFTY_BANK', label: 'Nifty Bank' },
+    { value: 'NIFTY_FINANCIAL_SERVICES', label: 'Nifty Financial Services' },
+    { value: 'NIFTY_MIDCAP_SELECT', label: 'Nifty Midcap Select' },
+    { value: 'NIFTY_MIDCAP_50', label: 'Nifty Midcap 50' },
+    { value: 'NIFTY_MIDCAP_100', label: 'Nifty Midcap 100' },
+    { value: 'NIFTY_MIDCAP_150', label: 'Nifty Midcap 150' },
+    { value: 'NIFTY_SMALLCAP_50', label: 'Nifty Smallcap 50' },
+    { value: 'NIFTY_SMALLCAP_100', label: 'Nifty Smallcap 100' },
+    { value: 'NIFTY_SMALLCAP_250', label: 'Nifty Smallcap 250' },
+    { value: 'NIFTY_MIDSMALLCAP_400', label: 'Nifty MidSmallcap 400' },
+    { value: 'NIFTY_AUTO', label: 'Nifty Auto' },
+    { value: 'NIFTY_FINANCIAL_SERVICES_25_50', label: 'Nifty Financial Services 25/50' },
+    { value: 'NIFTY_FMCG', label: 'Nifty FMCG' },
+    { value: 'NIFTY_IT', label: 'Nifty IT' },
+    { value: 'NIFTY_MEDIA', label: 'Nifty Media' },
+    { value: 'NIFTY_METAL', label: 'Nifty Metal' },
+    { value: 'NIFTY_PHARMA', label: 'Nifty Pharma' },
+    { value: 'NIFTY_PSU_BANK', label: 'Nifty PSU Bank' },
+    { value: 'NIFTY_REALTY', label: 'Nifty Realty' },
+    { value: 'NIFTY_PRIVATE_BANK', label: 'Nifty Private Bank' },
+    { value: 'NIFTY_HEALTHCARE_INDEX', label: 'Nifty Healthcare Index' },
+    { value: 'NIFTY_CONSUMER_DURABLES', label: 'Nifty Consumer Durables' },
+    { value: 'NIFTY_OIL_GAS', label: 'Nifty Oil & Gas' },
+    { value: 'NIFTY_MIDSMALL_HEALTHCARE', label: 'Nifty MidSmall Healthcare' },
+    { value: 'NIFTY_FINANCIAL_SERVICES_EX_BANK', label: 'Nifty Financial Services Ex-Bank' },
+    { value: 'NIFTY_MIDSMALL_FINANCIAL_SERVICES', label: 'Nifty MidSmall Financial Services' },
+    { value: 'NIFTY_MIDSMALL_IT_TELECOM', label: 'Nifty MidSmall IT & Telecom' }
+  ];
+
+  // Filter nifty indices based on search
+  const filteredNiftyIndices = allNiftyIndices.filter(index =>
+    index.label.toLowerCase().includes(niftyIndicesSearch.toLowerCase())
+  );
+
+  // Toggle nifty index selection
+  const toggleNiftyIndex = (index: string) => {
+    setFilters(prev => ({
+      ...prev,
+      niftyIndices: prev.niftyIndices.includes(index)
+        ? prev.niftyIndices.filter(i => i !== index)
+        : [...prev.niftyIndices, index]
+    }));
+  };
 
   // Fetch stocks from API
   const fetchStocks = async (page: number = 1, limit: number = 20) => {
@@ -117,15 +277,39 @@ export default function ScannerPage() {
         page: page.toString(),
         limit: limit.toString(),
         ...(filters.search && { search: filters.search }),
-        ...(filters.sector && { sector: filters.sector }),
-        ...(filters.industry && { industry: filters.industry }),
         ...(filters.minMarketCap && { minMarketCap: filters.minMarketCap }),
         ...(filters.maxMarketCap && { maxMarketCap: filters.maxMarketCap }),
         ...(filters.minPrice && { minPrice: filters.minPrice }),
         ...(filters.maxPrice && { maxPrice: filters.maxPrice }),
+        ...(filters.minPE && { minPE: filters.minPE }),
+        ...(filters.maxPE && { maxPE: filters.maxPE }),
+        ...(filters.minROCE && { minROCE: filters.minROCE }),
+        ...(filters.maxROCE && { maxROCE: filters.maxROCE }),
+        ...(filters.minROE && { minROE: filters.minROE }),
+        ...(filters.maxROE && { maxROE: filters.maxROE }),
+        ...(filters.minDebtToEquity && { minDebtToEquity: filters.minDebtToEquity }),
+        ...(filters.maxDebtToEquity && { maxDebtToEquity: filters.maxDebtToEquity }),
+        ...(filters.minPB && { minPB: filters.minPB }),
+        ...(filters.maxPB && { maxPB: filters.maxPB }),
+        ...(filters.minDividendYield && { minDividendYield: filters.minDividendYield }),
+        ...(filters.maxDividendYield && { maxDividendYield: filters.maxDividendYield }),
         sortBy: filters.sortBy,
         sortOrder: filters.sortOrder
       });
+
+      // Add multiple sectors as separate query params
+      if (filters.sector.length > 0) {
+        filters.sector.forEach(sector => {
+          queryParams.append('sector', sector);
+        });
+      }
+
+      // Add multiple nifty indices as separate query params
+      if (filters.niftyIndices.length > 0) {
+        filters.niftyIndices.forEach(index => {
+          queryParams.append('niftyIndices', index);
+        });
+      }
 
       const response = await fetch(`${API_URL}?${queryParams}`);
       const result: ApiResponse = await response.json();
@@ -206,15 +390,29 @@ export default function ScannerPage() {
   const resetAllFilters = () => {
     setFilters({
       search: '',
-      sector: '',
-      industry: '',
+      sector: [],
+      niftyIndices: [],
       minMarketCap: '',
       maxMarketCap: '',
       minPrice: '',
       maxPrice: '',
+      minPE: '',
+      maxPE: '',
+      minROCE: '',
+      maxROCE: '',
+      minROE: '',
+      maxROE: '',
+      minDebtToEquity: '',
+      maxDebtToEquity: '',
+      minPB: '',
+      maxPB: '',
+      minDividendYield: '',
+      maxDividendYield: '',
       sortBy: 'meta.marketCapitalization',
       sortOrder: 'desc'
     });
+    setSectorSearch('');
+    setNiftyIndicesSearch('');
     fetchStocks(1, selectedLimit);
   };
 
@@ -247,9 +445,9 @@ export default function ScannerPage() {
           <div className="grid grid-cols-12 gap-6">
             {/* Sidebar */}
             <div className="col-span-12 lg:col-span-3">
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sticky top-24">
-                {/* Filters Header */}
-                <div className="flex items-center justify-between mb-6">
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 sticky top-24 flex flex-col" style={{height: 'calc(100vh - 210px)'}}>
+                {/* Filters Header - Fixed */}
+                <div className="flex items-center justify-between py-5 px-5 border-b border-slate-200">
                   <h3 className="text-lg font-semibold text-slate-900">Filters</h3>
                   <button
                     onClick={resetAllFilters}
@@ -259,130 +457,1208 @@ export default function ScannerPage() {
                   </button>
                 </div>
 
-                {/* Filter Categories */}
-                <div className="space-y-4">
+                {/* Filter Categories - Scrollable */}
+                <div className="flex-1 overflow-y-auto scrollbar-thin">
+                  <div className="space-y-0">
                   {/* Search */}
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Search</label>
-                    <input
-                      type="text"
-                      placeholder="Search by company name or symbol..."
-                      value={filters.search}
-                      onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    />
+                  <div className="border-t border-slate-200 px-5">
+                    <button
+                      onClick={() => toggleFilter('search')}
+                      className="w-full flex items-center justify-between py-3 text-left"
+                    >
+                      <label className="text-sm font-medium text-slate-700 cursor-pointer">Search</label>
+                      <svg
+                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.search ? 'rotate-90' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                    {expandedFilters.search && (
+                      <div className="pb-3">
+                        <input
+                          type="text"
+                          placeholder="Search by company name or symbol..."
+                          value={filters.search}
+                          onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {/* Sector */}
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Sector</label>
-                    <select
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      value={filters.sector}
-                      onChange={(e) => setFilters(prev => ({ ...prev, sector: e.target.value }))}
+                  <div className="border-t border-slate-200 px-5">
+                    <button
+                      onClick={() => toggleFilter('sector')}
+                      className="w-full flex items-center justify-between py-3 text-left"
                     >
-                      <option value="">All Sectors</option>
-                      <option value="Banking">Banking</option>
-                      <option value="Technology">Technology</option>
-                      <option value="Energy">Energy</option>
-                      <option value="Healthcare">Healthcare</option>
-                      <option value="FMCG">FMCG</option>
-                      <option value="Auto">Auto</option>
-                      <option value="Telecom">Telecom</option>
-                      <option value="Infrastructure">Infrastructure</option>
-                      <option value="Real Estate">Real Estate</option>
-                    </select>
+                      <label className="text-sm font-medium text-slate-700 cursor-pointer">
+                        Sector {filters.sector.length > 0 && <span className="text-indigo-600">({filters.sector.length})</span>}
+                      </label>
+                      <svg
+                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.sector ? 'rotate-90' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                    {expandedFilters.sector && (
+                      <div className="pb-3 space-y-2">
+                        {/* Search bar */}
+                        <input
+                          type="text"
+                          placeholder="Search sectors..."
+                          value={sectorSearch}
+                          onChange={(e) => setSectorSearch(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+
+                        {/* Sector checkboxes */}
+                        <div className="max-h-48 overflow-y-auto scrollbar-thin space-y-1">
+                          {filteredSectors.map((sector) => (
+                            <label
+                              key={sector}
+                              className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded cursor-pointer transition-colors"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={filters.sector.includes(sector)}
+                                onChange={() => toggleSector(sector)}
+                                className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-2 focus:ring-indigo-500"
+                              />
+                              <span className="text-sm text-slate-700">{sector}</span>
+                            </label>
+                          ))}
+                        </div>
+
+                        {/* Clear selection */}
+                        {filters.sector.length > 0 && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, sector: [] }))}
+                            className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
+                          >
+                            Clear selection
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
 
-                  {/* Industry */}
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Industry</label>
-                    <input
-                      type="text"
-                      placeholder="Enter industry (e.g., IT Services, Banking)"
-                      value={filters.industry}
-                      onChange={(e) => setFilters(prev => ({ ...prev, industry: e.target.value }))}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                    />
+                  {/* Stock World (Nifty Indices) */}
+                  <div className="border-t border-slate-200 px-5">
+                    <button
+                      onClick={() => toggleFilter('niftyIndices')}
+                      className="w-full flex items-center justify-between py-3 text-left"
+                    >
+                      <label className="text-sm font-medium text-slate-700 cursor-pointer">
+                        Stock World {filters.niftyIndices.length > 0 && <span className="text-indigo-600">({filters.niftyIndices.length})</span>}
+                      </label>
+                      <svg
+                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.niftyIndices ? 'rotate-90' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                    {expandedFilters.niftyIndices && (
+                      <div className="pb-3 space-y-2">
+                        {/* Search bar */}
+                        <input
+                          type="text"
+                          placeholder="Search indices..."
+                          value={niftyIndicesSearch}
+                          onChange={(e) => setNiftyIndicesSearch(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+
+                        {/* Nifty indices checkboxes */}
+                        <div className="max-h-48 overflow-y-auto scrollbar-thin space-y-1">
+                          {filteredNiftyIndices.map((index) => (
+                            <label
+                              key={index.value}
+                              className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded cursor-pointer transition-colors"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={filters.niftyIndices.includes(index.value)}
+                                onChange={() => toggleNiftyIndex(index.value)}
+                                className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-2 focus:ring-indigo-500"
+                              />
+                              <span className="text-sm text-slate-700">{index.label}</span>
+                            </label>
+                          ))}
+                        </div>
+
+                        {/* Clear selection */}
+                        {filters.niftyIndices.length > 0 && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, niftyIndices: [] }))}
+                            className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
+                          >
+                            Clear selection
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Market Cap */}
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Market Cap (₹ Cr)</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="number"
-                        placeholder="Min"
-                        value={filters.minMarketCap}
-                        onChange={(e) => setFilters(prev => ({ ...prev, minMarketCap: e.target.value }))}
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                      <input
-                        type="number"
-                        placeholder="Max"
-                        value={filters.maxMarketCap}
-                        onChange={(e) => setFilters(prev => ({ ...prev, maxMarketCap: e.target.value }))}
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                    </div>
+                  <div className="border-t border-slate-200 px-5">
+                    <button
+                      onClick={() => toggleFilter('marketCap')}
+                      className="w-full flex items-center justify-between py-3 text-left"
+                    >
+                      <label className="text-sm font-medium text-slate-700 cursor-pointer">Market Cap (₹ Cr)</label>
+                      <svg
+                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.marketCap ? 'rotate-90' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                    {expandedFilters.marketCap && (
+                      <div className="pb-3 space-y-3">
+                        {/* Range Slider */}
+                        <div className="px-1">
+                          <div className="flex justify-between text-xs text-slate-600 mb-2">
+                            <span>₹{parseInt(filters.minMarketCap || '0').toLocaleString('en-IN')} Cr</span>
+                            <span>₹{parseInt(filters.maxMarketCap || '2052200').toLocaleString('en-IN')} Cr</span>
+                          </div>
+                          <div className="relative h-6 flex items-center">
+                            {/* Background track */}
+                            <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+
+                            {/* Highlighted range in middle */}
+                            <div
+                              className="absolute h-1.5 bg-indigo-500 rounded-full"
+                              style={{
+                                left: `${((parseInt(filters.minMarketCap || '0') / 2052200) * 100)}%`,
+                                right: `${100 - ((parseInt(filters.maxMarketCap || '2052200') / 2052200) * 100)}%`
+                              }}
+                            ></div>
+
+                            {/* Min range slider */}
+                            <input
+                              type="range"
+                              min="0"
+                              max="2052200"
+                              step="1000"
+                              value={filters.minMarketCap || 0}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                minMarketCap: e.target.value,
+                                maxMarketCap: prev.maxMarketCap && parseInt(e.target.value) > parseInt(prev.maxMarketCap)
+                                  ? e.target.value
+                                  : prev.maxMarketCap
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+
+                            {/* Max range slider */}
+                            <input
+                              type="range"
+                              min="0"
+                              max="2052200"
+                              step="1000"
+                              value={filters.maxMarketCap || 2052200}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                maxMarketCap: e.target.value,
+                                minMarketCap: prev.minMarketCap && parseInt(e.target.value) < parseInt(prev.minMarketCap)
+                                  ? e.target.value
+                                  : prev.minMarketCap
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Input Boxes */}
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Min"
+                            value={filters.minMarketCap ? parseInt(filters.minMarketCap).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, minMarketCap: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Max"
+                            value={filters.maxMarketCap ? parseInt(filters.maxMarketCap).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, maxMarketCap: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+
+                        {/* Preset Buttons */}
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minMarketCap: '0', maxMarketCap: '32500' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minMarketCap === '0' && filters.maxMarketCap === '32500'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Small Cap
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minMarketCap: '32501', maxMarketCap: '99500' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minMarketCap === '32501' && filters.maxMarketCap === '99500'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Mid Cap
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minMarketCap: '99501', maxMarketCap: '2052200' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minMarketCap === '99501' && filters.maxMarketCap === '2052200'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Large Cap
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  {/* Additional Filters */}
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Price Range (₹)</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="number"
-                        placeholder="Min"
-                        value={filters.minPrice}
-                        onChange={(e) => setFilters(prev => ({ ...prev, minPrice: e.target.value }))}
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                      <input
-                        type="number"
-                        placeholder="Max"
-                        value={filters.maxPrice}
-                        onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                    </div>
+                  {/* Price Range */}
+                  <div className="border-t border-slate-200 px-5">
+                    <button
+                      onClick={() => toggleFilter('priceRange')}
+                      className="w-full flex items-center justify-between py-3 text-left"
+                    >
+                      <label className="text-sm font-medium text-slate-700 cursor-pointer">Price Range (₹)</label>
+                      <svg
+                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.priceRange ? 'rotate-90' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                    {expandedFilters.priceRange && (
+                      <div className="pb-3 space-y-3">
+                        {/* Range Slider */}
+                        <div className="px-1">
+                          <div className="flex justify-between text-xs text-slate-600 mb-2">
+                            <span>₹{filters.minPrice ? parseFloat(filters.minPrice).toLocaleString('en-IN') : '0'}</span>
+                            <span>₹{filters.maxPrice ? parseFloat(filters.maxPrice).toLocaleString('en-IN') : '1,10,000'}</span>
+                          </div>
+                          <div className="relative h-6 flex items-center">
+                            <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+                            <div
+                              className="absolute h-1.5 bg-indigo-500 rounded-full"
+                              style={{
+                                left: `${((parseFloat(filters.minPrice || '0') / 110000) * 100)}%`,
+                                right: `${100 - ((parseFloat(filters.maxPrice || '110000') / 110000) * 100)}%`
+                              }}
+                            ></div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="110000"
+                              step="100"
+                              value={filters.minPrice || 0}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                minPrice: e.target.value,
+                                maxPrice: prev.maxPrice && parseFloat(e.target.value) > parseFloat(prev.maxPrice)
+                                  ? e.target.value
+                                  : prev.maxPrice
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+                            <input
+                              type="range"
+                              min="0"
+                              max="110000"
+                              step="100"
+                              value={filters.maxPrice || 110000}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                maxPrice: e.target.value,
+                                minPrice: prev.minPrice && parseFloat(e.target.value) < parseFloat(prev.minPrice)
+                                  ? e.target.value
+                                  : prev.minPrice
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Input Boxes */}
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Min"
+                            value={filters.minPrice ? parseFloat(filters.minPrice).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, minPrice: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Max"
+                            value={filters.maxPrice ? parseFloat(filters.maxPrice).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, maxPrice: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+
+                        {/* Preset Buttons */}
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPrice: '0', maxPrice: '100' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minPrice === '0' && filters.maxPrice === '100'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Low
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPrice: '100.1', maxPrice: '1000' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minPrice === '100.1' && filters.maxPrice === '1000'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Mid
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPrice: '1000.1', maxPrice: '110000' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minPrice === '1000.1' && filters.maxPrice === '110000'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            High
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">P/E Ratio</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="number"
-                        placeholder="Min"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                      <input
-                        type="number"
-                        placeholder="Max"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                    </div>
+                  {/* P/E Ratio */}
+                  <div className="border-t border-slate-200 px-5">
+                    <button
+                      onClick={() => toggleFilter('peRatio')}
+                      className="w-full flex items-center justify-between py-3 text-left"
+                    >
+                      <label className="text-sm font-medium text-slate-700 cursor-pointer">P/E Ratio</label>
+                      <svg
+                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.peRatio ? 'rotate-90' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                    {expandedFilters.peRatio && (
+                      <div className="pb-3 space-y-3">
+                        {/* Range Slider */}
+                        <div className="px-1">
+                          <div className="flex justify-between text-xs text-slate-600 mb-2">
+                            <span>{filters.minPE ? parseFloat(filters.minPE).toLocaleString('en-IN') : '0'}</span>
+                            <span>{filters.maxPE ? parseFloat(filters.maxPE).toLocaleString('en-IN') : '100'}</span>
+                          </div>
+                          <div className="relative h-6 flex items-center">
+                            <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+                            <div
+                              className="absolute h-1.5 bg-indigo-500 rounded-full"
+                              style={{
+                                left: `${((parseFloat(filters.minPE || '0') / 100) * 100)}%`,
+                                right: `${100 - ((parseFloat(filters.maxPE || '100') / 100) * 100)}%`
+                              }}
+                            ></div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="100"
+                              step="1"
+                              value={filters.minPE || 0}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                minPE: e.target.value,
+                                maxPE: prev.maxPE && parseFloat(e.target.value) > parseFloat(prev.maxPE)
+                                  ? e.target.value
+                                  : prev.maxPE
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+                            <input
+                              type="range"
+                              min="0"
+                              max="100"
+                              step="1"
+                              value={filters.maxPE || 100}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                maxPE: e.target.value,
+                                minPE: prev.minPE && parseFloat(e.target.value) < parseFloat(prev.minPE)
+                                  ? e.target.value
+                                  : prev.minPE
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Input Boxes */}
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Min"
+                            value={filters.minPE ? parseFloat(filters.minPE).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, minPE: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Max"
+                            value={filters.maxPE ? parseFloat(filters.maxPE).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, maxPE: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+
+                        {/* Preset Buttons */}
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPE: '0', maxPE: '15' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minPE === '0' && filters.maxPE === '15'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Low
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPE: '16', maxPE: '25' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minPE === '16' && filters.maxPE === '25'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Mid
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPE: '26', maxPE: '100' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minPE === '26' && filters.maxPE === '100'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            High
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">ROE (%)</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="number"
-                        placeholder="Min"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                      <input
-                        type="number"
-                        placeholder="Max"
-                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                      />
-                    </div>
+                  {/* ROCE */}
+                  <div className="border-t border-slate-200 px-5">
+                    <button
+                      onClick={() => toggleFilter('roce')}
+                      className="w-full flex items-center justify-between py-3 text-left"
+                    >
+                      <label className="text-sm font-medium text-slate-700 cursor-pointer">ROCE (%)</label>
+                      <svg
+                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.roce ? 'rotate-90' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                    {expandedFilters.roce && (
+                      <div className="pb-3 space-y-3">
+                        <div className="px-1">
+                          <div className="flex justify-between text-xs text-slate-600 mb-2">
+                            <span>{filters.minROCE ? parseFloat(filters.minROCE).toLocaleString('en-IN') : '0'}%</span>
+                            <span>{filters.maxROCE ? parseFloat(filters.maxROCE).toLocaleString('en-IN') : '50'}%</span>
+                          </div>
+                          <div className="relative h-6 flex items-center">
+                            <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+                            <div
+                              className="absolute h-1.5 bg-indigo-500 rounded-full"
+                              style={{
+                                left: `${((parseFloat(filters.minROCE || '0') / 50) * 100)}%`,
+                                right: `${100 - ((parseFloat(filters.maxROCE || '50') / 50) * 100)}%`
+                              }}
+                            ></div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="50"
+                              step="0.5"
+                              value={filters.minROCE || 0}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                minROCE: e.target.value,
+                                maxROCE: prev.maxROCE && parseFloat(e.target.value) > parseFloat(prev.maxROCE)
+                                  ? e.target.value
+                                  : prev.maxROCE
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+                            <input
+                              type="range"
+                              min="0"
+                              max="50"
+                              step="0.5"
+                              value={filters.maxROCE || 50}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                maxROCE: e.target.value,
+                                minROCE: prev.minROCE && parseFloat(e.target.value) < parseFloat(prev.minROCE)
+                                  ? e.target.value
+                                  : prev.minROCE
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Min"
+                            value={filters.minROCE ? parseFloat(filters.minROCE).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, minROCE: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Max"
+                            value={filters.maxROCE ? parseFloat(filters.maxROCE).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, maxROCE: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minROCE: '0', maxROCE: '10' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minROCE === '0' && filters.maxROCE === '10'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Low
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minROCE: '11', maxROCE: '20' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minROCE === '11' && filters.maxROCE === '20'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Mid
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minROCE: '21', maxROCE: '50' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minROCE === '21' && filters.maxROCE === '50'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            High
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ROE */}
+                  <div className="border-t border-slate-200 px-5">
+                    <button
+                      onClick={() => toggleFilter('roe')}
+                      className="w-full flex items-center justify-between py-3 text-left"
+                    >
+                      <label className="text-sm font-medium text-slate-700 cursor-pointer">ROE (%)</label>
+                      <svg
+                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.roe ? 'rotate-90' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                    {expandedFilters.roe && (
+                      <div className="pb-3 space-y-3">
+                        <div className="px-1">
+                          <div className="flex justify-between text-xs text-slate-600 mb-2">
+                            <span>{filters.minROE ? parseFloat(filters.minROE).toLocaleString('en-IN') : '0'}%</span>
+                            <span>{filters.maxROE ? parseFloat(filters.maxROE).toLocaleString('en-IN') : '50'}%</span>
+                          </div>
+                          <div className="relative h-6 flex items-center">
+                            <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+                            <div
+                              className="absolute h-1.5 bg-indigo-500 rounded-full"
+                              style={{
+                                left: `${((parseFloat(filters.minROE || '0') / 50) * 100)}%`,
+                                right: `${100 - ((parseFloat(filters.maxROE || '50') / 50) * 100)}%`
+                              }}
+                            ></div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="50"
+                              step="0.5"
+                              value={filters.minROE || 0}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                minROE: e.target.value,
+                                maxROE: prev.maxROE && parseFloat(e.target.value) > parseFloat(prev.maxROE)
+                                  ? e.target.value
+                                  : prev.maxROE
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+                            <input
+                              type="range"
+                              min="0"
+                              max="50"
+                              step="0.5"
+                              value={filters.maxROE || 50}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                maxROE: e.target.value,
+                                minROE: prev.minROE && parseFloat(e.target.value) < parseFloat(prev.minROE)
+                                  ? e.target.value
+                                  : prev.minROE
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Min"
+                            value={filters.minROE ? parseFloat(filters.minROE).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, minROE: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Max"
+                            value={filters.maxROE ? parseFloat(filters.maxROE).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, maxROE: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minROE: '0', maxROE: '10' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minROE === '0' && filters.maxROE === '10'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Low
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minROE: '11', maxROE: '20' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minROE === '11' && filters.maxROE === '20'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Mid
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minROE: '21', maxROE: '50' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minROE === '21' && filters.maxROE === '50'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            High
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Debt-to-Equity */}
+                  <div className="border-t border-slate-200 px-5">
+                    <button
+                      onClick={() => toggleFilter('debtToEquity')}
+                      className="w-full flex items-center justify-between py-3 text-left"
+                    >
+                      <label className="text-sm font-medium text-slate-700 cursor-pointer">Debt-to-Equity</label>
+                      <svg
+                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.debtToEquity ? 'rotate-90' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                    {expandedFilters.debtToEquity && (
+                      <div className="pb-3 space-y-3">
+                        <div className="px-1">
+                          <div className="flex justify-between text-xs text-slate-600 mb-2">
+                            <span>{filters.minDebtToEquity ? parseFloat(filters.minDebtToEquity).toLocaleString('en-IN') : '0'}</span>
+                            <span>{filters.maxDebtToEquity ? parseFloat(filters.maxDebtToEquity).toLocaleString('en-IN') : '5'}</span>
+                          </div>
+                          <div className="relative h-6 flex items-center">
+                            <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+                            <div
+                              className="absolute h-1.5 bg-indigo-500 rounded-full"
+                              style={{
+                                left: `${((parseFloat(filters.minDebtToEquity || '0') / 5) * 100)}%`,
+                                right: `${100 - ((parseFloat(filters.maxDebtToEquity || '5') / 5) * 100)}%`
+                              }}
+                            ></div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="5"
+                              step="0.1"
+                              value={filters.minDebtToEquity || 0}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                minDebtToEquity: e.target.value,
+                                maxDebtToEquity: prev.maxDebtToEquity && parseFloat(e.target.value) > parseFloat(prev.maxDebtToEquity)
+                                  ? e.target.value
+                                  : prev.maxDebtToEquity
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+                            <input
+                              type="range"
+                              min="0"
+                              max="5"
+                              step="0.1"
+                              value={filters.maxDebtToEquity || 5}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                maxDebtToEquity: e.target.value,
+                                minDebtToEquity: prev.minDebtToEquity && parseFloat(e.target.value) < parseFloat(prev.minDebtToEquity)
+                                  ? e.target.value
+                                  : prev.minDebtToEquity
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Min"
+                            value={filters.minDebtToEquity ? parseFloat(filters.minDebtToEquity).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, minDebtToEquity: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Max"
+                            value={filters.maxDebtToEquity ? parseFloat(filters.maxDebtToEquity).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, maxDebtToEquity: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minDebtToEquity: '0', maxDebtToEquity: '0.5' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minDebtToEquity === '0' && filters.maxDebtToEquity === '0.5'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Low
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minDebtToEquity: '0.6', maxDebtToEquity: '1.5' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minDebtToEquity === '0.6' && filters.maxDebtToEquity === '1.5'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Mid
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minDebtToEquity: '1.6', maxDebtToEquity: '5' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minDebtToEquity === '1.6' && filters.maxDebtToEquity === '5'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            High
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* P/B Ratio */}
+                  <div className="border-t border-slate-200 px-5">
+                    <button
+                      onClick={() => toggleFilter('pbRatio')}
+                      className="w-full flex items-center justify-between py-3 text-left"
+                    >
+                      <label className="text-sm font-medium text-slate-700 cursor-pointer">P/B Ratio</label>
+                      <svg
+                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.pbRatio ? 'rotate-90' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                    {expandedFilters.pbRatio && (
+                      <div className="pb-3 space-y-3">
+                        <div className="px-1">
+                          <div className="flex justify-between text-xs text-slate-600 mb-2">
+                            <span>{filters.minPB ? parseFloat(filters.minPB).toLocaleString('en-IN') : '0'}</span>
+                            <span>{filters.maxPB ? parseFloat(filters.maxPB).toLocaleString('en-IN') : '20'}</span>
+                          </div>
+                          <div className="relative h-6 flex items-center">
+                            <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+                            <div
+                              className="absolute h-1.5 bg-indigo-500 rounded-full"
+                              style={{
+                                left: `${((parseFloat(filters.minPB || '0') / 20) * 100)}%`,
+                                right: `${100 - ((parseFloat(filters.maxPB || '20') / 20) * 100)}%`
+                              }}
+                            ></div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="20"
+                              step="0.5"
+                              value={filters.minPB || 0}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                minPB: e.target.value,
+                                maxPB: prev.maxPB && parseFloat(e.target.value) > parseFloat(prev.maxPB)
+                                  ? e.target.value
+                                  : prev.maxPB
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+                            <input
+                              type="range"
+                              min="0"
+                              max="20"
+                              step="0.5"
+                              value={filters.maxPB || 20}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                maxPB: e.target.value,
+                                minPB: prev.minPB && parseFloat(e.target.value) < parseFloat(prev.minPB)
+                                  ? e.target.value
+                                  : prev.minPB
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Min"
+                            value={filters.minPB ? parseFloat(filters.minPB).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, minPB: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Max"
+                            value={filters.maxPB ? parseFloat(filters.maxPB).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, maxPB: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPB: '0', maxPB: '3' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minPB === '0' && filters.maxPB === '3'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Low
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPB: '3.1', maxPB: '6' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minPB === '3.1' && filters.maxPB === '6'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Mid
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPB: '6.1', maxPB: '20' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minPB === '6.1' && filters.maxPB === '20'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            High
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Dividend Yield */}
+                  <div className="border-t border-b border-slate-200 px-5">
+                    <button
+                      onClick={() => toggleFilter('dividendYield')}
+                      className="w-full flex items-center justify-between py-3 text-left"
+                    >
+                      <label className="text-sm font-medium text-slate-700 cursor-pointer">Dividend Yield (%)</label>
+                      <svg
+                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.dividendYield ? 'rotate-90' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                    {expandedFilters.dividendYield && (
+                      <div className="pb-3 space-y-3">
+                        <div className="px-1">
+                          <div className="flex justify-between text-xs text-slate-600 mb-2">
+                            <span>{filters.minDividendYield ? parseFloat(filters.minDividendYield).toLocaleString('en-IN') : '0'}%</span>
+                            <span>{filters.maxDividendYield ? parseFloat(filters.maxDividendYield).toLocaleString('en-IN') : '10'}%</span>
+                          </div>
+                          <div className="relative h-6 flex items-center">
+                            <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+                            <div
+                              className="absolute h-1.5 bg-indigo-500 rounded-full"
+                              style={{
+                                left: `${((parseFloat(filters.minDividendYield || '0') / 10) * 100)}%`,
+                                right: `${100 - ((parseFloat(filters.maxDividendYield || '10') / 10) * 100)}%`
+                              }}
+                            ></div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="10"
+                              step="0.1"
+                              value={filters.minDividendYield || 0}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                minDividendYield: e.target.value,
+                                maxDividendYield: prev.maxDividendYield && parseFloat(e.target.value) > parseFloat(prev.maxDividendYield)
+                                  ? e.target.value
+                                  : prev.maxDividendYield
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+                            <input
+                              type="range"
+                              min="0"
+                              max="10"
+                              step="0.1"
+                              value={filters.maxDividendYield || 10}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                maxDividendYield: e.target.value,
+                                minDividendYield: prev.minDividendYield && parseFloat(e.target.value) < parseFloat(prev.minDividendYield)
+                                  ? e.target.value
+                                  : prev.minDividendYield
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Min"
+                            value={filters.minDividendYield ? parseFloat(filters.minDividendYield).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, minDividendYield: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Max"
+                            value={filters.maxDividendYield ? parseFloat(filters.maxDividendYield).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, maxDividendYield: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minDividendYield: '0', maxDividendYield: '1' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minDividendYield === '0' && filters.maxDividendYield === '1'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Low
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minDividendYield: '1.1', maxDividendYield: '3' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minDividendYield === '1.1' && filters.maxDividendYield === '3'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Mid
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minDividendYield: '3.1', maxDividendYield: '10' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minDividendYield === '3.1' && filters.maxDividendYield === '10'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            High
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   </div>
                 </div>
 
-                {/* Apply Button */}
-                <div className="mt-6 pt-4 border-t border-slate-200">
+                {/* Apply Button - Fixed */}
+                <div className="border-t border-slate-200 px-5 py-4">
                   <button
                     onClick={applyFilters}
                     className="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm"
@@ -460,16 +1736,6 @@ export default function ScannerPage() {
                           </button>
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                          <button onClick={() => handleSort('oneMonthReturn')} className="flex items-center gap-1 hover:text-indigo-600">
-                            1M Return {getSortIcon('oneMonthReturn')}
-                          </button>
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                          <button onClick={() => handleSort('tenDayReturn')} className="flex items-center gap-1 hover:text-indigo-600">
-                            1D Return {getSortIcon('tenDayReturn')}
-                          </button>
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
                           <button onClick={() => handleSort('returnOnEquity')} className="flex items-center gap-1 hover:text-indigo-600">
                             ROE {getSortIcon('returnOnEquity')}
                           </button>
@@ -479,7 +1745,7 @@ export default function ScannerPage() {
                     <tbody className="divide-y divide-slate-100">
                       {loading ? (
                         <tr>
-                          <td colSpan={8} className="px-4 py-8 text-center text-slate-500">
+                          <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
                             <div className="flex items-center justify-center gap-2">
                               <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
                               Loading stocks...
@@ -488,13 +1754,13 @@ export default function ScannerPage() {
                         </tr>
                       ) : error ? (
                         <tr>
-                          <td colSpan={8} className="px-4 py-8 text-center text-red-500">
+                          <td colSpan={6} className="px-4 py-8 text-center text-red-500">
                             {error}
                           </td>
                         </tr>
                       ) : stocks.length === 0 ? (
                         <tr>
-                          <td colSpan={8} className="px-4 py-8 text-center text-slate-500">
+                          <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
                             No stocks found matching your criteria
                           </td>
                         </tr>
@@ -538,33 +1804,7 @@ export default function ScannerPage() {
                             <td className="px-4 py-4">
                               {stock.peRatio ? (
                                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-orange-100 text-orange-800">
-                                  {stock.peRatio.toFixed(2)}x
-                                </span>
-                              ) : (
-                                <span className="text-xs text-slate-400">N/A</span>
-                              )}
-                            </td>
-                            <td className="px-4 py-4">
-                              {stock.oneMonthReturn !== null ? (
-                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                  stock.oneMonthReturn >= 0
-                                    ? 'bg-green-100 text-green-800'
-                                    : 'bg-red-100 text-red-800'
-                                }`}>
-                                  {stock.oneMonthReturn >= 0 ? '+' : ''}{stock.oneMonthReturn.toFixed(2)}%
-                                </span>
-                              ) : (
-                                <span className="text-xs text-slate-400">N/A</span>
-                              )}
-                            </td>
-                            <td className="px-4 py-4">
-                              {stock.tenDayReturn !== null ? (
-                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                  stock.tenDayReturn >= 0
-                                    ? 'bg-green-100 text-green-800'
-                                    : 'bg-red-100 text-red-800'
-                                }`}>
-                                  {stock.tenDayReturn >= 0 ? '+' : ''}{stock.tenDayReturn.toFixed(2)}%
+                                  {stock.peRatio.toFixed(2)}
                                 </span>
                               ) : (
                                 <span className="text-xs text-slate-400">N/A</span>

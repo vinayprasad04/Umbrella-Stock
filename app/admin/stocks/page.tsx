@@ -278,6 +278,8 @@ export default function StocksDashboard() {
         case 'NIFTY_FINANCIAL_SERVICES_EX_BANK': return 'bg-indigo-100 text-indigo-800';
         case 'NIFTY_MIDSMALL_FINANCIAL_SERVICES': return 'bg-violet-100 text-violet-800';
         case 'NIFTY_MIDSMALL_IT_TELECOM': return 'bg-sky-100 text-sky-800';
+        case 'NIFTY_NEXT_50': return 'bg-teal-100 text-teal-800';
+        case 'NIFTY_MIDSMALLCAP_400': return 'bg-lime-100 text-lime-800';
         default: return 'bg-gray-100 text-gray-800';
       }
     };
@@ -313,7 +315,9 @@ export default function StocksDashboard() {
         'NIFTY_MIDSMALL_HEALTHCARE': 'MS-Health',
         'NIFTY_FINANCIAL_SERVICES_EX_BANK': 'Fin-ExBank',
         'NIFTY_MIDSMALL_FINANCIAL_SERVICES': 'MS-Fin',
-        'NIFTY_MIDSMALL_IT_TELECOM': 'MS-IT'
+        'NIFTY_MIDSMALL_IT_TELECOM': 'MS-IT',
+        'NIFTY_NEXT_50': 'Next50',
+        'NIFTY_MIDSMALLCAP_400': 'MSC-400'
       };
       return labels[index] || index;
     };
@@ -538,6 +542,7 @@ export default function StocksDashboard() {
                     { value: 'NIFTY_100', label: 'Nifty 100' },
                     { value: 'NIFTY_200', label: 'Nifty 200' },
                     { value: 'NIFTY_500', label: 'Nifty 500' },
+                    { value: 'NIFTY_NEXT_50', label: 'Nifty Next 50' },
                     { value: 'NIFTY_BANK', label: 'Nifty Bank' },
                     { value: 'NIFTY_FINANCIAL_SERVICES', label: 'Nifty Financial Services' },
                     { value: 'NIFTY_MIDCAP_SELECT', label: 'Nifty Midcap Select' },
@@ -547,6 +552,7 @@ export default function StocksDashboard() {
                     { value: 'NIFTY_SMALLCAP_50', label: 'Nifty Smallcap 50' },
                     { value: 'NIFTY_SMALLCAP_100', label: 'Nifty Smallcap 100' },
                     { value: 'NIFTY_SMALLCAP_250', label: 'Nifty Smallcap 250' },
+                    { value: 'NIFTY_MIDSMALLCAP_400', label: 'Nifty MidSmallcap 400' },
                     { value: 'NIFTY_AUTO', label: 'Nifty Auto' },
                     { value: 'NIFTY_FINANCIAL_SERVICES_25_50', label: 'Nifty Financial Services 25/50' },
                     { value: 'NIFTY_FMCG', label: 'Nifty FMCG' },
