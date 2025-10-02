@@ -9,6 +9,7 @@ export interface IEquityStock extends Document {
   marketLot: number;
   isinNumber: string;
   faceValue: number;
+  sector?: string;
   isActive: boolean;
   hasActualData: boolean;
   lastUpdated: Date;
@@ -53,6 +54,10 @@ const EquityStockSchema: Schema = new Schema({
   faceValue: {
     type: Number,
     required: true
+  },
+  sector: {
+    type: String,
+    index: true
   },
   isActive: {
     type: Boolean,
