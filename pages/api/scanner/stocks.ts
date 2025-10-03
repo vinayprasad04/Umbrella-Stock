@@ -87,10 +87,26 @@ export default async function handler(
       sortOrder = 'desc'
     }: QueryParams = req.query;
 
+    // Note: All ratio filters will be applied in application code due to string vs number issue in DB
+    // Store the filter values for later use
+    const peFilter = (minPE || maxPE) ? { min: minPE ? parseFloat(minPE) : 0, max: maxPE ? parseFloat(maxPE) : Infinity } : null;
+    const roceFilter = (minROCE || maxROCE) ? { min: minROCE ? parseFloat(minROCE) : 0, max: maxROCE ? parseFloat(maxROCE) : Infinity } : null;
+    const roeFilter = (minROE || maxROE) ? { min: minROE ? parseFloat(minROE) : 0, max: maxROE ? parseFloat(maxROE) : Infinity } : null;
+    const debtFilter = (minDebtToEquity || maxDebtToEquity) ? { min: minDebtToEquity ? parseFloat(minDebtToEquity) : 0, max: maxDebtToEquity ? parseFloat(maxDebtToEquity) : Infinity } : null;
+    const pbFilter = (minPB || maxPB) ? { min: minPB ? parseFloat(minPB) : 0, max: maxPB ? parseFloat(maxPB) : Infinity } : null;
+    const divYieldFilter = (minDividendYield || maxDividendYield) ? { min: minDividendYield ? parseFloat(minDividendYield) : 0, max: maxDividendYield ? parseFloat(maxDividendYield) : Infinity } : null;
+
+    const hasRatioFilter = peFilter || roceFilter || roeFilter || debtFilter || pbFilter || divYieldFilter;
+
     // Parse pagination parameters
     const pageNumber = Math.max(1, parseInt(page));
     const limitNumber = Math.min(50, Math.max(10, parseInt(limit))); // Min 10, Max 50
     const skip = (pageNumber - 1) * limitNumber;
+
+    // If any ratio filter is active, we need to fetch ALL records since we'll filter in-memory
+    // This is because ratio values are stored as strings and can't be filtered in MongoDB
+    const fetchLimit = hasRatioFilter ? 10000 : limitNumber; // Fetch up to 10k stocks when filtering
+    const fetchSkip = hasRatioFilter ? 0 : skip;
 
     // Build filter query
     const filterQuery: any = {
@@ -149,67 +165,6 @@ export default async function handler(
       }
     }
 
-    // Ratio filters - using exact field names from ratios object
-    if (minPE || maxPE) {
-      filterQuery['ratios.Stock P/E'] = {};
-      if (minPE) {
-        filterQuery['ratios.Stock P/E'].$gte = parseFloat(minPE);
-      }
-      if (maxPE) {
-        filterQuery['ratios.Stock P/E'].$lte = parseFloat(maxPE);
-      }
-    }
-
-    if (minROCE || maxROCE) {
-      filterQuery['ratios.ROCE'] = {};
-      if (minROCE) {
-        filterQuery['ratios.ROCE'].$gte = parseFloat(minROCE);
-      }
-      if (maxROCE) {
-        filterQuery['ratios.ROCE'].$lte = parseFloat(maxROCE);
-      }
-    }
-
-    if (minROE || maxROE) {
-      filterQuery['ratios.Return on equity'] = {};
-      if (minROE) {
-        filterQuery['ratios.Return on equity'].$gte = parseFloat(minROE);
-      }
-      if (maxROE) {
-        filterQuery['ratios.Return on equity'].$lte = parseFloat(maxROE);
-      }
-    }
-
-    if (minDebtToEquity || maxDebtToEquity) {
-      filterQuery['ratios.Debt to equity'] = {};
-      if (minDebtToEquity) {
-        filterQuery['ratios.Debt to equity'].$gte = parseFloat(minDebtToEquity);
-      }
-      if (maxDebtToEquity) {
-        filterQuery['ratios.Debt to equity'].$lte = parseFloat(maxDebtToEquity);
-      }
-    }
-
-    if (minPB || maxPB) {
-      filterQuery['ratios.Price to book value'] = {};
-      if (minPB) {
-        filterQuery['ratios.Price to book value'].$gte = parseFloat(minPB);
-      }
-      if (maxPB) {
-        filterQuery['ratios.Price to book value'].$lte = parseFloat(maxPB);
-      }
-    }
-
-    if (minDividendYield || maxDividendYield) {
-      filterQuery['ratios.Dividend Yield'] = {};
-      if (minDividendYield) {
-        filterQuery['ratios.Dividend Yield'].$gte = parseFloat(minDividendYield);
-      }
-      if (maxDividendYield) {
-        filterQuery['ratios.Dividend Yield'].$lte = parseFloat(maxDividendYield);
-      }
-    }
-
     // Build sort query
     const sortQuery: any = {};
     const validSortFields = [
@@ -253,12 +208,12 @@ export default async function handler(
         'balanceSheet.equityShareCapital': { $slice: -2 }
       })
       .sort(sortQuery)
-      .skip(skip)
-      .limit(limitNumber)
+      .skip(fetchSkip)
+      .limit(fetchLimit)
       .lean();
 
     // Transform data to include calculated metrics
-    const transformedStocks = stocks.map((stock: any) => {
+    let transformedStocks = stocks.map((stock: any) => {
       let marketCapInCrores = stock.meta?.marketCapitalization || 0;
 
       // Extract ratios from the ratios object if available
@@ -284,13 +239,86 @@ export default async function handler(
         oneMonthReturn: ratios['1M Return'] ? parseFloat(ratios['1M Return']) : null,
         tenDayReturn: ratios['1D Return'] ? parseFloat(ratios['1D Return']) : null,
         returnOnEquity: ratios['ROE'] ? parseFloat(ratios['ROE']) : null,
-        pbRatio: ratios['P/B'] ? parseFloat(ratios['P/B']) : null,
+        returnOnCapitalEmployed: ratios['ROCE'] ? parseFloat(ratios['ROCE']) : null,
+        pbRatio: ratios['Price to book value'] ? parseFloat(ratios['Price to book value']) :
+                 (ratios['P/B'] ? parseFloat(ratios['P/B']) :
+                 (ratios['Price to Book'] ? parseFloat(ratios['Price to Book']) :
+                 (ratios['P/B Ratio'] ? parseFloat(ratios['P/B Ratio']) : null))),
+        debtToEquity: ratios['Debt to equity'] ? parseFloat(ratios['Debt to equity']) : null,
+        dividendYield: ratios['Dividend Yield'] ? parseFloat(ratios['Dividend Yield']) : (ratios['Dividend yield'] ? parseFloat(ratios['Dividend yield']) : null),
         // Include all available ratios
         allRatios: ratios
       };
     });
 
-    // Build pagination info
+    // Apply ratio filters in application code (due to string vs number issue in DB)
+    if (hasRatioFilter) {
+      transformedStocks = transformedStocks.filter((stock: any) => {
+        // P/E filter
+        if (peFilter) {
+          if (stock.peRatio == null) return false;
+          if (stock.peRatio < peFilter.min || stock.peRatio > peFilter.max) return false;
+        }
+
+        // ROCE filter
+        if (roceFilter) {
+          if (stock.returnOnCapitalEmployed == null) return false;
+          if (stock.returnOnCapitalEmployed < roceFilter.min || stock.returnOnCapitalEmployed > roceFilter.max) return false;
+        }
+
+        // ROE filter
+        if (roeFilter) {
+          if (stock.returnOnEquity == null) return false;
+          if (stock.returnOnEquity < roeFilter.min || stock.returnOnEquity > roeFilter.max) return false;
+        }
+
+        // Debt-to-Equity filter
+        if (debtFilter) {
+          if (stock.debtToEquity == null) return false;
+          if (stock.debtToEquity < debtFilter.min || stock.debtToEquity > debtFilter.max) return false;
+        }
+
+        // P/B filter
+        if (pbFilter) {
+          if (stock.pbRatio == null) return false;
+          if (stock.pbRatio < pbFilter.min || stock.pbRatio > pbFilter.max) return false;
+        }
+
+        // Dividend Yield filter
+        if (divYieldFilter) {
+          if (stock.dividendYield == null) return false;
+          if (stock.dividendYield < divYieldFilter.min || stock.dividendYield > divYieldFilter.max) return false;
+        }
+
+        return true;
+      });
+
+      // Apply pagination after filtering
+      const filteredTotalRecords = transformedStocks.length;
+      const filteredTotalPages = Math.ceil(filteredTotalRecords / limitNumber);
+      const startIndex = (pageNumber - 1) * limitNumber;
+      const endIndex = startIndex + limitNumber;
+      transformedStocks = transformedStocks.slice(startIndex, endIndex);
+
+      const pagination = {
+        currentPage: pageNumber,
+        totalPages: filteredTotalPages,
+        totalRecords: filteredTotalRecords,
+        limit: limitNumber,
+        hasNext: pageNumber < filteredTotalPages,
+        hasPrevious: pageNumber > 1
+      };
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          stocks: transformedStocks,
+          pagination
+        }
+      });
+    }
+
+    // Build pagination info for non-P/B filtered results
     const pagination = {
       currentPage: pageNumber,
       totalPages,

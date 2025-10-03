@@ -90,6 +90,9 @@ interface StockData {
   tenDayReturn: number | null;
   returnOnEquity: number | null;
   pbRatio: number | null;
+  returnOnCapitalEmployed: number | null;
+  debtToEquity: number | null;
+  dividendYield: number | null;
   dataQuality: string;
   lastUpdated: string;
   allRatios?: { [key: string]: any };
@@ -180,6 +183,15 @@ export default function ScannerPage() {
       ...prev,
       [filterName]: !prev[filterName]
     }));
+  };
+
+  // Helper to show selected range when filter is collapsed
+  const getFilterDisplay = (min: string, max: string, defaultMax: string, suffix = '') => {
+    if (!min && !max) return null;
+    const minVal = min || '0';
+    const maxVal = max || defaultMax;
+    if (minVal === '0' && maxVal === defaultMax) return null;
+    return `${parseFloat(minVal).toLocaleString('en-IN')}${suffix} - ${parseFloat(maxVal).toLocaleString('en-IN')}${suffix}`;
   };
 
   // All available sectors
@@ -387,8 +399,8 @@ export default function ScannerPage() {
     }
   };
 
-  const resetAllFilters = () => {
-    setFilters({
+  const resetAllFilters = async () => {
+    const resetFilters = {
       search: '',
       sector: [],
       niftyIndices: [],
@@ -410,10 +422,35 @@ export default function ScannerPage() {
       maxDividendYield: '',
       sortBy: 'meta.marketCapitalization',
       sortOrder: 'desc'
-    });
+    };
+
+    setFilters(resetFilters);
     setSectorSearch('');
     setNiftyIndicesSearch('');
-    fetchStocks(1, selectedLimit);
+
+    // Fetch stocks with reset filters
+    try {
+      setLoading(true);
+      const queryParams = new URLSearchParams({
+        page: '1',
+        limit: selectedLimit.toString(),
+        sortBy: 'meta.marketCapitalization',
+        sortOrder: 'desc'
+      });
+
+      const response = await fetch(`/api/scanner/stocks?${queryParams}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setStocks(data.data.stocks);
+        setPagination(data.data.pagination);
+      }
+    } catch (error) {
+      console.error('Error fetching stocks:', error);
+      setError('Failed to load stocks');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -429,22 +466,14 @@ export default function ScannerPage() {
               <h1 className="text-2xl font-bold text-slate-900 ">Stock Screener</h1>
               <p className="text-slate-600">Find the perfect stocks with advanced filtering</p>
             </div>
-            <div className="flex items-center gap-3">
-              {/* <button className="px-4 py-2 text-slate-600 hover:text-slate-900 hover:bg-white rounded-lg transition-all">
-                Save Screen
-              </button> */}
-              <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all">
-                Export Results
-              </button>
-            </div>
           </div>
 
         </div>
 
         <div className="px-6">
-          <div className="grid grid-cols-12 gap-6">
+          <div className="flex gap-6">
             {/* Sidebar */}
-            <div className="col-span-12 lg:col-span-3">
+            <div className="w-full lg:w-[350px] flex-shrink-0">
               <div className="bg-white rounded-xl shadow-sm border border-slate-200 sticky top-24 flex flex-col" style={{height: 'calc(100vh - 210px)'}}>
                 {/* Filters Header - Fixed */}
                 <div className="flex items-center justify-between py-5 px-5 border-b border-slate-200">
@@ -462,20 +491,35 @@ export default function ScannerPage() {
                   <div className="space-y-0">
                   {/* Search */}
                   <div className="border-t border-slate-200 px-5">
-                    <button
-                      onClick={() => toggleFilter('search')}
-                      className="w-full flex items-center justify-between py-3 text-left"
-                    >
-                      <label className="text-sm font-medium text-slate-700 cursor-pointer">Search</label>
-                      <svg
-                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.search ? 'rotate-90' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('search')}
+                        className="flex-1 flex items-center justify-between text-left"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
+                        <label className="text-sm font-medium text-slate-700 cursor-pointer">Search</label>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {filters.search && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, search: '' }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('search')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.search ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                     {expandedFilters.search && (
                       <div className="pb-3">
                         <input
@@ -491,22 +535,37 @@ export default function ScannerPage() {
 
                   {/* Sector */}
                   <div className="border-t border-slate-200 px-5">
-                    <button
-                      onClick={() => toggleFilter('sector')}
-                      className="w-full flex items-center justify-between py-3 text-left"
-                    >
-                      <label className="text-sm font-medium text-slate-700 cursor-pointer">
-                        Sector {filters.sector.length > 0 && <span className="text-indigo-600">({filters.sector.length})</span>}
-                      </label>
-                      <svg
-                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.sector ? 'rotate-90' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('sector')}
+                        className="flex-1 flex items-center justify-between text-left"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
+                        <label className="text-sm font-medium text-slate-700 cursor-pointer">
+                          Sector {filters.sector.length > 0 && <span className="text-indigo-600">({filters.sector.length})</span>}
+                        </label>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {filters.sector.length > 0 && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, sector: [] }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('sector')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.sector ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                     {expandedFilters.sector && (
                       <div className="pb-3 space-y-2">
                         {/* Search bar */}
@@ -551,22 +610,37 @@ export default function ScannerPage() {
 
                   {/* Stock World (Nifty Indices) */}
                   <div className="border-t border-slate-200 px-5">
-                    <button
-                      onClick={() => toggleFilter('niftyIndices')}
-                      className="w-full flex items-center justify-between py-3 text-left"
-                    >
-                      <label className="text-sm font-medium text-slate-700 cursor-pointer">
-                        Stock World {filters.niftyIndices.length > 0 && <span className="text-indigo-600">({filters.niftyIndices.length})</span>}
-                      </label>
-                      <svg
-                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.niftyIndices ? 'rotate-90' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('niftyIndices')}
+                        className="flex-1 flex items-center justify-between text-left"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
+                        <label className="text-sm font-medium text-slate-700 cursor-pointer">
+                          Stock World {filters.niftyIndices.length > 0 && <span className="text-indigo-600">({filters.niftyIndices.length})</span>}
+                        </label>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {filters.niftyIndices.length > 0 && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, niftyIndices: [] }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('niftyIndices')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.niftyIndices ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                     {expandedFilters.niftyIndices && (
                       <div className="pb-3 space-y-2">
                         {/* Search bar */}
@@ -611,20 +685,42 @@ export default function ScannerPage() {
 
                   {/* Market Cap */}
                   <div className="border-t border-slate-200 px-5">
-                    <button
-                      onClick={() => toggleFilter('marketCap')}
-                      className="w-full flex items-center justify-between py-3 text-left"
-                    >
-                      <label className="text-sm font-medium text-slate-700 cursor-pointer">Market Cap (₹ Cr)</label>
-                      <svg
-                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.marketCap ? 'rotate-90' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('marketCap')}
+                        className="flex-1 flex items-center justify-between text-left"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm font-medium text-slate-700 cursor-pointer">Market Cap (₹ Cr)</label>
+                          {!expandedFilters.marketCap && getFilterDisplay(filters.minMarketCap, filters.maxMarketCap, '2052200') && (
+                            <span className="text-xs text-indigo-600">
+                              (₹{getFilterDisplay(filters.minMarketCap, filters.maxMarketCap, '2052200')} Cr)
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {(filters.minMarketCap || filters.maxMarketCap) && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minMarketCap: '', maxMarketCap: '' }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('marketCap')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.marketCap ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                     {expandedFilters.marketCap && (
                       <div className="pb-3 space-y-3">
                         {/* Range Slider */}
@@ -751,20 +847,42 @@ export default function ScannerPage() {
 
                   {/* Price Range */}
                   <div className="border-t border-slate-200 px-5">
-                    <button
-                      onClick={() => toggleFilter('priceRange')}
-                      className="w-full flex items-center justify-between py-3 text-left"
-                    >
-                      <label className="text-sm font-medium text-slate-700 cursor-pointer">Price Range (₹)</label>
-                      <svg
-                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.priceRange ? 'rotate-90' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('priceRange')}
+                        className="flex-1 flex items-center justify-between text-left"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm font-medium text-slate-700 cursor-pointer">Price Range (₹)</label>
+                          {!expandedFilters.priceRange && getFilterDisplay(filters.minPrice, filters.maxPrice, '200000') && (
+                            <span className="text-xs text-indigo-600">
+                              (₹{getFilterDisplay(filters.minPrice, filters.maxPrice, '200000')})
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {(filters.minPrice || filters.maxPrice) && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPrice: '', maxPrice: '' }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('priceRange')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.priceRange ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                     {expandedFilters.priceRange && (
                       <div className="pb-3 space-y-3">
                         {/* Range Slider */}
@@ -884,20 +1002,40 @@ export default function ScannerPage() {
 
                   {/* P/E Ratio */}
                   <div className="border-t border-slate-200 px-5">
-                    <button
-                      onClick={() => toggleFilter('peRatio')}
-                      className="w-full flex items-center justify-between py-3 text-left"
-                    >
-                      <label className="text-sm font-medium text-slate-700 cursor-pointer">P/E Ratio</label>
-                      <svg
-                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.peRatio ? 'rotate-90' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('peRatio')}
+                        className="flex-1 flex items-center justify-between text-left"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm font-medium text-slate-700 cursor-pointer">P/E Ratio</label>
+                          {!expandedFilters.peRatio && getFilterDisplay(filters.minPE, filters.maxPE, '100') && (
+                            <span className="text-xs text-indigo-600">({getFilterDisplay(filters.minPE, filters.maxPE, '100')})</span>
+                          )}
+                        </div>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {(filters.minPE || filters.maxPE) && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPE: '', maxPE: '' }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('peRatio')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.peRatio ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                     {expandedFilters.peRatio && (
                       <div className="pb-3 space-y-3">
                         {/* Range Slider */}
@@ -1017,20 +1155,40 @@ export default function ScannerPage() {
 
                   {/* ROCE */}
                   <div className="border-t border-slate-200 px-5">
-                    <button
-                      onClick={() => toggleFilter('roce')}
-                      className="w-full flex items-center justify-between py-3 text-left"
-                    >
-                      <label className="text-sm font-medium text-slate-700 cursor-pointer">ROCE (%)</label>
-                      <svg
-                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.roce ? 'rotate-90' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('roce')}
+                        className="flex-1 flex items-center justify-between text-left"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm font-medium text-slate-700 cursor-pointer">ROCE (%)</label>
+                          {!expandedFilters.roce && getFilterDisplay(filters.minROCE, filters.maxROCE, '50', '%') && (
+                            <span className="text-xs text-indigo-600">({getFilterDisplay(filters.minROCE, filters.maxROCE, '50', '%')})</span>
+                          )}
+                        </div>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {(filters.minROCE || filters.maxROCE) && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minROCE: '', maxROCE: '' }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('roce')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.roce ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                     {expandedFilters.roce && (
                       <div className="pb-3 space-y-3">
                         <div className="px-1">
@@ -1145,20 +1303,40 @@ export default function ScannerPage() {
 
                   {/* ROE */}
                   <div className="border-t border-slate-200 px-5">
-                    <button
-                      onClick={() => toggleFilter('roe')}
-                      className="w-full flex items-center justify-between py-3 text-left"
-                    >
-                      <label className="text-sm font-medium text-slate-700 cursor-pointer">ROE (%)</label>
-                      <svg
-                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.roe ? 'rotate-90' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('roe')}
+                        className="flex-1 flex items-center justify-between text-left"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm font-medium text-slate-700 cursor-pointer">ROE (%)</label>
+                          {!expandedFilters.roe && getFilterDisplay(filters.minROE, filters.maxROE, '50', '%') && (
+                            <span className="text-xs text-indigo-600">({getFilterDisplay(filters.minROE, filters.maxROE, '50', '%')})</span>
+                          )}
+                        </div>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {(filters.minROE || filters.maxROE) && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minROE: '', maxROE: '' }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('roe')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.roe ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                     {expandedFilters.roe && (
                       <div className="pb-3 space-y-3">
                         <div className="px-1">
@@ -1273,20 +1451,40 @@ export default function ScannerPage() {
 
                   {/* Debt-to-Equity */}
                   <div className="border-t border-slate-200 px-5">
-                    <button
-                      onClick={() => toggleFilter('debtToEquity')}
-                      className="w-full flex items-center justify-between py-3 text-left"
-                    >
-                      <label className="text-sm font-medium text-slate-700 cursor-pointer">Debt-to-Equity</label>
-                      <svg
-                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.debtToEquity ? 'rotate-90' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('debtToEquity')}
+                        className="flex-1 flex items-center justify-between text-left"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm font-medium text-slate-700 cursor-pointer">Debt-to-Equity</label>
+                          {!expandedFilters.debtToEquity && getFilterDisplay(filters.minDebtToEquity, filters.maxDebtToEquity, '5') && (
+                            <span className="text-xs text-indigo-600">({getFilterDisplay(filters.minDebtToEquity, filters.maxDebtToEquity, '5')})</span>
+                          )}
+                        </div>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {(filters.minDebtToEquity || filters.maxDebtToEquity) && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minDebtToEquity: '', maxDebtToEquity: '' }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('debtToEquity')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.debtToEquity ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                     {expandedFilters.debtToEquity && (
                       <div className="pb-3 space-y-3">
                         <div className="px-1">
@@ -1401,20 +1599,40 @@ export default function ScannerPage() {
 
                   {/* P/B Ratio */}
                   <div className="border-t border-slate-200 px-5">
-                    <button
-                      onClick={() => toggleFilter('pbRatio')}
-                      className="w-full flex items-center justify-between py-3 text-left"
-                    >
-                      <label className="text-sm font-medium text-slate-700 cursor-pointer">P/B Ratio</label>
-                      <svg
-                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.pbRatio ? 'rotate-90' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('pbRatio')}
+                        className="flex-1 flex items-center justify-between text-left"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm font-medium text-slate-700 cursor-pointer">P/B Ratio</label>
+                          {!expandedFilters.pbRatio && getFilterDisplay(filters.minPB, filters.maxPB, '20') && (
+                            <span className="text-xs text-indigo-600">({getFilterDisplay(filters.minPB, filters.maxPB, '20')})</span>
+                          )}
+                        </div>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {(filters.minPB || filters.maxPB) && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPB: '', maxPB: '' }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('pbRatio')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.pbRatio ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                     {expandedFilters.pbRatio && (
                       <div className="pb-3 space-y-3">
                         <div className="px-1">
@@ -1529,20 +1747,40 @@ export default function ScannerPage() {
 
                   {/* Dividend Yield */}
                   <div className="border-t border-b border-slate-200 px-5">
-                    <button
-                      onClick={() => toggleFilter('dividendYield')}
-                      className="w-full flex items-center justify-between py-3 text-left"
-                    >
-                      <label className="text-sm font-medium text-slate-700 cursor-pointer">Dividend Yield (%)</label>
-                      <svg
-                        className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.dividendYield ? 'rotate-90' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('dividendYield')}
+                        className="flex-1 flex items-center justify-between text-left"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm font-medium text-slate-700 cursor-pointer">Dividend Yield (%)</label>
+                          {!expandedFilters.dividendYield && getFilterDisplay(filters.minDividendYield, filters.maxDividendYield, '10', '%') && (
+                            <span className="text-xs text-indigo-600">({getFilterDisplay(filters.minDividendYield, filters.maxDividendYield, '10', '%')})</span>
+                          )}
+                        </div>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {(filters.minDividendYield || filters.maxDividendYield) && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minDividendYield: '', maxDividendYield: '' }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('dividendYield')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.dividendYield ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                     {expandedFilters.dividendYield && (
                       <div className="pb-3 space-y-3">
                         <div className="px-1">
@@ -1670,7 +1908,7 @@ export default function ScannerPage() {
             </div>
 
             {/* Results Section */}
-            <div className="col-span-12 lg:col-span-9">
+            <div className="flex-1 min-w-0">
               {/* Results Summary */}
               <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-3 mb-4">
                 <div className="flex items-center justify-between">
@@ -1699,17 +1937,14 @@ export default function ScannerPage() {
                       <option value={30}>30</option>
                       <option value={50}>50</option>
                     </select>
-                    <button className="px-3 py-1.5 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all text-sm">
-                      Export
-                    </button>
                   </div>
                 </div>
               </div>
 
               {/* Stock Cards Grid */}
               <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="overflow-auto scrollbar-thin" style={{maxHeight: '575px'}}>
-                  <table className="w-full">
+                <div className="overflow-auto scrollbar-thin" style={{minHeight: 'calc(100vh - 369px)', maxHeight: 'calc(100vh - 369px)'}}>
+                  <table className="w-full min-h-full">
                     <thead className="bg-slate-50 sticky top-0">
                       <tr>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
@@ -1740,12 +1975,32 @@ export default function ScannerPage() {
                             ROE {getSortIcon('returnOnEquity')}
                           </button>
                         </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                          <button onClick={() => handleSort('returnOnCapitalEmployed')} className="flex items-center gap-1 hover:text-indigo-600">
+                            ROCE {getSortIcon('returnOnCapitalEmployed')}
+                          </button>
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                          <button onClick={() => handleSort('pbRatio')} className="flex items-center gap-1 hover:text-indigo-600">
+                            P/B {getSortIcon('pbRatio')}
+                          </button>
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                          <button onClick={() => handleSort('debtToEquity')} className="flex items-center gap-1 hover:text-indigo-600">
+                            Debt/Equity {getSortIcon('debtToEquity')}
+                          </button>
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                          <button onClick={() => handleSort('dividendYield')} className="flex items-center gap-1 hover:text-indigo-600">
+                            Div Yield {getSortIcon('dividendYield')}
+                          </button>
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {loading ? (
                         <tr>
-                          <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
+                          <td colSpan={10} className="px-4 py-8 text-center text-slate-500">
                             <div className="flex items-center justify-center gap-2">
                               <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
                               Loading stocks...
@@ -1754,13 +2009,13 @@ export default function ScannerPage() {
                         </tr>
                       ) : error ? (
                         <tr>
-                          <td colSpan={6} className="px-4 py-8 text-center text-red-500">
+                          <td colSpan={10} className="px-4 py-8 text-center text-red-500">
                             {error}
                           </td>
                         </tr>
                       ) : stocks.length === 0 ? (
                         <tr>
-                          <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
+                          <td colSpan={10} className="px-4 py-8 text-center text-slate-500">
                             No stocks found matching your criteria
                           </td>
                         </tr>
@@ -1825,6 +2080,52 @@ export default function ScannerPage() {
                                 <span className="text-xs text-slate-400">N/A</span>
                               )}
                             </td>
+                            <td className="px-4 py-4">
+                              {stock.returnOnCapitalEmployed != null ? (
+                                <div className="flex items-center gap-2">
+                                  <div className="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-purple-500 rounded-full"
+                                      style={{ width: `${Math.min(stock.returnOnCapitalEmployed * 1.67, 100)}%` }}
+                                    ></div>
+                                  </div>
+                                  <span className="text-sm font-medium text-slate-900">{stock.returnOnCapitalEmployed.toFixed(1)}%</span>
+                                </div>
+                              ) : (
+                                <span className="text-xs text-slate-400">N/A</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-4">
+                              {stock.pbRatio != null ? (
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                                  {stock.pbRatio.toFixed(2)}
+                                </span>
+                              ) : (
+                                <span className="text-xs text-slate-400">N/A</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-4">
+                              {stock.debtToEquity != null ? (
+                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
+                                  stock.debtToEquity < 0.5 ? 'bg-green-100 text-green-800' :
+                                  stock.debtToEquity < 1 ? 'bg-yellow-100 text-yellow-800' :
+                                  'bg-red-100 text-red-800'
+                                }`}>
+                                  {stock.debtToEquity.toFixed(2)}
+                                </span>
+                              ) : (
+                                <span className="text-xs text-slate-400">N/A</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-4">
+                              {stock.dividendYield != null ? (
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-emerald-100 text-emerald-800">
+                                  {stock.dividendYield.toFixed(2)}%
+                                </span>
+                              ) : (
+                                <span className="text-xs text-slate-400">N/A</span>
+                              )}
+                            </td>
                           </tr>
                         ))
                       )}
@@ -1834,7 +2135,7 @@ export default function ScannerPage() {
               </div>
 
               {/* Pagination Controls */}
-              {!loading && !error && pagination.totalPages > 1 && (
+              {!loading && !error && (
                 <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-3 mt-4">
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-slate-600">

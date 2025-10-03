@@ -45,7 +45,7 @@ def get_driver():
 # ===== FUNCTIONS =====
 def get_stock_list(page=1, limit=100, sortBy="symbol", sortOrder="asc"):
     """Fetch stock symbols from your source API"""
-    params = {"page": page, "limit": limit, "sortBy": sortBy, "sortOrder": sortOrder, "hasRatios":"false"}
+    params = {"page": page, "limit": limit, "sortBy": sortBy, "sortOrder": sortOrder, "niftyIndices":"NIFTY_100"}
     r = requests.get(SOURCE_API, headers=HEADERS, params=params, timeout=15)
     r.raise_for_status()
     data = r.json()

@@ -43,7 +43,9 @@
       "Bash(npm run bulk-test:*)",
       "WebFetch(domain:www.screener.in)",
       "Bash(rm:*)",
-      "Bash(git ls-tree:*)"
+      "Bash(git ls-tree:*)",
+      "Bash(awk:*)",
+      "Bash(python:*)"
     ],
     "deny": [],
     "ask": [],
