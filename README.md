@@ -52,7 +52,10 @@ git clone <repository-url>
 cd Umberlla-Stock
 
 # Install dependencies
-npm install
+npm install --legacy-peer-deps
+
+# Apply Next.js build patch (required for production builds)
+node -e "const fs = require('fs'); const filePath = 'node_modules/next/dist/build/generate-build-id.js'; let content = fs.readFileSync(filePath, 'utf8'); content = content.replace('async function generateBuildId(generate, fallback) {\\n    let buildId = await generate();', 'async function generateBuildId(generate, fallback) {\\n    let buildId = generate ? await generate() : null;'); fs.writeFileSync(filePath, content, 'utf8'); console.log('✓ Build patch applied successfully');"
 
 # Create environment file (optional)
 cp .env.example .env.local
@@ -63,6 +66,20 @@ npm run dev
 # Or build for production
 npm run build
 npm start
+```
+
+### ⚠️ **Important Build Notes**
+
+**Build Patch Required**: Due to a Next.js 13.4.5 issue with `generateBuildId`, a patch must be applied to `node_modules/next/dist/build/generate-build-id.js` after running `npm install`. The patch handles the case when `config.generateBuildId` is undefined.
+
+**When to reapply the patch:**
+- After running `npm install` or `npm ci`
+- After deleting `node_modules` folder
+- On fresh clones of the repository
+
+**Quick patch command:**
+```bash
+node -e "const fs = require('fs'); const filePath = 'node_modules/next/dist/build/generate-build-id.js'; let content = fs.readFileSync(filePath, 'utf8'); content = content.replace('async function generateBuildId(generate, fallback) {\\n    let buildId = await generate();', 'async function generateBuildId(generate, fallback) {\\n    let buildId = generate ? await generate() : null;'); fs.writeFileSync(filePath, content, 'utf8'); console.log('✓ Build patch applied');"
 ```
 
 ## 📱 **Usage**

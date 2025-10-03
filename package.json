@@ -9,7 +9,8 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "sync-mutual-funds": "node scripts/sync-mutual-funds.js",
-    "sync-mf-daily": "node scripts/sync-amfi-daily.js"
+    "sync-mf-daily": "node scripts/sync-amfi-daily.js",
+    "postinstall": "node scripts/postinstall.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
