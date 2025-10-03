@@ -1,6 +1,6 @@
 // Client-side authentication utilities
 
-const AUTH_STORAGE_KEY = 'auth_token';
+const AUTH_STORAGE_KEY = 'authToken'; // Match the existing app's token key
 const LOGIN_EVENT = 'user_logged_in';
 const LOGOUT_EVENT = 'user_logged_out';
 
