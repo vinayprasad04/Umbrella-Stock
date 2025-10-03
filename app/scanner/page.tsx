@@ -372,17 +372,19 @@ export default function ScannerPage() {
       setPageTitle('Stock Screener');
     });
 
-    // Load saved screener if screenerId in URL
-    const screenerId = searchParams?.get('screenerId');
-    if (screenerId) {
-      loadSavedScreener(screenerId);
-    }
-
     return () => {
       unsubscribeLogin();
       unsubscribeLogout();
     };
   }, []);
+
+  // Watch for URL parameter changes to load screener
+  useEffect(() => {
+    const screenerId = searchParams?.get('screenerId');
+    if (screenerId) {
+      loadSavedScreener(screenerId);
+    }
+  }, [searchParams]);
 
   // Load a saved screener
   const loadSavedScreener = async (screenerId: string) => {
@@ -400,18 +402,68 @@ export default function ScannerPage() {
         const data = await response.json();
         const screener = data.data;
 
-        // Update filters with saved screener filters
-        setFilters(screener.filters);
+        // Update state
         setCurrentScreenerId(screener._id);
         setPageTitle(screener.title);
         setScreenerTitle(screener.title);
         setScreenerDescription(screener.description);
 
+        // Update filters and fetch stocks immediately with new filters
+        const newFilters = screener.filters;
+        setFilters(newFilters);
+
+        // Build query params with the loaded filters
+        const queryParams = new URLSearchParams({
+          page: '1',
+          limit: selectedLimit.toString(),
+          search: newFilters.search || '',
+          sortBy: newFilters.sortBy || 'meta.marketCapitalization',
+          sortOrder: newFilters.sortOrder || 'desc',
+        });
+
+        // Add array filters
+        if (newFilters.sector?.length > 0) {
+          newFilters.sector.forEach((s: string) => queryParams.append('sector', s));
+        }
+        if (newFilters.niftyIndices?.length > 0) {
+          newFilters.niftyIndices.forEach((idx: string) => queryParams.append('niftyIndices', idx));
+        }
+
+        // Add range filters
+        if (newFilters.minMarketCap) queryParams.set('minMarketCap', newFilters.minMarketCap);
+        if (newFilters.maxMarketCap) queryParams.set('maxMarketCap', newFilters.maxMarketCap);
+        if (newFilters.minPrice) queryParams.set('minPrice', newFilters.minPrice);
+        if (newFilters.maxPrice) queryParams.set('maxPrice', newFilters.maxPrice);
+        if (newFilters.minPE) queryParams.set('minPE', newFilters.minPE);
+        if (newFilters.maxPE) queryParams.set('maxPE', newFilters.maxPE);
+        if (newFilters.minROCE) queryParams.set('minROCE', newFilters.minROCE);
+        if (newFilters.maxROCE) queryParams.set('maxROCE', newFilters.maxROCE);
+        if (newFilters.minROE) queryParams.set('minROE', newFilters.minROE);
+        if (newFilters.maxROE) queryParams.set('maxROE', newFilters.maxROE);
+        if (newFilters.minDebtToEquity) queryParams.set('minDebtToEquity', newFilters.minDebtToEquity);
+        if (newFilters.maxDebtToEquity) queryParams.set('maxDebtToEquity', newFilters.maxDebtToEquity);
+        if (newFilters.minPB) queryParams.set('minPB', newFilters.minPB);
+        if (newFilters.maxPB) queryParams.set('maxPB', newFilters.maxPB);
+        if (newFilters.minDividendYield) queryParams.set('minDividendYield', newFilters.minDividendYield);
+        if (newFilters.maxDividendYield) queryParams.set('maxDividendYield', newFilters.maxDividendYield);
+
         // Fetch stocks with loaded filters
-        setTimeout(() => applyFilters(), 100);
+        setLoading(true);
+        const stockResponse = await fetch(`${API_URL}?${queryParams.toString()}`);
+        const stockData = await stockResponse.json();
+
+        if (stockData.success) {
+          setStocks(stockData.data);
+          setPagination(stockData.pagination);
+          setError('');
+        } else {
+          setError(stockData.error || 'Failed to fetch stocks');
+        }
+        setLoading(false);
       }
     } catch (error) {
       console.error('Error loading saved screener:', error);
+      setLoading(false);
     }
   };
 
