@@ -421,7 +421,7 @@ export default function ScannerPage() {
       minDividendYield: '',
       maxDividendYield: '',
       sortBy: 'meta.marketCapitalization',
-      sortOrder: 'desc'
+      sortOrder: 'desc' as 'desc'
     };
 
     setFilters(resetFilters);
@@ -459,22 +459,13 @@ export default function ScannerPage() {
       <Header />
 
       <main className="pt-[120px] md:pt-[140px] lg:pt-[90px] pb-4">
-        {/* Top Header Section */}
-        <div className="px-6 mb-4">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900 ">Stock Screener</h1>
-              <p className="text-slate-600">Find the perfect stocks with advanced filtering</p>
-            </div>
-          </div>
-
-        </div>
+      
 
         <div className="px-6">
           <div className="flex gap-6">
             {/* Sidebar */}
             <div className="w-full lg:w-[350px] flex-shrink-0">
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 sticky top-24 flex flex-col" style={{height: 'calc(100vh - 210px)'}}>
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 sticky top-24 flex flex-col" style={{height: 'calc(100vh - 134px)'}}>
                 {/* Filters Header - Fixed */}
                 <div className="flex items-center justify-between py-5 px-5 border-b border-slate-200">
                   <h3 className="text-lg font-semibold text-slate-900">Filters</h3>
@@ -1909,6 +1900,22 @@ export default function ScannerPage() {
 
             {/* Results Section */}
             <div className="flex-1 min-w-0">
+                {/* Top Header Section */}
+              <div className=" mb-4">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h1 className="text-2xl font-bold text-slate-900 ">Stock Screener</h1>
+                    <p className="text-slate-600">Find the perfect stocks with advanced filtering</p>
+                  </div>
+                  <div>
+                    {/* <button className='bg-indigo-600 text-white py-2.5 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm'>
+                      
+                    </button> */}
+                    <button className='border py-2.5 px-4 rounded-lg hover:bg-indigo-700 hover:text-white transition-colors font-medium text-sm'>Save List</button>
+                  </div>
+                </div>
+
+              </div>
               {/* Results Summary */}
               <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-3 mb-4">
                 <div className="flex items-center justify-between">
