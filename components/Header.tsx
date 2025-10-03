@@ -13,6 +13,14 @@ interface User {
   role: string;
 }
 
+interface SavedScreener {
+  _id: string;
+  title: string;
+  description: string;
+  filters: any;
+  updatedAt: string;
+}
+
 const sharesTradingMenu = [
   { label: 'Home', href: '/' },
   { label: 'Sectors', href: '/sectors' },
@@ -25,25 +33,60 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showScreenersMenu, setShowScreenersMenu] = useState(false);
+  const [savedScreeners, setSavedScreeners] = useState<SavedScreener[]>([]);
   const router = useRouter();
 
   useEffect(() => {
     // Get current pathname from window location
     if (typeof window !== 'undefined') {
       setPathname(window.location.pathname);
-      
+
       // Check if user is logged in
       const userStr = localStorage.getItem('user');
       if (userStr) {
         try {
-          setUser(JSON.parse(userStr));
+          const userData = JSON.parse(userStr);
+          setUser(userData);
+          // Fetch saved screeners
+          fetchSavedScreeners();
         } catch (error) {
           localStorage.removeItem('user');
           localStorage.removeItem('authToken');
         }
       }
+
+      // Listen for screener-saved event
+      const handleScreenerSaved = () => {
+        fetchSavedScreeners();
+      };
+      window.addEventListener('screener-saved', handleScreenerSaved);
+
+      return () => {
+        window.removeEventListener('screener-saved', handleScreenerSaved);
+      };
     }
   }, []);
+
+  const fetchSavedScreeners = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) return;
+
+      const response = await fetch('/api/user/screeners', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSavedScreeners(data.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching saved screeners:', error);
+    }
+  };
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -214,6 +257,56 @@ export default function Header() {
                       </svg>
                       Dashboard
                     </Link>
+
+                    {/* Saved Screeners Submenu */}
+                    <div
+                      className="relative"
+                      onMouseEnter={() => setShowScreenersMenu(true)}
+                      onMouseLeave={() => setShowScreenersMenu(false)}
+                    >
+                      <button
+                        className="flex items-center justify-between gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors w-full text-left"
+                      >
+                        <div className="flex items-center gap-3">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                          </svg>
+                          Saved Screeners
+                        </div>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+
+                      {/* Screeners Submenu Dropdown */}
+                      {showScreenersMenu && (
+                        <div className="absolute left-full top-0 ml-1 w-64 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 z-50 max-h-96 overflow-y-auto">
+                          {savedScreeners.length > 0 ? (
+                            savedScreeners.map((screener) => (
+                              <Link
+                                key={screener._id}
+                                href={`/scanner?screenerId=${screener._id}`}
+                                onClick={() => {
+                                  setShowUserMenu(false);
+                                  setShowScreenersMenu(false);
+                                }}
+                                className="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
+                              >
+                                <div className="font-medium text-gray-900 truncate">{screener.title}</div>
+                                <div className="text-xs text-gray-500 mt-1 truncate">{screener.description}</div>
+                                <div className="text-xs text-gray-400 mt-1">
+                                  Updated {new Date(screener.updatedAt).toLocaleDateString()}
+                                </div>
+                              </Link>
+                            ))
+                          ) : (
+                            <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                              No saved screeners yet
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
 
                     {['ADMIN', 'DATA_ENTRY'].includes(user.role) && (
                       <Link

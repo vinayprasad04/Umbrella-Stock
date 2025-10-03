@@ -1,0 +1,107 @@
+import { NextApiRequest, NextApiResponse } from 'next';
+import connectDB from '@/lib/mongodb';
+import SavedScreener from '@/models/SavedScreener';
+import { AuthUtils } from '@/lib/auth';
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  await connectDB();
+
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      error: 'Authentication required',
+    });
+  }
+
+  try {
+    const decoded = AuthUtils.verifyAccessToken(token);
+    if (!decoded) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid token',
+      });
+    }
+
+    const userId = decoded.userId;
+    const { id } = req.query;
+
+    if (req.method === 'GET') {
+      // Get a specific screener
+      const screener = await SavedScreener.findOne({ _id: id, userId });
+
+      if (!screener) {
+        return res.status(404).json({
+          success: false,
+          error: 'Screener not found',
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: screener,
+      });
+    } else if (req.method === 'PUT') {
+      // Update a screener
+      const { title, description, filters } = req.body;
+
+      if (title && title.length > 30) {
+        return res.status(400).json({
+          success: false,
+          error: 'Title must be 30 characters or less',
+        });
+      }
+
+      const screener = await SavedScreener.findOneAndUpdate(
+        { _id: id, userId },
+        {
+          ...(title && { title }),
+          ...(description && { description }),
+          ...(filters && { filters }),
+        },
+        { new: true }
+      );
+
+      if (!screener) {
+        return res.status(404).json({
+          success: false,
+          error: 'Screener not found',
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: screener,
+      });
+    } else if (req.method === 'DELETE') {
+      // Delete a screener
+      const screener = await SavedScreener.findOneAndDelete({ _id: id, userId });
+
+      if (!screener) {
+        return res.status(404).json({
+          success: false,
+          error: 'Screener not found',
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: 'Screener deleted successfully',
+      });
+    } else {
+      return res.status(405).json({
+        success: false,
+        error: 'Method not allowed',
+      });
+    }
+  } catch (error: any) {
+    console.error('Screener API error:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Internal server error',
+    });
+  }
+}

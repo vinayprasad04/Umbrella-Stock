@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Link from "next/link";
 import { formatCurrency, formatPercentage } from '@/lib/api-utils';
+import { authUtils } from '@/lib/authUtils';
+import { useSearchParams } from 'next/navigation';
 
 // Custom styles for new design
 const customStyles = `
@@ -120,10 +122,22 @@ interface ApiResponse {
 const API_URL = '/api/scanner/stocks';
 
 export default function ScannerPage() {
+  const searchParams = useSearchParams();
+
   // Data states
   const [stocks, setStocks] = useState<StockData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+
+  // Save screener states
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [screenerTitle, setScreenerTitle] = useState('');
+  const [screenerDescription, setScreenerDescription] = useState('');
+  const [currentScreenerId, setCurrentScreenerId] = useState<string | null>(null);
+  const [pageTitle, setPageTitle] = useState('Stock Screener');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   // Pagination states
   const [pagination, setPagination] = useState<PaginationInfo>({
@@ -343,7 +357,141 @@ export default function ScannerPage() {
   // Load initial data
   useEffect(() => {
     fetchStocks(1, selectedLimit);
+
+    // Check login status
+    setIsLoggedIn(authUtils.isLoggedIn());
+
+    // Listen for cross-tab login
+    const unsubscribeLogin = authUtils.onLogin(() => {
+      setIsLoggedIn(true);
+    });
+
+    const unsubscribeLogout = authUtils.onLogout(() => {
+      setIsLoggedIn(false);
+      setCurrentScreenerId(null);
+      setPageTitle('Stock Screener');
+    });
+
+    // Load saved screener if screenerId in URL
+    const screenerId = searchParams?.get('screenerId');
+    if (screenerId) {
+      loadSavedScreener(screenerId);
+    }
+
+    return () => {
+      unsubscribeLogin();
+      unsubscribeLogout();
+    };
   }, []);
+
+  // Load a saved screener
+  const loadSavedScreener = async (screenerId: string) => {
+    try {
+      const token = authUtils.getToken();
+      if (!token) return;
+
+      const response = await fetch(`/api/user/screeners/${screenerId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const screener = data.data;
+
+        // Update filters with saved screener filters
+        setFilters(screener.filters);
+        setCurrentScreenerId(screener._id);
+        setPageTitle(screener.title);
+        setScreenerTitle(screener.title);
+        setScreenerDescription(screener.description);
+
+        // Fetch stocks with loaded filters
+        setTimeout(() => applyFilters(), 100);
+      }
+    } catch (error) {
+      console.error('Error loading saved screener:', error);
+    }
+  };
+
+  // Handle save button click
+  const handleSaveClick = () => {
+    if (!isLoggedIn) {
+      setShowLoginModal(true);
+    } else {
+      setShowSaveModal(true);
+    }
+  };
+
+  // Handle save/update screener
+  const handleSaveScreener = async () => {
+    if (!screenerTitle.trim() || !screenerDescription.trim()) {
+      alert('Please fill in both title and description');
+      return;
+    }
+
+    if (screenerTitle.length > 30) {
+      alert('Title must be 30 characters or less');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const token = authUtils.getToken();
+      if (!token) {
+        setShowLoginModal(true);
+        return;
+      }
+
+      const endpoint = currentScreenerId
+        ? `/api/user/screeners/${currentScreenerId}`
+        : '/api/user/screeners';
+
+      const method = currentScreenerId ? 'PUT' : 'POST';
+
+      const response = await fetch(endpoint, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: screenerTitle,
+          description: screenerDescription,
+          filters,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentScreenerId(data.data._id);
+        setPageTitle(screenerTitle);
+        setShowSaveModal(false);
+        alert(currentScreenerId ? 'Screener updated successfully!' : 'Screener saved successfully!');
+
+        // Reload header to update saved screeners list
+        window.dispatchEvent(new CustomEvent('screener-saved'));
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || 'Failed to save screener');
+      }
+    } catch (error) {
+      console.error('Error saving screener:', error);
+      alert('Failed to save screener');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Handle new screener (clear current)
+  const handleNewScreener = () => {
+    setCurrentScreenerId(null);
+    setPageTitle('Stock Screener');
+    setScreenerTitle('');
+    setScreenerDescription('');
+    setShowSaveModal(true);
+  };
 
   // Handle pagination
   const handlePageChange = (newPage: number) => {
@@ -1904,14 +2052,24 @@ export default function ScannerPage() {
               <div className=" mb-4">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h1 className="text-2xl font-bold text-slate-900 ">Stock Screener</h1>
+                    <h1 className="text-2xl font-bold text-slate-900">{pageTitle}</h1>
                     <p className="text-slate-600">Find the perfect stocks with advanced filtering</p>
                   </div>
-                  <div>
-                    {/* <button className='bg-indigo-600 text-white py-2.5 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm'>
-                      
-                    </button> */}
-                    <button className='border py-2.5 px-4 rounded-lg hover:bg-indigo-700 hover:text-white transition-colors font-medium text-sm'>Save List</button>
+                  <div className="flex items-center gap-2">
+                    {currentScreenerId && (
+                      <button
+                        onClick={handleNewScreener}
+                        className='border border-indigo-600 text-indigo-600 py-2.5 px-4 rounded-lg hover:bg-indigo-50 transition-colors font-medium text-sm'
+                      >
+                        New
+                      </button>
+                    )}
+                    <button
+                      onClick={handleSaveClick}
+                      className='bg-indigo-600 text-white py-2.5 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm'
+                    >
+                      {currentScreenerId ? 'Update' : 'Save'}
+                    </button>
                   </div>
                 </div>
 
@@ -2207,6 +2365,102 @@ export default function ScannerPage() {
           </div>
         </div>
       </main>
+
+      {/* Login Confirmation Modal */}
+      {showLoginModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
+          <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Login Required</h2>
+            <p className="text-gray-600 mb-6">
+              Please login to save screeners. Would you like to login now?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowLoginModal(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  window.open('/login', '_blank');
+                  setShowLoginModal(false);
+                }}
+                className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+              >
+                Login
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Save Screener Modal */}
+      {showSaveModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
+          <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
+              {currentScreenerId ? 'Update Screener' : 'Save Screener'}
+            </h2>
+
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Title <span className="text-red-500">*</span>
+                  <span className="text-xs text-gray-500 ml-1">(max 30 characters)</span>
+                </label>
+                <input
+                  type="text"
+                  value={screenerTitle}
+                  onChange={(e) => setScreenerTitle(e.target.value)}
+                  maxLength={30}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  placeholder="My High Growth Stocks"
+                />
+                <div className="text-xs text-gray-500 mt-1 text-right">
+                  {screenerTitle.length}/30
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={screenerDescription}
+                  onChange={(e) => setScreenerDescription(e.target.value)}
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                  placeholder="Stocks with high ROE, low debt, and good dividend yield"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowSaveModal(false);
+                  if (!currentScreenerId) {
+                    setScreenerTitle('');
+                    setScreenerDescription('');
+                  }
+                }}
+                disabled={saving}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveScreener}
+                disabled={saving || !screenerTitle.trim() || !screenerDescription.trim()}
+                className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saving ? 'Saving...' : (currentScreenerId ? 'Update' : 'Save')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
