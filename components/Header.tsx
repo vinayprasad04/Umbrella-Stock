@@ -5,6 +5,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import SearchBar from './SearchBar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface User {
   id: string;
@@ -32,8 +43,6 @@ export default function Header() {
   const [pathname, setPathname] = useState('/');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showScreenersMenu, setShowScreenersMenu] = useState(false);
   const [savedScreeners, setSavedScreeners] = useState<SavedScreener[]>([]);
   const router = useRouter();
 
@@ -43,18 +52,47 @@ export default function Header() {
       setPathname(window.location.pathname);
 
       // Check if user is logged in
-      const userStr = localStorage.getItem('user');
-      if (userStr) {
-        try {
-          const userData = JSON.parse(userStr);
-          setUser(userData);
-          // Fetch saved screeners
-          fetchSavedScreeners();
-        } catch (error) {
+      const validateAndSetUser = async () => {
+        const userStr = localStorage.getItem('user');
+        const token = localStorage.getItem('authToken');
+
+        if (userStr && token) {
+          try {
+            const userData = JSON.parse(userStr);
+
+            // Validate token by trying to fetch saved screeners
+            const response = await fetch('/api/user/screeners', {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+              },
+            });
+
+            if (response.ok) {
+              // Token is valid
+              setUser(userData);
+              fetchSavedScreeners();
+            } else {
+              // Token is invalid - clear everything
+              console.log('Token validation failed, clearing user data');
+              localStorage.removeItem('user');
+              localStorage.removeItem('authToken');
+              setUser(null);
+            }
+          } catch (error) {
+            console.error('Error validating user:', error);
+            localStorage.removeItem('user');
+            localStorage.removeItem('authToken');
+            setUser(null);
+          }
+        } else if (userStr && !token) {
+          // User exists but no token - clear user
+          console.log('User exists but no token, clearing user data');
           localStorage.removeItem('user');
-          localStorage.removeItem('authToken');
+          setUser(null);
         }
-      }
+      };
+
+      validateAndSetUser();
 
       // Listen for screener-saved event
       const handleScreenerSaved = () => {
@@ -100,7 +138,6 @@ export default function Header() {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
     setUser(null);
-    setShowUserMenu(false);
     router.push('/');
   };
 
@@ -219,117 +256,139 @@ export default function Header() {
           {/* Authentication Section */}
           <div className="ml-2 lg:ml-4 flex items-center gap-2">
             {user ? (
-              <div className="relative">
-                <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center gap-2 px-2 lg:px-2 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
-                >
-                  <div className="w-4 h-4 lg:w-6 lg:h-6 bg-white/20 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs lg:text-xs">
-                      {user.name.charAt(0).toUpperCase()}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-2 px-2 lg:px-2 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus-visible:outline-none focus-visible:ring-0">
+                    <div className="w-4 h-4 lg:w-6 lg:h-6 bg-white/20 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs lg:text-xs">
+                        {user.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <span className="text-white text-sm lg:text-sm hidden lg:block">
+                      {user.name}
                     </span>
-                  </div>]
-                  <span className="text-white text-sm lg:text-sm hidden lg:block">
-                    {user.name}
-                  </span>
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </DropdownMenuTrigger>
 
-                {/* User Dropdown Menu */}
-                {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 z-50">
-                    <div className="px-4 py-3 border-b border-gray-100">
+                <DropdownMenuContent className="w-56 z-[9999]" align="end">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium text-gray-900">{user.name}</p>
                       <p className="text-xs text-gray-500">{user.email}</p>
-                      <p className="text-xs text-blue-600 font-medium mt-1">{user.role}</p>
+                      <p className="text-xs text-blue-600 font-medium">{user.role}</p>
                     </div>
-                    
-                    <Link
-                      href={getDashboardLink()}
-                      onClick={() => setShowUserMenu(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  </DropdownMenuLabel>
+
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem asChild>
+                    <Link href={getDashboardLink()} className="cursor-pointer">
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5a2 2 0 012-2h2a2 2 0 012 2v1H8V5z" />
                       </svg>
                       Dashboard
                     </Link>
+                  </DropdownMenuItem>
 
-                    {/* Saved Screeners Submenu */}
-                    <div
-                      className="relative"
-                      onMouseEnter={() => setShowScreenersMenu(true)}
-                      onMouseLeave={() => setShowScreenersMenu(false)}
-                    >
-                      <button
-                        className="flex items-center justify-between gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors w-full text-left"
-                      >
-                        <div className="flex items-center gap-3">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                          </svg>
-                          Saved Screeners
-                        </div>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </button>
+                  {/* Saved Screeners Submenu */}
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                      </svg>
+                      Saved Screeners
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent className="max-h-96 overflow-y-auto z-[10000] w-64">
+                      {savedScreeners.length > 0 ? (
+                        savedScreeners.map((screener: SavedScreener) => (
+                          <DropdownMenuItem key={screener._id} className="flex items-center justify-between p-0" onSelect={(e: Event) => e.preventDefault()}>
+                            <Link
+                              href={`/scanner?screenerId=${screener._id}`}
+                              className="flex-1 px-2 py-1.5 cursor-pointer hover:bg-transparent"
+                            >
+                              {screener.title}
+                            </Link>
+                            <button
+                              onClick={async (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                if (confirm(`Are you sure you want to delete "${screener.title}"?`)) {
+                                  try {
+                                    const token = localStorage.getItem('authToken');
+                                    const response = await fetch(`/api/user/screeners/${screener._id}`, {
+                                      method: 'DELETE',
+                                      headers: {
+                                        'Authorization': `Bearer ${token}`,
+                                      },
+                                    });
+                                    if (response.ok) {
+                                      fetchSavedScreeners();
 
-                      {/* Screeners Submenu Dropdown */}
-                      {showScreenersMenu && (
-                        <div className="absolute left-full top-0 ml-1 w-64 bg-white rounded-xl shadow-2xl border border-gray-200 py-2 z-50 max-h-96 overflow-y-auto">
-                          {savedScreeners.length > 0 ? (
-                            savedScreeners.map((screener) => (
-                              <Link
-                                key={screener._id}
-                                href={`/scanner?screenerId=${screener._id}`}
-                                onClick={() => {
-                                  setShowUserMenu(false);
-                                  setShowScreenersMenu(false);
-                                }}
-                                className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
-                              >
-                                <div className="font-medium text-gray-900 truncate">{screener.title}</div>
-                              </Link>
-                            ))
-                          ) : (
-                            <div className="px-4 py-3 text-sm text-gray-500 text-center">
-                              No saved screeners yet
-                            </div>
-                          )}
-                        </div>
+                                      // Check if currently viewing this screener
+                                      const currentUrl = new URL(window.location.href);
+                                      const currentScreenerId = currentUrl.searchParams.get('screenerId');
+
+                                      if (currentScreenerId === screener._id) {
+                                        // Navigate to scanner page without screenerId
+                                        router.push('/scanner');
+                                      }
+
+                                      // Notify scanner page if this screener was being viewed
+                                      window.dispatchEvent(new CustomEvent('screener-deleted', {
+                                        detail: { screenerId: screener._id }
+                                      }));
+                                    } else {
+                                      alert('Failed to delete screener');
+                                    }
+                                  } catch (error) {
+                                    console.error('Error deleting screener:', error);
+                                    alert('Failed to delete screener');
+                                  }
+                                }
+                              }}
+                              className="p-1.5 hover:bg-red-50 rounded transition-colors mr-1"
+                              title="Delete screener"
+                            >
+                              <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </DropdownMenuItem>
+                        ))
+                      ) : (
+                        <DropdownMenuItem disabled>
+                          No saved screeners yet
+                        </DropdownMenuItem>
                       )}
-                    </div>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
 
-                    {['ADMIN', 'DATA_ENTRY'].includes(user.role) && (
-                      <Link
-                        href="/admin/dashboard"
-                        onClick={() => setShowUserMenu(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {['ADMIN', 'DATA_ENTRY'].includes(user.role) && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin/dashboard" className="cursor-pointer">
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                         Admin Panel
                       </Link>
-                    )}
+                    </DropdownMenuItem>
+                  )}
 
-                    <button
-                      onClick={handleLogout}
-                      className="flex items-center gap-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors w-full text-left"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                      </svg>
-                      Sign Out
-                    </button>
-                  </div>
-                )}
-              </div>
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600 cursor-pointer">
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <div className="flex items-center gap-2">
                 <Link

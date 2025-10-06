@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Header from '@/components/Header';
 import Link from "next/link";
 import { formatCurrency, formatPercentage } from '@/lib/api-utils';
 import { authUtils } from '@/lib/authUtils';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 
 // Custom styles for new design
 const customStyles = `
@@ -123,6 +123,8 @@ const API_URL = '/api/scanner/stocks';
 
 export default function ScannerPage() {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const isResettingRef = useRef(false);
 
   // Data states
   const [stocks, setStocks] = useState<StockData[]>([]);
@@ -132,8 +134,11 @@ export default function ScannerPage() {
   // Save screener states
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false); // Separate modal for update
   const [screenerTitle, setScreenerTitle] = useState('');
   const [screenerDescription, setScreenerDescription] = useState('');
+  const [newScreenerTitle, setNewScreenerTitle] = useState(''); // Separate state for new screener
+  const [newScreenerDescription, setNewScreenerDescription] = useState('');
   const [currentScreenerId, setCurrentScreenerId] = useState<string | null>(null);
   const [pageTitle, setPageTitle] = useState('Stock Screener');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -294,7 +299,12 @@ export default function ScannerPage() {
   };
 
   // Fetch stocks from API
-  const fetchStocks = async (page: number = 1, limit: number = 20) => {
+  const fetchStocks = async (page: number = 1, limit: number = 20, customFilters?: typeof filters) => {
+    const filtersToUse = customFilters || filters;
+
+    console.log('📊 fetchStocks called with page:', page, 'limit:', limit);
+    console.log('📊 Using filters:', customFilters ? 'CUSTOM' : 'STATE', filtersToUse);
+
     setLoading(true);
     setError('');
 
@@ -302,45 +312,50 @@ export default function ScannerPage() {
       const queryParams = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
-        ...(filters.search && { search: filters.search }),
-        ...(filters.minMarketCap && { minMarketCap: filters.minMarketCap }),
-        ...(filters.maxMarketCap && { maxMarketCap: filters.maxMarketCap }),
-        ...(filters.minPrice && { minPrice: filters.minPrice }),
-        ...(filters.maxPrice && { maxPrice: filters.maxPrice }),
-        ...(filters.minPE && { minPE: filters.minPE }),
-        ...(filters.maxPE && { maxPE: filters.maxPE }),
-        ...(filters.minROCE && { minROCE: filters.minROCE }),
-        ...(filters.maxROCE && { maxROCE: filters.maxROCE }),
-        ...(filters.minROE && { minROE: filters.minROE }),
-        ...(filters.maxROE && { maxROE: filters.maxROE }),
-        ...(filters.minDebtToEquity && { minDebtToEquity: filters.minDebtToEquity }),
-        ...(filters.maxDebtToEquity && { maxDebtToEquity: filters.maxDebtToEquity }),
-        ...(filters.minPB && { minPB: filters.minPB }),
-        ...(filters.maxPB && { maxPB: filters.maxPB }),
-        ...(filters.minDividendYield && { minDividendYield: filters.minDividendYield }),
-        ...(filters.maxDividendYield && { maxDividendYield: filters.maxDividendYield }),
-        sortBy: filters.sortBy,
-        sortOrder: filters.sortOrder
+        ...(filtersToUse.search && { search: filtersToUse.search }),
+        ...(filtersToUse.minMarketCap && { minMarketCap: filtersToUse.minMarketCap }),
+        ...(filtersToUse.maxMarketCap && { maxMarketCap: filtersToUse.maxMarketCap }),
+        ...(filtersToUse.minPrice && { minPrice: filtersToUse.minPrice }),
+        ...(filtersToUse.maxPrice && { maxPrice: filtersToUse.maxPrice }),
+        ...(filtersToUse.minPE && { minPE: filtersToUse.minPE }),
+        ...(filtersToUse.maxPE && { maxPE: filtersToUse.maxPE }),
+        ...(filtersToUse.minROCE && { minROCE: filtersToUse.minROCE }),
+        ...(filtersToUse.maxROCE && { maxROCE: filtersToUse.maxROCE }),
+        ...(filtersToUse.minROE && { minROE: filtersToUse.minROE }),
+        ...(filtersToUse.maxROE && { maxROE: filtersToUse.maxROE }),
+        ...(filtersToUse.minDebtToEquity && { minDebtToEquity: filtersToUse.minDebtToEquity }),
+        ...(filtersToUse.maxDebtToEquity && { maxDebtToEquity: filtersToUse.maxDebtToEquity }),
+        ...(filtersToUse.minPB && { minPB: filtersToUse.minPB }),
+        ...(filtersToUse.maxPB && { maxPB: filtersToUse.maxPB }),
+        ...(filtersToUse.minDividendYield && { minDividendYield: filtersToUse.minDividendYield }),
+        ...(filtersToUse.maxDividendYield && { maxDividendYield: filtersToUse.maxDividendYield }),
+        sortBy: filtersToUse.sortBy,
+        sortOrder: filtersToUse.sortOrder
       });
 
       // Add multiple sectors as separate query params
-      if (filters.sector.length > 0) {
-        filters.sector.forEach(sector => {
+      if (filtersToUse.sector.length > 0) {
+        filtersToUse.sector.forEach(sector => {
           queryParams.append('sector', sector);
         });
       }
 
       // Add multiple nifty indices as separate query params
-      if (filters.niftyIndices.length > 0) {
-        filters.niftyIndices.forEach(index => {
+      if (filtersToUse.niftyIndices.length > 0) {
+        filtersToUse.niftyIndices.forEach(index => {
           queryParams.append('niftyIndices', index);
         });
       }
 
+      console.log('📊 Fetching from:', `${API_URL}?${queryParams}`);
       const response = await fetch(`${API_URL}?${queryParams}`);
       const result: ApiResponse = await response.json();
 
+      console.log('📊 API Response:', result.success ? 'Success' : 'Failed');
+      console.log('📊 Stocks count:', result.data?.stocks?.length || 0);
+
       if (result.success) {
+        console.log('📊 Setting stocks state with', result.data.stocks.length, 'stocks');
         setStocks(result.data.stocks);
         setPagination(result.data.pagination);
       } else {
@@ -356,7 +371,18 @@ export default function ScannerPage() {
 
   // Load initial data
   useEffect(() => {
-    fetchStocks(1, selectedLimit);
+    // Only fetch default stocks if there's no screenerId in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const screenerId = urlParams.get('screenerId');
+
+    if (!screenerId && !isResettingRef.current) {
+      console.log('Loading default stocks (no screenerId in URL)');
+      fetchStocks(1, selectedLimit);
+    } else if (screenerId) {
+      console.log('Skipping default load, screenerId found:', screenerId);
+    } else if (isResettingRef.current) {
+      console.log('Skipping default load, currently resetting');
+    }
 
     // Check login status
     setIsLoggedIn(authUtils.isLoggedIn());
@@ -372,19 +398,128 @@ export default function ScannerPage() {
       setPageTitle('Stock Screener');
     });
 
+    // Listen for screener deleted event
+    const handleScreenerDeleted = (event: any) => {
+      const { screenerId } = event.detail;
+      if (screenerId === currentScreenerId) {
+        // Reset to default if viewing the deleted screener
+        setCurrentScreenerId(null);
+        setPageTitle('Stock Screener');
+        setScreenerTitle('');
+        setScreenerDescription('');
+        setFilters({
+          search: '',
+          sector: [],
+          niftyIndices: [],
+          minMarketCap: '',
+          maxMarketCap: '',
+          minPrice: '',
+          maxPrice: '',
+          minPE: '',
+          maxPE: '',
+          minROCE: '',
+          maxROCE: '',
+          minROE: '',
+          maxROE: '',
+          minDebtToEquity: '',
+          maxDebtToEquity: '',
+          minPB: '',
+          maxPB: '',
+          minDividendYield: '',
+          maxDividendYield: '',
+          sortBy: 'meta.marketCapitalization',
+          sortOrder: 'desc'
+        });
+        fetchStocks(1, selectedLimit);
+        // Update URL
+        window.history.pushState({}, '', '/scanner');
+      }
+    };
+
+    window.addEventListener('screener-deleted', handleScreenerDeleted);
+
     return () => {
       unsubscribeLogin();
       unsubscribeLogout();
+      window.removeEventListener('screener-deleted', handleScreenerDeleted);
     };
-  }, []);
+  }, [currentScreenerId]);
 
   // Watch for URL parameter changes to load screener
   useEffect(() => {
-    const screenerId = searchParams?.get('screenerId');
-    if (screenerId) {
+    // Get screenerId from URL directly
+    const urlParams = new URLSearchParams(window.location.search);
+    const screenerId = urlParams.get('screenerId');
+
+    console.log('=== URL CHANGE DETECTED ===');
+    console.log('URL screenerId:', screenerId);
+    console.log('Current screenerId:', currentScreenerId);
+    console.log('Pathname:', pathname);
+
+    if (screenerId && screenerId !== currentScreenerId) {
+      console.log('➜ Loading screener:', screenerId);
       loadSavedScreener(screenerId);
+    } else if (!screenerId && currentScreenerId) {
+      // Reset to default when no screenerId in URL
+      console.log('➜ Resetting to default scanner page');
+      isResettingRef.current = true;
+
+      // Create default filters object
+      const defaultFilters = {
+        search: '',
+        sector: [] as string[],
+        niftyIndices: [] as string[],
+        minMarketCap: '',
+        maxMarketCap: '',
+        minPrice: '',
+        maxPrice: '',
+        minPE: '',
+        maxPE: '',
+        minROCE: '',
+        maxROCE: '',
+        minROE: '',
+        maxROE: '',
+        minDebtToEquity: '',
+        maxDebtToEquity: '',
+        minPB: '',
+        maxPB: '',
+        minDividendYield: '',
+        maxDividendYield: '',
+        sortBy: 'meta.marketCapitalization',
+        sortOrder: 'desc' as 'desc'
+      };
+
+      // Reset all state
+      setCurrentScreenerId(null);
+      setPageTitle('Stock Screener');
+      setScreenerTitle('');
+      setScreenerDescription('');
+      setNewScreenerTitle('');
+      setNewScreenerDescription('');
+      setFilters(defaultFilters);
+
+      // Fetch stocks immediately with default filters (don't wait for state update)
+      console.log('➜ Fetching default stocks with CUSTOM default filters...');
+      fetchStocks(1, selectedLimit, defaultFilters);
+      isResettingRef.current = false;
+    } else {
+      console.log('➜ No action needed');
     }
-  }, [searchParams]);
+  }, [searchParams, pathname]);
+
+  // Also listen for popstate events (browser back/forward)
+  useEffect(() => {
+    const handlePopState = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const screenerId = urlParams.get('screenerId');
+      if (screenerId) {
+        loadSavedScreener(screenerId);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // Load a saved screener
   const loadSavedScreener = async (screenerId: string) => {
@@ -410,6 +545,7 @@ export default function ScannerPage() {
 
         // Update filters and fetch stocks immediately with new filters
         const newFilters = screener.filters;
+        console.log('Loaded filters from screener:', newFilters);
         setFilters(newFilters);
 
         // Build query params with the loaded filters
@@ -449,35 +585,140 @@ export default function ScannerPage() {
 
         // Fetch stocks with loaded filters
         setLoading(true);
+        setError('');
+
+        console.log('Fetching stocks with URL:', `${API_URL}?${queryParams.toString()}`);
         const stockResponse = await fetch(`${API_URL}?${queryParams.toString()}`);
         const stockData = await stockResponse.json();
+        console.log('Stock response:', stockData);
 
-        if (stockData.success) {
-          setStocks(stockData.data);
-          setPagination(stockData.pagination);
+        if (stockData.success && stockData.data) {
+          // The API returns stocks in data.data.stocks, not data.data
+          const stocksArray = Array.isArray(stockData.data.stocks) ? stockData.data.stocks : [];
+          console.log('Setting stocks array with length:', stocksArray.length);
+          setStocks(stocksArray);
+          setPagination(stockData.data.pagination || {
+            currentPage: 1,
+            totalPages: 1,
+            totalRecords: stocksArray.length,
+            limit: selectedLimit,
+            hasNext: false,
+            hasPrevious: false
+          });
           setError('');
+          console.log('Successfully loaded', stocksArray.length, 'stocks');
         } else {
-          setError(stockData.error || 'Failed to fetch stocks');
+          console.log('Failed condition - setting error');
+          setError(stockData.message || stockData.error || 'Failed to fetch stocks');
+          setStocks([]);
+          setPagination({
+            currentPage: 1,
+            totalPages: 0,
+            totalRecords: 0,
+            limit: selectedLimit,
+            hasNext: false,
+            hasPrevious: false
+          });
         }
         setLoading(false);
       }
     } catch (error) {
       console.error('Error loading saved screener:', error);
+      setError('Failed to load screener');
+      setStocks([]);
+      setPagination({
+        currentPage: 1,
+        totalPages: 0,
+        totalRecords: 0,
+        limit: selectedLimit,
+        hasNext: false,
+        hasPrevious: false
+      });
       setLoading(false);
     }
   };
 
-  // Handle save button click
+  // Handle save/update button click
   const handleSaveClick = () => {
     if (!isLoggedIn) {
       setShowLoginModal(true);
     } else {
-      setShowSaveModal(true);
+      if (currentScreenerId) {
+        // Open update modal for existing screener
+        setShowUpdateModal(true);
+      } else {
+        // Open save modal for new screener
+        setShowSaveModal(true);
+      }
     }
   };
 
-  // Handle save/update screener
-  const handleSaveScreener = async () => {
+  // Handle save new screener
+  const handleSaveNewScreener = async () => {
+    if (!newScreenerTitle.trim() || !newScreenerDescription.trim()) {
+      alert('Please fill in both title and description');
+      return;
+    }
+
+    if (newScreenerTitle.length > 30) {
+      alert('Title must be 30 characters or less');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const token = authUtils.getToken();
+      if (!token) {
+        setShowLoginModal(true);
+        return;
+      }
+
+      const response = await fetch('/api/user/screeners', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: newScreenerTitle,
+          description: newScreenerDescription,
+          filters,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const savedScreenerId = data.data._id;
+
+        setCurrentScreenerId(savedScreenerId);
+        setScreenerTitle(newScreenerTitle);
+        setScreenerDescription(newScreenerDescription);
+        setPageTitle(newScreenerTitle);
+        setShowSaveModal(false);
+        setNewScreenerTitle('');
+        setNewScreenerDescription('');
+
+        // Update URL with screenerId
+        window.history.pushState({}, '', `/scanner?screenerId=${savedScreenerId}`);
+
+        alert('Screener saved successfully!');
+
+        // Reload header to update saved screeners list
+        window.dispatchEvent(new CustomEvent('screener-saved'));
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || 'Failed to save screener');
+      }
+    } catch (error) {
+      console.error('Error saving screener:', error);
+      alert('Failed to save screener');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Handle update existing screener
+  const handleUpdateScreener = async () => {
     if (!screenerTitle.trim() || !screenerDescription.trim()) {
       alert('Please fill in both title and description');
       return;
@@ -496,14 +737,8 @@ export default function ScannerPage() {
         return;
       }
 
-      const endpoint = currentScreenerId
-        ? `/api/user/screeners/${currentScreenerId}`
-        : '/api/user/screeners';
-
-      const method = currentScreenerId ? 'PUT' : 'POST';
-
-      const response = await fetch(endpoint, {
-        method,
+      const response = await fetch(`/api/user/screeners/${currentScreenerId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
@@ -517,31 +752,29 @@ export default function ScannerPage() {
 
       if (response.ok) {
         const data = await response.json();
-        setCurrentScreenerId(data.data._id);
         setPageTitle(screenerTitle);
-        setShowSaveModal(false);
-        alert(currentScreenerId ? 'Screener updated successfully!' : 'Screener saved successfully!');
+        setShowUpdateModal(false);
+        alert('Screener updated successfully!');
 
         // Reload header to update saved screeners list
         window.dispatchEvent(new CustomEvent('screener-saved'));
       } else {
         const errorData = await response.json();
-        alert(errorData.error || 'Failed to save screener');
+        alert(errorData.error || 'Failed to update screener');
       }
     } catch (error) {
-      console.error('Error saving screener:', error);
-      alert('Failed to save screener');
+      console.error('Error updating screener:', error);
+      alert('Failed to update screener');
     } finally {
       setSaving(false);
     }
   };
 
-  // Handle new screener (clear current)
+  // Handle new screener (clear current and open new screener modal)
   const handleNewScreener = () => {
-    setCurrentScreenerId(null);
-    setPageTitle('Stock Screener');
-    setScreenerTitle('');
-    setScreenerDescription('');
+    // Clear new screener fields and open save modal
+    setNewScreenerTitle('');
+    setNewScreenerDescription('');
     setShowSaveModal(true);
   };
 
@@ -2113,14 +2346,14 @@ export default function ScannerPage() {
                         onClick={handleNewScreener}
                         className='border border-indigo-600 text-indigo-600 py-2.5 px-4 rounded-lg hover:bg-indigo-50 transition-colors font-medium text-sm'
                       >
-                        New
+                        New List
                       </button>
                     )}
                     <button
                       onClick={handleSaveClick}
                       className='bg-indigo-600 text-white py-2.5 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm'
                     >
-                      {currentScreenerId ? 'Update' : 'Save'}
+                      {currentScreenerId ? 'Update List' : 'New List'}
                     </button>
                   </div>
                 </div>
@@ -2230,7 +2463,7 @@ export default function ScannerPage() {
                             {error}
                           </td>
                         </tr>
-                      ) : stocks.length === 0 ? (
+                      ) : !Array.isArray(stocks) || stocks.length === 0 ? (
                         <tr>
                           <td colSpan={10} className="px-4 py-8 text-center text-slate-500">
                             No stocks found matching your criteria
@@ -2447,13 +2680,74 @@ export default function ScannerPage() {
         </div>
       )}
 
-      {/* Save Screener Modal */}
+      {/* Save New Screener Modal */}
       {showSaveModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
           <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">
-              {currentScreenerId ? 'Update Screener' : 'Save Screener'}
-            </h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Save New Screener</h2>
+
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Title <span className="text-red-500">*</span>
+                  <span className="text-xs text-gray-500 ml-1">(max 30 characters)</span>
+                </label>
+                <input
+                  type="text"
+                  value={newScreenerTitle}
+                  onChange={(e) => setNewScreenerTitle(e.target.value)}
+                  maxLength={30}
+                  className="w-full text-xs px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  placeholder="My High Growth Stocks"
+                />
+                <div className="text-xs text-gray-500 mt-1 text-right">
+                  {newScreenerTitle.length}/30
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={newScreenerDescription}
+                  onChange={(e) => setNewScreenerDescription(e.target.value)}
+                  rows={3}
+                  className="w-full text-xs px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                  placeholder="Stocks with high ROE, low debt, and good dividend yield"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setNewScreenerTitle('');
+                  setNewScreenerDescription('');
+                  setShowSaveModal(false);
+                }}
+                disabled={saving}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-xs disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveNewScreener}
+                disabled={saving || !newScreenerTitle.trim() || !newScreenerDescription.trim()}
+                className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saving ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Update Existing Screener Modal */}
+      {showUpdateModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
+          <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Update Screener</h2>
 
             <div className="space-y-4 mb-6">
               <div>
@@ -2466,7 +2760,7 @@ export default function ScannerPage() {
                   value={screenerTitle}
                   onChange={(e) => setScreenerTitle(e.target.value)}
                   maxLength={30}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full text-xs px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   placeholder="My High Growth Stocks"
                 />
                 <div className="text-xs text-gray-500 mt-1 text-right">
@@ -2482,7 +2776,7 @@ export default function ScannerPage() {
                   value={screenerDescription}
                   onChange={(e) => setScreenerDescription(e.target.value)}
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                  className="w-full text-xs px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
                   placeholder="Stocks with high ROE, low debt, and good dividend yield"
                 />
               </div>
@@ -2491,23 +2785,23 @@ export default function ScannerPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => {
-                  setShowSaveModal(false);
-                  if (!currentScreenerId) {
-                    setScreenerTitle('');
-                    setScreenerDescription('');
+                  setShowUpdateModal(false);
+                  // Reload the saved screener data to reset values
+                  if (currentScreenerId) {
+                    loadSavedScreener(currentScreenerId);
                   }
                 }}
                 disabled={saving}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-xs disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
-                onClick={handleSaveScreener}
+                onClick={handleUpdateScreener}
                 disabled={saving || !screenerTitle.trim() || !screenerDescription.trim()}
-                className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-xs disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {saving ? 'Saving...' : (currentScreenerId ? 'Update' : 'Save')}
+                {saving ? 'Updating...' : 'Update'}
               </button>
             </div>
           </div>
