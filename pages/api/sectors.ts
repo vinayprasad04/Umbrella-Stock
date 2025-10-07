@@ -1,74 +1,26 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import connectDB from '@/lib/mongodb';
-import Sector from '@/models/Sector';
+import ActualStockDetail from '@/lib/models/ActualStockDetail';
 import { APIResponse } from '@/types';
 
-const SECTORS_DATA = [
-  {
-    name: 'Information Technology',
-    performance: 3.25,
-    stockCount: 125,
-    topStocks: ['TCS', 'INFY', 'WIPRO', 'HCLTECH', 'TECHM'],
-  },
-  {
-    name: 'Banking & Financial Services',
-    performance: 1.87,
-    stockCount: 95,
-    topStocks: ['HDFCBANK', 'ICICIBANK', 'KOTAKBANK', 'SBIN', 'AXISBANK'],
-  },
-  {
-    name: 'Healthcare & Pharmaceuticals',
-    performance: 2.14,
-    stockCount: 85,
-    topStocks: ['SUNPHARMA', 'DRREDDY', 'CIPLA', 'DIVISLAB', 'LUPIN'],
-  },
-  {
-    name: 'Consumer Goods',
-    performance: 1.45,
-    stockCount: 75,
-    topStocks: ['HINDUNILVR', 'ITC', 'NESTLEIND', 'BRITANNIA', 'DABUR'],
-  },
-  {
-    name: 'Automotive',
-    performance: 0.98,
-    stockCount: 60,
-    topStocks: ['MARUTI', 'M&M', 'TATAMOTORS', 'BAJAJ-AUTO', 'HEROMOTOCO'],
-  },
-  {
-    name: 'Energy & Power',
-    performance: 0.67,
-    stockCount: 55,
-    topStocks: ['RELIANCE', 'ONGC', 'IOC', 'BPCL', 'POWERGRID'],
-  },
-  {
-    name: 'Metals & Mining',
-    performance: -0.45,
-    stockCount: 45,
-    topStocks: ['TATASTEEL', 'JSWSTEEL', 'HINDALCO', 'VEDL', 'COALINDIA'],
-  },
-  {
-    name: 'Telecom',
-    performance: -1.23,
-    stockCount: 25,
-    topStocks: ['BHARTIARTL', 'IDEA', 'BSNL', 'RJIO', 'TTML'],
-  },
-  {
-    name: 'Infrastructure',
-    performance: 1.76,
-    stockCount: 70,
-    topStocks: ['LT', 'ULTRACEMCO', 'GRASIM', 'ACC', 'AMBUJACEMENT'],
-  },
-  {
-    name: 'Textiles',
-    performance: 0.34,
-    stockCount: 40,
-    topStocks: ['RTNPOWER', 'WELSPUNIND', 'VARDHMAN', 'TRIDENT', 'CENTURYTEX'],
-  },
-];
+interface SectorData {
+  name: string;
+  performance: number;
+  stockCount: number;
+  topStocks: Array<{
+    symbol: string;
+    companyName: string;
+    marketCap: number;
+    currentPrice: number;
+  }>;
+  totalMarketCap: number;
+  avgMarketCap: number;
+  lastUpdated: Date;
+}
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<APIResponse<any>>
+  res: NextApiResponse<APIResponse<SectorData[]>>
 ) {
   if (req.method !== 'GET') {
     return res.status(405).json({
@@ -79,42 +31,136 @@ export default async function handler(
 
   try {
     await connectDB();
-    
-    let sectors = await Sector
-      .find({
-        lastUpdated: {
-          $gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24 hours
-        },
-      })
-      .sort({ performance: -1 })
-      .lean();
 
-    if (sectors.length === 0) {
-      const sectorPromises = SECTORS_DATA.map(sectorData =>
-        Sector.findOneAndUpdate(
-          { name: sectorData.name },
-          {
-            ...sectorData,
-            lastUpdated: new Date(),
-          },
-          { upsert: true, new: true, setDefaultsOnInsert: true }
-        )
-      );
+    // Aggregate sectors from actualstockdetails collection
+    const sectors = await ActualStockDetail.aggregate([
+      {
+        $match: {
+          'additionalInfo.sector': { $exists: true, $ne: null, $nin: ['Banks', 'Unknown'] },
+          'ratios.Market Cap': { $exists: true, $ne: null },
+          isActive: true,
+          $expr: { $ne: ['$additionalInfo.sector', ''] }
+        }
+      },
+      {
+        $addFields: {
+          marketCapCleaned: {
+            $cond: [
+              { $eq: [{ $type: '$ratios.Market Cap' }, 'string'] },
+              {
+                $replaceAll: {
+                  input: {
+                    $replaceAll: {
+                      input: {
+                        $replaceAll: {
+                          input: {
+                            $replaceAll: {
+                              input: {
+                                $replaceAll: {
+                                  input: { $toString: '$ratios.Market Cap' },
+                                  find: '₹',
+                                  replacement: ''
+                                }
+                              },
+                              find: ' Cr.',
+                              replacement: ''
+                            }
+                          },
+                          find: ' Cr',
+                          replacement: ''
+                        }
+                      },
+                      find: ',',
+                      replacement: ''
+                    }
+                  },
+                  find: ' ',
+                  replacement: ''
+                }
+              },
+              { $toString: '$ratios.Market Cap' }
+            ]
+          }
+        }
+      },
+      {
+        $addFields: {
+          marketCapNumeric: {
+            $cond: [
+              {
+                $and: [
+                  { $ne: ['$marketCapCleaned', ''] },
+                  { $ne: ['$marketCapCleaned', null] },
+                  { $regexMatch: { input: '$marketCapCleaned', regex: '^[0-9.]+$' } }
+                ]
+              },
+              { $toDouble: '$marketCapCleaned' },
+              0
+            ]
+          }
+        }
+      },
+      {
+        $group: {
+          _id: '$additionalInfo.sector',
+          stockCount: { $sum: 1 },
+          totalMarketCap: { $sum: '$marketCapNumeric' },
+          avgMarketCap: { $avg: '$marketCapNumeric' },
+          stocks: {
+            $push: {
+              symbol: '$symbol',
+              companyName: '$companyName',
+              marketCap: '$marketCapNumeric',
+              currentPrice: '$meta.currentPrice'
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          name: '$_id',
+          stockCount: 1,
+          totalMarketCap: 1,
+          avgMarketCap: 1,
+          stocks: 1
+        }
+      },
+      {
+        $sort: { totalMarketCap: -1 }
+      }
+    ]);
 
-      sectors = await Promise.all(sectorPromises);
-      sectors.sort((a, b) => b.performance - a.performance);
-    }
+    // Process each sector to get top 5 stocks by market cap
+    const sectorsWithTopStocks: SectorData[] = sectors.map((sector: any) => {
+      // Sort stocks by market cap and take top 5
+      const topStocks = sector.stocks
+        .filter((stock: any) => stock.marketCap && stock.marketCap > 0)
+        .sort((a: any, b: any) => b.marketCap - a.marketCap)
+        .slice(0, 5);
+
+      return {
+        name: sector.name,
+        stockCount: sector.stockCount,
+        topStocks: topStocks,
+        totalMarketCap: sector.totalMarketCap || 0,
+        avgMarketCap: sector.avgMarketCap || 0,
+        performance: 0, // Will be calculated later when we have price data
+        lastUpdated: new Date()
+      };
+    });
 
     res.status(200).json({
       success: true,
-      data: sectors,
+      data: sectorsWithTopStocks,
     });
   } catch (error) {
     console.error('Error fetching sectors:', error);
-    
+
     res.status(500).json({
       success: false,
       error: 'Internal server error',
+      message: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 }

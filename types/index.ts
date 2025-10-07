@@ -32,7 +32,14 @@ export interface Sector {
   name: string;
   performance: number;
   stockCount: number;
-  topStocks: string[];
+  topStocks: Array<{
+    symbol: string;
+    companyName: string;
+    marketCap: number;
+    currentPrice: number;
+  }> | string[];
+  totalMarketCap?: number;
+  avgMarketCap?: number;
   lastUpdated: Date;
 }
 
