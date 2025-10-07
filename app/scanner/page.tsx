@@ -85,6 +85,10 @@ interface StockData {
   sector: string;
   industry: string;
   currentPrice: number;
+  livePrice?: number; // Live price from Yahoo Finance API
+  livePriceChange?: number; // Live price change
+  livePriceChangePercent?: number; // Live price change percentage
+  livePriceLoading?: boolean; // Loading state for live price
   marketCap: number; // Market Cap in Cr from ratios["Market Cap"]
   faceValue: number;
   peRatio: number | null;
@@ -356,8 +360,15 @@ export default function ScannerPage() {
 
       if (result.success) {
         console.log('📊 Setting stocks state with', result.data.stocks.length, 'stocks');
-        setStocks(result.data.stocks);
+        const stocksWithLiveLoading = result.data.stocks.map((stock: StockData) => ({
+          ...stock,
+          livePriceLoading: true
+        }));
+        setStocks(stocksWithLiveLoading);
         setPagination(result.data.pagination);
+
+        // Fetch live prices after setting initial stocks
+        fetchLivePrices(result.data.stocks);
       } else {
         setError(result.message || 'Failed to fetch stocks');
       }
@@ -367,6 +378,72 @@ export default function ScannerPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Fetch live prices for all stocks
+  const fetchLivePrices = async (stocksList: StockData[]) => {
+    console.log('💰 Fetching live prices for', stocksList.length, 'stocks');
+
+    // Fetch live prices with limited concurrency to avoid overwhelming the API
+    const batchSize = 5; // Fetch 5 stocks at a time
+
+    for (let i = 0; i < stocksList.length; i += batchSize) {
+      const batch = stocksList.slice(i, i + batchSize);
+
+      // Fetch all stocks in the batch concurrently
+      const promises = batch.map(async (stock) => {
+        try {
+          const response = await fetch(`/api/stocks/live/${stock.symbol}`);
+          const result = await response.json();
+
+          if (result.success) {
+            // Update stock with live price
+            setStocks(prevStocks =>
+              prevStocks.map(s =>
+                s.symbol === stock.symbol
+                  ? {
+                      ...s,
+                      livePrice: result.data.price,
+                      livePriceChange: result.data.change,
+                      livePriceChangePercent: result.data.changePercent,
+                      livePriceLoading: false
+                    }
+                  : s
+              )
+            );
+          } else {
+            // Mark as failed to load live price
+            setStocks(prevStocks =>
+              prevStocks.map(s =>
+                s.symbol === stock.symbol
+                  ? { ...s, livePriceLoading: false }
+                  : s
+              )
+            );
+          }
+        } catch (error) {
+          console.error(`Error fetching live price for ${stock.symbol}:`, error);
+          // Mark as failed to load live price
+          setStocks(prevStocks =>
+            prevStocks.map(s =>
+              s.symbol === stock.symbol
+                ? { ...s, livePriceLoading: false }
+                : s
+            )
+          );
+        }
+      });
+
+      // Wait for current batch to complete before moving to next
+      await Promise.all(promises);
+
+      // Small delay between batches to avoid rate limiting
+      if (i + batchSize < stocksList.length) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    }
+
+    console.log('💰 Finished fetching live prices');
   };
 
   // Load initial data
@@ -596,7 +673,14 @@ export default function ScannerPage() {
           // The API returns stocks in data.data.stocks, not data.data
           const stocksArray = Array.isArray(stockData.data.stocks) ? stockData.data.stocks : [];
           console.log('Setting stocks array with length:', stocksArray.length);
-          setStocks(stocksArray);
+
+          // Add live price loading flag
+          const stocksWithLiveLoading = stocksArray.map((stock: StockData) => ({
+            ...stock,
+            livePriceLoading: true
+          }));
+          setStocks(stocksWithLiveLoading);
+
           setPagination(stockData.data.pagination || {
             currentPage: 1,
             totalPages: 1,
@@ -607,6 +691,9 @@ export default function ScannerPage() {
           });
           setError('');
           console.log('Successfully loaded', stocksArray.length, 'stocks');
+
+          // Fetch live prices after setting initial stocks
+          fetchLivePrices(stocksArray);
         } else {
           console.log('Failed condition - setting error');
           setError(stockData.message || stockData.error || 'Failed to fetch stocks');
@@ -2370,8 +2457,29 @@ export default function ScannerPage() {
                               </div>
                             </td>
                             <td className="px-4 py-4">
-                              <div className="text-sm font-semibold text-slate-900 text-right">
-                                ₹{stock.currentPrice.toFixed(2)}
+                              <div className="text-right">
+                                {stock.livePriceLoading ? (
+                                  <div className="flex items-center justify-end gap-2">
+                                    <span className="text-sm text-slate-400">₹{stock.currentPrice.toFixed(2)}</span>
+                                    <div className="animate-spin h-3 w-3 border-2 border-indigo-500 border-t-transparent rounded-full"></div>
+                                  </div>
+                                ) : stock.livePrice !== undefined ? (
+                                  <div className="space-y-0.5">
+                                    <div className="flex items-center justify-end gap-1.5">
+                                      <span className="text-sm font-semibold text-slate-900">₹{stock.livePrice.toFixed(2)}</span>
+                                      <span className="inline-flex items-center w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" title="Live"></span>
+                                    </div>
+                                    {stock.livePriceChangePercent !== undefined && (
+                                      <div className={`text-xs ${stock.livePriceChangePercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                        {stock.livePriceChangePercent >= 0 ? '▲' : '▼'} {Math.abs(stock.livePriceChangePercent).toFixed(2)}%
+                                      </div>
+                                    )}
+                                  </div>
+                                ) : (
+                                  <div className="text-sm font-semibold text-slate-900">
+                                    ₹{stock.currentPrice.toFixed(2)}
+                                  </div>
+                                )}
                               </div>
                             </td>
                             <td className="px-4 py-4">
