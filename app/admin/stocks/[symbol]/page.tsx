@@ -35,6 +35,9 @@ interface ParsedStockDetail {
     marketCapitalization: number;
     numberOfShares?: number;
   };
+  ratios?: {
+    [key: string]: any;
+  };
   profitAndLoss?: any;
   quarterlyData?: any;
   balanceSheet?: any;

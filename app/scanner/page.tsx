@@ -1269,159 +1269,7 @@ export default function ScannerPage() {
                   </div>
 
                   {/* Price Range */}
-                  <div className="border-t border-slate-200 px-5">
-                    <div className="flex items-center justify-between py-3">
-                      <button
-                        onClick={() => toggleFilter('priceRange')}
-                        className="flex-1 flex items-center justify-between text-left"
-                      >
-                        <div className="flex items-center gap-2">
-                          <label className="text-sm font-medium text-slate-700 cursor-pointer">Price Range (₹)</label>
-                          {!expandedFilters.priceRange && getFilterDisplay(filters.minPrice, filters.maxPrice, '200000') && (
-                            <span className="text-xs text-indigo-600">
-                              (₹{getFilterDisplay(filters.minPrice, filters.maxPrice, '200000')})
-                            </span>
-                          )}
-                        </div>
-                      </button>
-                      <div className="flex items-center gap-2">
-                        {(filters.minPrice || filters.maxPrice) && (
-                          <button
-                            onClick={() => setFilters(prev => ({ ...prev, minPrice: '', maxPrice: '' }))}
-                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
-                            title="Reset filter"
-                          >
-                            ✕
-                          </button>
-                        )}
-                        <button onClick={() => toggleFilter('priceRange')}>
-                          <svg
-                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.priceRange ? 'rotate-90' : ''}`}
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                    {expandedFilters.priceRange && (
-                      <div className="pb-3 space-y-3">
-                        {/* Range Slider */}
-                        <div className="px-1">
-                          <div className="flex justify-between text-xs text-slate-600 mb-2">
-                            <span>₹{filters.minPrice ? parseFloat(filters.minPrice).toLocaleString('en-IN') : '0'}</span>
-                            <span>₹{filters.maxPrice ? parseFloat(filters.maxPrice).toLocaleString('en-IN') : '1,10,000'}</span>
-                          </div>
-                          <div className="relative h-6 flex items-center">
-                            <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
-                            <div
-                              className="absolute h-1.5 bg-indigo-500 rounded-full"
-                              style={{
-                                left: `${((parseFloat(filters.minPrice || '0') / 110000) * 100)}%`,
-                                right: `${100 - ((parseFloat(filters.maxPrice || '110000') / 110000) * 100)}%`
-                              }}
-                            ></div>
-                            <input
-                              type="range"
-                              min="0"
-                              max="110000"
-                              step="100"
-                              value={filters.minPrice || 0}
-                              onChange={(e) => setFilters(prev => ({
-                                ...prev,
-                                minPrice: e.target.value,
-                                maxPrice: prev.maxPrice && parseFloat(e.target.value) > parseFloat(prev.maxPrice)
-                                  ? e.target.value
-                                  : prev.maxPrice
-                              }))}
-                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
-                              style={{ height: '1.5rem' }}
-                            />
-                            <input
-                              type="range"
-                              min="0"
-                              max="110000"
-                              step="100"
-                              value={filters.maxPrice || 110000}
-                              onChange={(e) => setFilters(prev => ({
-                                ...prev,
-                                maxPrice: e.target.value,
-                                minPrice: prev.minPrice && parseFloat(e.target.value) < parseFloat(prev.minPrice)
-                                  ? e.target.value
-                                  : prev.minPrice
-                              }))}
-                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
-                              style={{ height: '1.5rem' }}
-                            />
-                          </div>
-                        </div>
-
-                        {/* Input Boxes */}
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            placeholder="Min"
-                            value={filters.minPrice ? parseFloat(filters.minPrice).toLocaleString('en-IN') : ''}
-                            onChange={(e) => {
-                              const value = e.target.value.replace(/,/g, '');
-                              if (value === '' || !isNaN(Number(value))) {
-                                setFilters(prev => ({ ...prev, minPrice: value }));
-                              }
-                            }}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                          />
-                          <input
-                            type="text"
-                            placeholder="Max"
-                            value={filters.maxPrice ? parseFloat(filters.maxPrice).toLocaleString('en-IN') : ''}
-                            onChange={(e) => {
-                              const value = e.target.value.replace(/,/g, '');
-                              if (value === '' || !isNaN(Number(value))) {
-                                setFilters(prev => ({ ...prev, maxPrice: value }));
-                              }
-                            }}
-                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                          />
-                        </div>
-
-                        {/* Preset Buttons */}
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => setFilters(prev => ({ ...prev, minPrice: '0', maxPrice: '100' }))}
-                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
-                              filters.minPrice === '0' && filters.maxPrice === '100'
-                                ? 'bg-indigo-500 text-white border-indigo-500'
-                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
-                            }`}
-                          >
-                            Low
-                          </button>
-                          <button
-                            onClick={() => setFilters(prev => ({ ...prev, minPrice: '100.1', maxPrice: '1000' }))}
-                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
-                              filters.minPrice === '100.1' && filters.maxPrice === '1000'
-                                ? 'bg-indigo-500 text-white border-indigo-500'
-                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
-                            }`}
-                          >
-                            Mid
-                          </button>
-                          <button
-                            onClick={() => setFilters(prev => ({ ...prev, minPrice: '1000.1', maxPrice: '110000' }))}
-                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
-                              filters.minPrice === '1000.1' && filters.maxPrice === '110000'
-                                ? 'bg-indigo-500 text-white border-indigo-500'
-                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
-                            }`}
-                          >
-                            High
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                  
 
                   {/* P/E Ratio */}
                   <div className="border-t border-slate-200 px-5">
@@ -2336,7 +2184,7 @@ export default function ScannerPage() {
               <div className=" mb-4">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h1 className="text-2xl font-bold text-slate-900">{pageTitle}</h1>
+                    <h1 className="text-2xl font-bold text-slate-900 capitalize">{pageTitle}</h1>
                     <p className="text-slate-600">Find the perfect stocks with advanced filtering</p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -2393,7 +2241,7 @@ export default function ScannerPage() {
               {/* Stock Cards Grid */}
               <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                 <div className="overflow-auto scrollbar-thin" style={{minHeight: 'calc(100vh - 369px)', maxHeight: 'calc(100vh - 369px)'}}>
-                  <table className="w-full min-h-full">
+                  <table className="w-full min-h-full layout-fixed table-auto">
                     <thead className="bg-slate-50 sticky top-0">
                       <tr>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
@@ -2402,16 +2250,18 @@ export default function ScannerPage() {
                           </button>
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                          Sector
+                          <button onClick={() => handleSort('additionalInfo.sector')} className="flex items-center gap-1 hover:text-indigo-600">
+                            Sector {getSortIcon('additionalInfo.sector')}
+                          </button>
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                          <button onClick={() => handleSort('marketCap')} className="flex items-center gap-1 hover:text-indigo-600">
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                          <button onClick={() => handleSort('marketCap')} className="flex items-center gap-1 hover:text-indigo-600 ml-auto">
                             Market Cap (Cr.) {getSortIcon('marketCap')}
                           </button>
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                          <button onClick={() => handleSort('meta.currentPrice')} className="flex items-center gap-1 hover:text-indigo-600">
-                            Price {getSortIcon('meta.currentPrice')}
+                        <th className="px-4 py-3 text-right text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                          <button className="flex items-center gap-1 ml-auto">
+                           Price {/*  {getSortIcon('meta.currentPrice')}   onClick={() => handleSort('meta.currentPrice')}*/}
                           </button>
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
@@ -2496,12 +2346,12 @@ export default function ScannerPage() {
                               </span>
                             </td>
                             <td className="px-4 py-4">
-                              <div className="text-sm font-semibold text-slate-900">
+                              <div className="text-sm font-semibold text-slate-900 text-right">
                                 {stock.marketCap ? stock.marketCap.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-'}
                               </div>
                             </td>
                             <td className="px-4 py-4">
-                              <div className="text-sm font-semibold text-slate-900">
+                              <div className="text-sm font-semibold text-slate-900 text-right">
                                 ₹{stock.currentPrice.toFixed(2)}
                               </div>
                             </td>

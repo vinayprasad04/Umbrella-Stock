@@ -44,6 +44,28 @@ interface StockScannerResponse {
   message?: string;
 }
 
+// Helper function to sort stocks in-memory
+function applySorting(stocks: any[], sortBy: string, sortOrder: 'asc' | 'desc'): any[] {
+  return stocks.sort((a, b) => {
+    let aValue = a[sortBy];
+    let bValue = b[sortBy];
+
+    // Handle null/undefined values
+    if (aValue == null && bValue == null) return 0;
+    if (aValue == null) return 1;
+    if (bValue == null) return -1;
+
+    // Compare values
+    if (typeof aValue === 'string') {
+      const comparison = aValue.localeCompare(bValue);
+      return sortOrder === 'asc' ? comparison : -comparison;
+    } else {
+      const comparison = aValue - bValue;
+      return sortOrder === 'asc' ? comparison : -comparison;
+    }
+  });
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<StockScannerResponse>
@@ -158,22 +180,32 @@ export default async function handler(
       }
     }
 
-    // Build sort query
+    // Build sort query for MongoDB
+    // Note: marketCap sorting will be done in-memory since it's calculated from ratios
     const sortQuery: any = {};
     const validSortFields = [
       'symbol',
       'companyName',
-      'meta.marketCapitalization',
       'meta.currentPrice',
       'additionalInfo.sector',
       'additionalInfo.industry',
       'lastUpdated'
     ];
 
-    if (validSortFields.includes(sortBy)) {
+    // Don't sort in MongoDB if sorting by marketCap or any ratio field
+    const needsInMemorySort = sortBy === 'marketCap' ||
+                               sortBy === 'peRatio' ||
+                               sortBy === 'returnOnEquity' ||
+                               sortBy === 'returnOnCapitalEmployed' ||
+                               sortBy === 'pbRatio' ||
+                               sortBy === 'debtToEquity' ||
+                               sortBy === 'dividendYield';
+
+    if (!needsInMemorySort && validSortFields.includes(sortBy)) {
       sortQuery[sortBy] = sortOrder === 'asc' ? 1 : -1;
-    } else {
-      sortQuery['meta.marketCapitalization'] = -1; // Default sort
+    } else if (!needsInMemorySort) {
+      // Default: don't sort in MongoDB, will sort in-memory by marketCap
+      sortQuery['symbol'] = 1; // Just use symbol for consistent ordering
     }
 
     // Get total count for pagination
@@ -226,12 +258,18 @@ export default async function handler(
       // Use Stock P/E from ratios object (actual stock data), not calculated
       const peRatio = ratios['Stock P/E'] ? parseFloat(ratios['Stock P/E']) : null;
 
+      // Replace "Unknown" with "Other" for sector
+      let sectorName = stock.additionalInfo?.sector || 'Other';
+      if (sectorName === 'Unknown') {
+        sectorName = 'Other';
+      }
+
       return {
         id: stock._id,
         symbol: stock.symbol,
         name: stock.companyName,
-        sector: stock.additionalInfo?.sector || 'Others',
-        industry: stock.additionalInfo?.industry || 'Others',
+        sector: sectorName,
+        industry: stock.additionalInfo?.industry || 'Other',
         currentPrice: stock.meta?.currentPrice || 0,
         marketCap: marketCapValue, // Now using ratios["Market Cap"] instead of meta.marketCapitalization
         faceValue: stock.meta?.faceValue || 0,
@@ -302,6 +340,11 @@ export default async function handler(
         return true;
       });
 
+      // Apply in-memory sorting if needed
+      if (needsInMemorySort) {
+        transformedStocks = applySorting(transformedStocks, sortBy, sortOrder);
+      }
+
       // Apply pagination after filtering
       const filteredTotalRecords = transformedStocks.length;
       const filteredTotalPages = Math.ceil(filteredTotalRecords / limitNumber);
@@ -327,7 +370,12 @@ export default async function handler(
       });
     }
 
-    // Build pagination info for non-P/B filtered results
+    // Apply in-memory sorting if needed (for marketCap and ratio fields)
+    if (needsInMemorySort) {
+      transformedStocks = applySorting(transformedStocks, sortBy, sortOrder);
+    }
+
+    // Build pagination info for non-filtered results
     const pagination = {
       currentPage: pageNumber,
       totalPages,

@@ -141,6 +141,45 @@ export default function Header() {
     router.push('/');
   };
 
+  const handleDeleteScreener = async (screenerId: string) => {
+    try {
+      const screener = savedScreeners.find(s => s._id === screenerId);
+      if (!screener) return;
+
+      if (!confirm(`Are you sure you want to delete "${screener.title}"?`)) {
+        return;
+      }
+
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`/api/user/screeners/${screenerId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        fetchSavedScreeners();
+
+        // Check if currently viewing this screener
+        const currentUrl = new URL(window.location.href);
+        const currentScreenerId = currentUrl.searchParams.get('screenerId');
+
+        if (currentScreenerId === screenerId) {
+          // Navigate to scanner page without screenerId
+          router.push('/scanner');
+        }
+
+        // Notify scanner page if this screener was being viewed
+        window.dispatchEvent(new CustomEvent('screener-deleted', {
+          detail: { screenerId }
+        }));
+      }
+    } catch (error) {
+      console.error('Error deleting screener:', error);
+    }
+  };
+
   const getDashboardLink = () => {
     if (!user) return '/login';
     return ['ADMIN', 'DATA_ENTRY'].includes(user.role) ? '/admin/dashboard' : '/dashboard';
@@ -231,27 +270,79 @@ export default function Header() {
         
         {/* Navigation Menu */}
         <nav className="hidden md:flex items-center gap-1">
-          {sharesTradingMenu.map((item, index) => (
-            <Link
-              key={index}
-              href={item.href}
-              className={`no-underline font-medium px-2 lg:px-2 py-1 lg:py-1 rounded-lg transition-all duration-200 flex items-center gap-1 text-sm lg:text-sm ${
-                (pathname === item.href || 
-                 (item.label === 'Stock' && pathname.startsWith('/stocks')))
-                  ? 'text-[#FF6B2C] bg-[#FF6B2C]/10 shadow-sm border border-[#FF6B2C]/20' 
-                  : 'text-gray-200 hover:text-white hover:bg-white/10 border border-transparent'
-              }`}
-            >
-              {/* <span className="text-xs lg:text-sm">
-                {item.label === 'Home' && '🏠'}
-                {item.label === 'Stock' && '📊'}
-                {item.label === 'Sectors' && '🏢'}
-                {item.label === 'Mutual Fund' && '📈'}
-                {item.label === 'Scanner' && '🔍'}
-              </span> */}
-              <span className="hidden lg:inline ml-1">{item.label}</span>
-            </Link>
-          ))}
+          {sharesTradingMenu.map((item, index) => {
+            // Scanner menu with dropdown for logged-in users
+            if (item.label === 'Scanner' && user && savedScreeners.length > 0) {
+              return (
+                <DropdownMenu key={index}>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className={`no-underline font-medium px-2 lg:px-2 py-1 lg:py-1 rounded-lg transition-all duration-200 flex items-center gap-1 text-sm lg:text-sm ${
+                        pathname === item.href
+                          ? 'text-[#FF6B2C] bg-[#FF6B2C]/10 shadow-sm border border-[#FF6B2C]/20'
+                          : 'text-gray-200 hover:text-white hover:bg-white/10 border border-transparent'
+                      }`}
+                    >
+                      <span className="hidden lg:inline ml-1">{item.label}</span>
+                      <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-52 z-[9999]" align="start">
+                    <DropdownMenuItem asChild>
+                      <Link href="/scanner" className="cursor-pointer font-medium">
+                       
+                        New Scanner
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel className="text-xs text-gray-500">Saved Screeners</DropdownMenuLabel>
+                    {savedScreeners.map((screener: SavedScreener) => (
+                      <DropdownMenuItem key={screener._id} className="flex items-center justify-between p-0" onSelect={(e: Event) => e.preventDefault()}>
+                        <Link
+                          href={`/scanner?screenerId=${screener._id}`}
+                          className="flex-1 px-2 py-1.5 cursor-pointer hover:bg-transparent"
+                        >
+                          <div className="flex flex-col">
+                            <span className="text-sm font-medium truncate max-w-[140px] capitalize" title={screener.title}>{screener.title}</span>
+                          </div>
+                        </Link>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteScreener(screener._id);
+                          }}
+                          className="px-2 py-1.5 hover:bg-red-50 rounded"
+                          title="Delete screener"
+                        >
+                          <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              );
+            }
+
+            // Regular menu items
+            return (
+              <Link
+                key={index}
+                href={item.href}
+                className={`no-underline font-medium px-2 lg:px-2 py-1 lg:py-1 rounded-lg transition-all duration-200 flex items-center gap-1 text-sm lg:text-sm ${
+                  (pathname === item.href ||
+                   (item.label === 'Stock' && pathname.startsWith('/stocks')))
+                    ? 'text-[#FF6B2C] bg-[#FF6B2C]/10 shadow-sm border border-[#FF6B2C]/20'
+                    : 'text-gray-200 hover:text-white hover:bg-white/10 border border-transparent'
+                }`}
+              >
+                <span className="hidden lg:inline ml-1">{item.label}</span>
+              </Link>
+            );
+          })}
 
           {/* Authentication Section */}
           <div className="ml-2 lg:ml-4 flex items-center gap-2">
@@ -294,78 +385,7 @@ export default function Header() {
                     </Link>
                   </DropdownMenuItem>
 
-                  {/* Saved Screeners Submenu */}
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                      </svg>
-                      Saved Screeners
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent className="max-h-96 overflow-y-auto z-[10000] w-64">
-                      {savedScreeners.length > 0 ? (
-                        savedScreeners.map((screener: SavedScreener) => (
-                          <DropdownMenuItem key={screener._id} className="flex items-center justify-between p-0" onSelect={(e: Event) => e.preventDefault()}>
-                            <Link
-                              href={`/scanner?screenerId=${screener._id}`}
-                              className="flex-1 px-2 py-1.5 cursor-pointer hover:bg-transparent"
-                            >
-                              {screener.title}
-                            </Link>
-                            <button
-                              onClick={async (e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                if (confirm(`Are you sure you want to delete "${screener.title}"?`)) {
-                                  try {
-                                    const token = localStorage.getItem('authToken');
-                                    const response = await fetch(`/api/user/screeners/${screener._id}`, {
-                                      method: 'DELETE',
-                                      headers: {
-                                        'Authorization': `Bearer ${token}`,
-                                      },
-                                    });
-                                    if (response.ok) {
-                                      fetchSavedScreeners();
-
-                                      // Check if currently viewing this screener
-                                      const currentUrl = new URL(window.location.href);
-                                      const currentScreenerId = currentUrl.searchParams.get('screenerId');
-
-                                      if (currentScreenerId === screener._id) {
-                                        // Navigate to scanner page without screenerId
-                                        router.push('/scanner');
-                                      }
-
-                                      // Notify scanner page if this screener was being viewed
-                                      window.dispatchEvent(new CustomEvent('screener-deleted', {
-                                        detail: { screenerId: screener._id }
-                                      }));
-                                    } else {
-                                      alert('Failed to delete screener');
-                                    }
-                                  } catch (error) {
-                                    console.error('Error deleting screener:', error);
-                                    alert('Failed to delete screener');
-                                  }
-                                }
-                              }}
-                              className="p-1.5 hover:bg-red-50 rounded transition-colors mr-1"
-                              title="Delete screener"
-                            >
-                              <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                            </button>
-                          </DropdownMenuItem>
-                        ))
-                      ) : (
-                        <DropdownMenuItem disabled>
-                          No saved screeners yet
-                        </DropdownMenuItem>
-                      )}
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
+                 
 
                   {['ADMIN', 'DATA_ENTRY'].includes(user.role) && (
                     <DropdownMenuItem asChild>

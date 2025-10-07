@@ -45,7 +45,9 @@
       "Bash(rm:*)",
       "Bash(git ls-tree:*)",
       "Bash(awk:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(mongosh:*)",
+      "Bash(mongo:*)"
     ],
     "deny": [],
     "ask": [],
