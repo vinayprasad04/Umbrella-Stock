@@ -579,7 +579,9 @@ export default function StockDetailPage() {
                <div className="card">
                   <h3 className="text-xl font-bold text-gray-900 mb-2">Key Financial Ratios</h3>
                   <div className="grid grid-cols-3 gap-x-8">
-                    {Object.entries(ratiosData.ratios).map(([key, value], index) => {
+                    {Object.entries(ratiosData.ratios)
+                      .filter(([key]) => key !== 'Current Price' && key !== 'High / Low')
+                      .map(([key, value], index) => {
                       // Calculate background color based on position in 6-item groups
                       // Positions 0,1,2 (6n+1, 6n+2, 6n+3) get white background
                       // Positions 3,4,5 (6n+4, 6n+5, 6n+6) get #f8f8fc background
@@ -656,49 +658,6 @@ export default function StockDetailPage() {
             {/* Comprehensive Financial Data for Verified Stocks - Move to left column */}
             {isVerified && verifiedData?.parsedStockDetail && (
               <div className="space-y-6">
-                {/* Company Overview (separate from tabs) */}
-                {verifiedData.parsedStockDetail.meta && (
-                  <div className="card">
-                    <h4 className="text-xl font-bold mb-6 flex items-center">
-                      <span className="w-2 h-6 bg-blue-500 mr-3"></span>
-                      📈 Company Overview
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="bg-blue-50 p-4 rounded-lg">
-                        <p className="text-sm text-gray-600">Face Value</p>
-                        <p className="text-lg font-semibold text-gray-900">₹{verifiedData.parsedStockDetail.meta.faceValue}</p>
-                      </div>
-                      <div className="bg-green-50 p-4 rounded-lg">
-                        <p className="text-sm text-gray-600">Current Price</p>
-                        <p className="text-lg font-semibold text-gray-900">₹{verifiedData.parsedStockDetail.meta.currentPrice}</p>
-                      </div>
-                      <div className="bg-purple-50 p-4 rounded-lg">
-                        <p className="text-sm text-gray-600">Market Cap (Cr.)</p>
-                        <p className="text-lg font-semibold text-gray-900">
-                          {verifiedData.parsedStockDetail.ratios?.['Market Cap']
-                            ? (() => {
-                                const cleaned = String(verifiedData.parsedStockDetail.ratios['Market Cap'])
-                                  .replace(/₹/g, '')
-                                  .replace(/\s*Cr\.?/g, '')
-                                  .replace(/,/g, '')
-                                  .trim();
-                                const value = parseFloat(cleaned) || 0;
-                                return value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                              })()
-                            : (verifiedData.parsedStockDetail.meta?.marketCapitalization?.toLocaleString() || '-')
-                          }
-                        </p>
-                      </div>
-                      {verifiedData.parsedStockDetail.meta.numberOfShares && (
-                        <div className="bg-yellow-50 p-4 rounded-lg">
-                          <p className="text-sm text-gray-600">Number of Shares</p>
-                          <p className="text-lg font-semibold text-gray-900">{verifiedData.parsedStockDetail.meta.numberOfShares.toLocaleString()}</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
                 {/* Tabbed Financial Data */}
                 <div className="card">
                   {/* Tab Headers */}
