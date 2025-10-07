@@ -1,26 +1,28 @@
 import os
 import time
+import json
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 load_dotenv()
 
+# ===== CONFIGURATION =====
 SOURCE_API = os.getenv("SOURCE_API")  # e.g., http://localhost:3000/api/admin/stocks
-AUTH_TOKEN = os.getenv("AUTH_TOKEN")  # your JWT token
 POST_API = os.getenv("POST_API")      # e.g., http://localhost:3000/api/admin/stock-details
+AUTH_TOKEN = os.getenv("AUTH_TOKEN")
 DELAY = float(os.getenv("DELAY", 1.5))
 
-# ===== CONFIGURATION =====
-POST_API_TEMPLATE = "http://localhost:3000/api/admin/stock-details/{symbol}/ratios"
+PAGE_NUMBER = os.getenv("PAGE") 
+TOTAL_NUMBER = os.getenv("LIMIT")
 
-
-# Screener login cookies
-COOKIES = {
-    "sessionid": "jcnlwstd2m83epb6bungcsdv1vws70f3",
-    "csrftoken": "P26rOqposaoKXjQHxp4dt1KwjevtJeTJ",
-    "ext_name": "ojplmecpdpgccookcobabopnaifgidhf"
-}
+POST_API_TEMPLATE = f"{POST_API}/{{symbol}}/ratios"
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
@@ -28,19 +30,44 @@ HEADERS = {
     "Content-Type": "application/json"
 }
 
+# Chrome user profile (dedicated SeleniumProfile)
+CHROME_PROFILE_PATH = r"C:\Users\QSS\AppData\Local\Google\Chrome\SeleniumProfile"
+
+# ===== SELENIUM SETUP =====
+def get_driver():
+    chrome_options = Options()
+    chrome_options.add_argument(f"user-data-dir={CHROME_PROFILE_PATH}")
+    chrome_options.add_argument("--start-maximized")
+    service = Service()
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+    return driver
+
 # ===== FUNCTIONS =====
 def get_stock_list(page=1, limit=100, sortBy="symbol", sortOrder="asc"):
-    params = {"page": page, "limit": limit, "sortBy": sortBy, "sortOrder": sortOrder}
+    """Fetch stock symbols from your source API"""
+    params = {"page": page, "limit": limit, "sortBy": sortBy, "sortOrder": sortOrder, "niftyIndices":"NIFTY_500"}
     r = requests.get(SOURCE_API, headers=HEADERS, params=params, timeout=15)
     r.raise_for_status()
     data = r.json()
     return data.get("data", {}).get("stocks", [])
 
-def scrape_ratios(symbol):
+def scrape_ratios(driver, symbol):
+    """Scrape ratios from Screener site using Selenium"""
     url = f"https://www.screener.in/company/{symbol}/"
-    r = requests.get(url, headers={"User-Agent": HEADERS["User-Agent"]}, cookies=COOKIES)
-    r.raise_for_status()
-    soup = BeautifulSoup(r.text, "html.parser")
+    driver.get(url)
+
+    # wait until ratios load
+    try:
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, "#top-ratios li"))
+        )
+    except Exception:
+        print(f"[WARN] Timeout waiting for {symbol}")
+        return {}
+
+    time.sleep(1)  # let JS finish
+    soup = BeautifulSoup(driver.page_source, "html.parser")
+
     ratios = {}
     for li in soup.select("#top-ratios li.flex.flex-space-between"):
         key = li.select_one("span.name").get_text(strip=True)
@@ -52,9 +79,11 @@ def scrape_ratios(symbol):
         else:
             value = numbers
         ratios[key] = value
+
     return ratios
 
 def send_ratios(symbol, ratios):
+    """Send scraped data to POST API"""
     url = POST_API_TEMPLATE.format(symbol=symbol)
     payload = {"ratios": ratios}
     r = requests.post(url, headers=HEADERS, json=payload, timeout=15)
@@ -63,8 +92,9 @@ def send_ratios(symbol, ratios):
 
 # ===== MAIN =====
 def main():
-    page = 1
-    limit = 100
+    driver = get_driver()
+    page = PAGE_NUMBER
+    limit = TOTAL_NUMBER
     success_count = 0
     failed_count = 0
 
@@ -74,19 +104,24 @@ def main():
     for stock in stocks:
         symbol = stock.get("symbol")
         try:
-            ratios = scrape_ratios(symbol)
-            if send_ratios(symbol, ratios):
-                print(f"[SUCCESS] {symbol} saved")
-                success_count += 1
+            ratios = scrape_ratios(driver, symbol)
+            if ratios:
+                if send_ratios(symbol, ratios):
+                    print(f"[SUCCESS] {symbol} saved")
+                    success_count += 1
+                else:
+                    print(f"[FAILED] {symbol} not saved")
+                    failed_count += 1
             else:
-                print(f"[FAILED] {symbol} not saved")
+                print(f"[NO DATA] {symbol}")
                 failed_count += 1
         except Exception as e:
             print(f"[ERROR] {symbol}: {e}")
             failed_count += 1
 
-        time.sleep(1)  # delay between requests
+        time.sleep(DELAY)
 
+    driver.quit()
     print(f"\nCompleted: {success_count} success, {failed_count} failed")
 
 # ===== ENTRY POINT =====

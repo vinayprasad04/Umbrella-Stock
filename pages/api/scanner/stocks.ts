@@ -126,10 +126,20 @@ export default async function handler(
     const limitNumber = Math.min(50, Math.max(10, parseInt(limit))); // Min 10, Max 50
     const skip = (pageNumber - 1) * limitNumber;
 
-    // If any ratio filter is active, we need to fetch ALL records since we'll filter in-memory
-    // This is because ratio values are stored as strings and can't be filtered in MongoDB
-    const fetchLimit = hasRatioFilter ? 10000 : limitNumber; // Fetch up to 10k stocks when filtering
-    const fetchSkip = hasRatioFilter ? 0 : skip;
+    // Determine if we need in-memory sorting (before we fetch data)
+    const needsInMemorySort = sortBy === 'marketCap' ||
+                               sortBy === 'peRatio' ||
+                               sortBy === 'returnOnEquity' ||
+                               sortBy === 'returnOnCapitalEmployed' ||
+                               sortBy === 'pbRatio' ||
+                               sortBy === 'debtToEquity' ||
+                               sortBy === 'dividendYield';
+
+    // If any ratio filter is active OR we need in-memory sorting, fetch ALL records
+    // This is because ratio values are stored as strings and can't be filtered/sorted in MongoDB
+    const needsAllRecords = hasRatioFilter || needsInMemorySort;
+    const fetchLimit = needsAllRecords ? 10000 : limitNumber; // Fetch up to 10k stocks when filtering/sorting by ratios
+    const fetchSkip = needsAllRecords ? 0 : skip;
 
     // Build filter query
     const filterQuery: any = {
@@ -192,15 +202,7 @@ export default async function handler(
       'lastUpdated'
     ];
 
-    // Don't sort in MongoDB if sorting by marketCap or any ratio field
-    const needsInMemorySort = sortBy === 'marketCap' ||
-                               sortBy === 'peRatio' ||
-                               sortBy === 'returnOnEquity' ||
-                               sortBy === 'returnOnCapitalEmployed' ||
-                               sortBy === 'pbRatio' ||
-                               sortBy === 'debtToEquity' ||
-                               sortBy === 'dividendYield';
-
+    // Build MongoDB sort query (only for fields that don't need in-memory sorting)
     if (!needsInMemorySort && validSortFields.includes(sortBy)) {
       sortQuery[sortBy] = sortOrder === 'asc' ? 1 : -1;
     } else if (!needsInMemorySort) {
@@ -373,9 +375,33 @@ export default async function handler(
     // Apply in-memory sorting if needed (for marketCap and ratio fields)
     if (needsInMemorySort) {
       transformedStocks = applySorting(transformedStocks, sortBy, sortOrder);
+
+      // Apply pagination after sorting when in-memory sorting is used
+      const sortedTotalRecords = transformedStocks.length;
+      const sortedTotalPages = Math.ceil(sortedTotalRecords / limitNumber);
+      const startIndex = (pageNumber - 1) * limitNumber;
+      const endIndex = startIndex + limitNumber;
+      transformedStocks = transformedStocks.slice(startIndex, endIndex);
+
+      const pagination = {
+        currentPage: pageNumber,
+        totalPages: sortedTotalPages,
+        totalRecords: sortedTotalRecords,
+        limit: limitNumber,
+        hasNext: pageNumber < sortedTotalPages,
+        hasPrevious: pageNumber > 1
+      };
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          stocks: transformedStocks,
+          pagination
+        }
+      });
     }
 
-    // Build pagination info for non-filtered results
+    // Build pagination info for non-filtered, non-sorted results (already paginated by MongoDB)
     const pagination = {
       currentPage: pageNumber,
       totalPages,

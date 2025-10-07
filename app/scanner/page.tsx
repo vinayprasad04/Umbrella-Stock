@@ -6,6 +6,7 @@ import Link from "next/link";
 import { formatCurrency, formatPercentage } from '@/lib/api-utils';
 import { authUtils } from '@/lib/authUtils';
 import { useSearchParams, usePathname } from 'next/navigation';
+import RatioInfoTooltip from '@/components/RatioInfoTooltip';
 
 // Custom styles for new design
 const customStyles = `
@@ -1279,7 +1280,10 @@ export default function ScannerPage() {
                         className="flex-1 flex items-center justify-between text-left"
                       >
                         <div className="flex items-center gap-2">
-                          <label className="text-sm font-medium text-slate-700 cursor-pointer">P/E Ratio</label>
+                          <div className="flex items-center">
+                            <label className="text-sm font-medium text-slate-700 cursor-pointer">P/E Ratio</label>
+                            <RatioInfoTooltip ratio="pe" />
+                          </div>
                           {!expandedFilters.peRatio && getFilterDisplay(filters.minPE, filters.maxPE, '100') && (
                             <span className="text-xs text-indigo-600">({getFilterDisplay(filters.minPE, filters.maxPE, '100')})</span>
                           )}
@@ -1432,7 +1436,10 @@ export default function ScannerPage() {
                         className="flex-1 flex items-center justify-between text-left"
                       >
                         <div className="flex items-center gap-2">
-                          <label className="text-sm font-medium text-slate-700 cursor-pointer">ROCE (%)</label>
+                          <div className="flex items-center">
+                            <label className="text-sm font-medium text-slate-700 cursor-pointer">ROCE (%)</label>
+                            <RatioInfoTooltip ratio="roce" />
+                          </div>
                           {!expandedFilters.roce && getFilterDisplay(filters.minROCE, filters.maxROCE, '50', '%') && (
                             <span className="text-xs text-indigo-600">({getFilterDisplay(filters.minROCE, filters.maxROCE, '50', '%')})</span>
                           )}
@@ -1580,7 +1587,10 @@ export default function ScannerPage() {
                         className="flex-1 flex items-center justify-between text-left"
                       >
                         <div className="flex items-center gap-2">
-                          <label className="text-sm font-medium text-slate-700 cursor-pointer">ROE (%)</label>
+                          <div className="flex items-center">
+                            <label className="text-sm font-medium text-slate-700 cursor-pointer">ROE (%)</label>
+                            <RatioInfoTooltip ratio="roe" />
+                          </div>
                           {!expandedFilters.roe && getFilterDisplay(filters.minROE, filters.maxROE, '50', '%') && (
                             <span className="text-xs text-indigo-600">({getFilterDisplay(filters.minROE, filters.maxROE, '50', '%')})</span>
                           )}
@@ -1728,7 +1738,10 @@ export default function ScannerPage() {
                         className="flex-1 flex items-center justify-between text-left"
                       >
                         <div className="flex items-center gap-2">
-                          <label className="text-sm font-medium text-slate-700 cursor-pointer">Debt-to-Equity</label>
+                          <div className="flex items-center">
+                            <label className="text-sm font-medium text-slate-700 cursor-pointer">Debt-to-Equity</label>
+                            <RatioInfoTooltip ratio="debt" />
+                          </div>
                           {!expandedFilters.debtToEquity && getFilterDisplay(filters.minDebtToEquity, filters.maxDebtToEquity, '5') && (
                             <span className="text-xs text-indigo-600">({getFilterDisplay(filters.minDebtToEquity, filters.maxDebtToEquity, '5')})</span>
                           )}
@@ -1876,7 +1889,10 @@ export default function ScannerPage() {
                         className="flex-1 flex items-center justify-between text-left"
                       >
                         <div className="flex items-center gap-2">
-                          <label className="text-sm font-medium text-slate-700 cursor-pointer">P/B Ratio</label>
+                          <div className="flex items-center">
+                            <label className="text-sm font-medium text-slate-700 cursor-pointer">P/B Ratio</label>
+                            <RatioInfoTooltip ratio="pb" />
+                          </div>
                           {!expandedFilters.pbRatio && getFilterDisplay(filters.minPB, filters.maxPB, '20') && (
                             <span className="text-xs text-indigo-600">({getFilterDisplay(filters.minPB, filters.maxPB, '20')})</span>
                           )}
@@ -2024,7 +2040,10 @@ export default function ScannerPage() {
                         className="flex-1 flex items-center justify-between text-left"
                       >
                         <div className="flex items-center gap-2">
-                          <label className="text-sm font-medium text-slate-700 cursor-pointer">Dividend Yield (%)</label>
+                          <div className="flex items-center">
+                            <label className="text-sm font-medium text-slate-700 cursor-pointer">Dividend Yield (%)</label>
+                            <RatioInfoTooltip ratio="dividend" />
+                          </div>
                           {!expandedFilters.dividendYield && getFilterDisplay(filters.minDividendYield, filters.maxDividendYield, '10', '%') && (
                             <span className="text-xs text-indigo-600">({getFilterDisplay(filters.minDividendYield, filters.maxDividendYield, '10', '%')})</span>
                           )}
