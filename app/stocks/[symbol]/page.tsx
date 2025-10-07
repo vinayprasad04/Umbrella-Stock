@@ -1052,235 +1052,212 @@ export default function StockDetailPage() {
 
             {/* Stock Analysis Dashboard */}
             {(isVerified && ratiosData?.ratios) && (
-              <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 rounded-2xl p-6 text-white relative overflow-hidden">
-                {/* Background Pattern */}
-                <div className="absolute inset-0 opacity-50">
-                  <div className="absolute inset-0" style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-                  }}></div>
-                </div>
-
+              <div className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 rounded-xl shadow-lg border border-indigo-100 overflow-hidden">
                 {/* Header */}
-                <div className="relative z-10 mb-6">
+                <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-5">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-xl font-bold text-white mb-1">Investment Scorecard</h3>
-                      <p className="text-purple-200 text-sm">AI-Powered Financial Analysis</p>
+                      <h3 className="text-xl font-bold text-white">Investment Scorecard</h3>
+                      <p className="text-indigo-100 text-sm mt-1">AI-Powered Financial Analysis</p>
                     </div>
-                    <div className="bg-gradient-to-r from-green-400 to-blue-500 px-3 py-1 rounded-full">
-                      <span className="text-white text-xs font-semibold">✓ VERIFIED</span>
+                    <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-2 rounded-lg">
+                      <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-white text-sm font-semibold">VERIFIED</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Metrics Grid */}
-                <div className="relative z-10 grid grid-cols-1 gap-4">
-                  {/* Performance */}
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300 group">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300 ${
-                          calculatePerformance(ratiosData.ratios, overview) === 'Good' ? 'bg-gradient-to-br from-green-400 to-green-600' :
-                          calculatePerformance(ratiosData.ratios, overview) === 'Average' ? 'bg-gradient-to-br from-yellow-400 to-orange-500' :
-                          'bg-gradient-to-br from-red-400 to-red-600'
-                        }`}>
-                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                          </svg>
+                {/* Grid Layout */}
+                <div className="p-6">
+                  <div className="grid grid-cols-1 gap-4">
+                    {/* Performance */}
+                    <div className="bg-white rounded-lg p-5 shadow-sm border border-slate-200 hover:shadow-md transition-all">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            calculatePerformance(ratiosData.ratios, overview) === 'Good' ? 'bg-gradient-to-br from-emerald-400 to-emerald-600' :
+                            calculatePerformance(ratiosData.ratios, overview) === 'Average' ? 'bg-gradient-to-br from-amber-400 to-amber-600' :
+                            'bg-gradient-to-br from-rose-400 to-rose-600'
+                          }`}>
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-bold text-slate-900 text-base mb-1">Performance</h4>
+                            <p className="text-sm text-slate-600 leading-relaxed">
+                              {getPerformanceDescription(calculatePerformance(ratiosData.ratios, overview))}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="text-white font-semibold text-lg">Performance</h4>
-                          <p className="text-purple-200 text-sm max-w-xs">
-                            {getPerformanceDescription(calculatePerformance(ratiosData.ratios, overview))}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className={`inline-flex px-4 py-2 rounded-lg font-bold text-sm shadow-lg ${
-                          calculatePerformance(ratiosData.ratios, overview) === 'Good' ? 'bg-green-500 text-white' :
-                          calculatePerformance(ratiosData.ratios, overview) === 'Average' ? 'bg-yellow-500 text-black' :
-                          'bg-red-500 text-white'
+                        <div className={`px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap ${
+                          calculatePerformance(ratiosData.ratios, overview) === 'Good' ? 'bg-emerald-100 text-emerald-800' :
+                          calculatePerformance(ratiosData.ratios, overview) === 'Average' ? 'bg-amber-100 text-amber-800' :
+                          'bg-rose-100 text-rose-800'
                         }`}>
                           {calculatePerformance(ratiosData.ratios, overview) === 'Average' ? 'AVG' : calculatePerformance(ratiosData.ratios, overview)}
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Valuation */}
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300 group">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300 ${
-                          calculateValuation(ratiosData.ratios, overview, liveData) === 'Low' ? 'bg-gradient-to-br from-green-400 to-green-600' :
-                          calculateValuation(ratiosData.ratios, overview, liveData) === 'Medium' ? 'bg-gradient-to-br from-yellow-400 to-orange-500' :
-                          'bg-gradient-to-br from-red-400 to-red-600'
-                        }`}>
-                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                          </svg>
+                    {/* Valuation */}
+                    <div className="bg-white rounded-lg p-5 shadow-sm border border-slate-200 hover:shadow-md transition-all">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            calculateValuation(ratiosData.ratios, overview, liveData) === 'Low' ? 'bg-gradient-to-br from-emerald-400 to-emerald-600' :
+                            calculateValuation(ratiosData.ratios, overview, liveData) === 'Medium' ? 'bg-gradient-to-br from-amber-400 to-amber-600' :
+                            'bg-gradient-to-br from-rose-400 to-rose-600'
+                          }`}>
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                            </svg>
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-bold text-slate-900 text-base mb-1">Valuation</h4>
+                            <p className="text-sm text-slate-600 leading-relaxed">
+                              {getValuationDescription(calculateValuation(ratiosData.ratios, overview, liveData))}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="text-white font-semibold text-lg">Valuation</h4>
-                          <p className="text-purple-200 text-sm max-w-xs">
-                            {getValuationDescription(calculateValuation(ratiosData.ratios, overview, liveData))}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className={`inline-flex px-4 py-2 rounded-lg font-bold text-sm shadow-lg ${
-                          calculateValuation(ratiosData.ratios, overview, liveData) === 'Low' ? 'bg-green-500 text-white' :
-                          calculateValuation(ratiosData.ratios, overview, liveData) === 'Medium' ? 'bg-yellow-500 text-black' :
-                          'bg-red-500 text-white'
+                        <div className={`px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap ${
+                          calculateValuation(ratiosData.ratios, overview, liveData) === 'Low' ? 'bg-emerald-100 text-emerald-800' :
+                          calculateValuation(ratiosData.ratios, overview, liveData) === 'Medium' ? 'bg-amber-100 text-amber-800' :
+                          'bg-rose-100 text-rose-800'
                         }`}>
                           {calculateValuation(ratiosData.ratios, overview, liveData)}
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Growth */}
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300 group">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300 ${
-                          calculateGrowth(ratiosData.ratios, overview) === 'Good' ? 'bg-gradient-to-br from-green-400 to-green-600' :
-                          calculateGrowth(ratiosData.ratios, overview) === 'Average' ? 'bg-gradient-to-br from-yellow-400 to-orange-500' :
-                          'bg-gradient-to-br from-red-400 to-red-600'
-                        }`}>
-                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-                          </svg>
+                    {/* Growth */}
+                    <div className="bg-white rounded-lg p-5 shadow-sm border border-slate-200 hover:shadow-md transition-all">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            calculateGrowth(ratiosData.ratios, overview) === 'Good' ? 'bg-gradient-to-br from-emerald-400 to-emerald-600' :
+                            calculateGrowth(ratiosData.ratios, overview) === 'Average' ? 'bg-gradient-to-br from-amber-400 to-amber-600' :
+                            'bg-gradient-to-br from-rose-400 to-rose-600'
+                          }`}>
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                            </svg>
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-bold text-slate-900 text-base mb-1">Growth</h4>
+                            <p className="text-sm text-slate-600 leading-relaxed">
+                              {getGrowthDescription(calculateGrowth(ratiosData.ratios, overview))}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="text-white font-semibold text-lg">Growth</h4>
-                          <p className="text-purple-200 text-sm max-w-xs">
-                            {getGrowthDescription(calculateGrowth(ratiosData.ratios, overview))}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className={`inline-flex px-4 py-2 rounded-lg font-bold text-sm shadow-lg ${
-                          calculateGrowth(ratiosData.ratios, overview) === 'Good' ? 'bg-green-500 text-white' :
-                          calculateGrowth(ratiosData.ratios, overview) === 'Average' ? 'bg-yellow-500 text-black' :
-                          'bg-red-500 text-white'
+                        <div className={`px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap ${
+                          calculateGrowth(ratiosData.ratios, overview) === 'Good' ? 'bg-emerald-100 text-emerald-800' :
+                          calculateGrowth(ratiosData.ratios, overview) === 'Average' ? 'bg-amber-100 text-amber-800' :
+                          'bg-rose-100 text-rose-800'
                         }`}>
                           {calculateGrowth(ratiosData.ratios, overview) === 'Average' ? 'AVG' : calculateGrowth(ratiosData.ratios, overview)}
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Profitability */}
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300 group">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300 ${
-                          calculateProfitability(ratiosData.ratios, overview) === 'High' ? 'bg-gradient-to-br from-green-400 to-green-600' :
-                          calculateProfitability(ratiosData.ratios, overview) === 'Medium' ? 'bg-gradient-to-br from-yellow-400 to-orange-500' :
-                          'bg-gradient-to-br from-red-400 to-red-600'
-                        }`}>
-                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                          </svg>
+                    {/* Profitability */}
+                    <div className="bg-white rounded-lg p-5 shadow-sm border border-slate-200 hover:shadow-md transition-all">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            calculateProfitability(ratiosData.ratios, overview) === 'High' ? 'bg-gradient-to-br from-emerald-400 to-emerald-600' :
+                            calculateProfitability(ratiosData.ratios, overview) === 'Medium' ? 'bg-gradient-to-br from-amber-400 to-amber-600' :
+                            'bg-gradient-to-br from-rose-400 to-rose-600'
+                          }`}>
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-bold text-slate-900 text-base mb-1">Profitability</h4>
+                            <p className="text-sm text-slate-600 leading-relaxed">
+                              {getProfitabilityDescription(calculateProfitability(ratiosData.ratios, overview))}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="text-white font-semibold text-lg">Profitability</h4>
-                          <p className="text-purple-200 text-sm max-w-xs">
-                            {getProfitabilityDescription(calculateProfitability(ratiosData.ratios, overview))}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className={`inline-flex px-4 py-2 rounded-lg font-bold text-sm shadow-lg ${
-                          calculateProfitability(ratiosData.ratios, overview) === 'High' ? 'bg-green-500 text-white' :
-                          calculateProfitability(ratiosData.ratios, overview) === 'Medium' ? 'bg-yellow-500 text-black' :
-                          'bg-red-500 text-white'
+                        <div className={`px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap ${
+                          calculateProfitability(ratiosData.ratios, overview) === 'High' ? 'bg-emerald-100 text-emerald-800' :
+                          calculateProfitability(ratiosData.ratios, overview) === 'Medium' ? 'bg-amber-100 text-amber-800' :
+                          'bg-rose-100 text-rose-800'
                         }`}>
                           {calculateProfitability(ratiosData.ratios, overview)}
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Entry Point */}
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300 group">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300 ${
-                          calculateEntryPoint(ratiosData.ratios, overview, liveData) === 'Good' ? 'bg-gradient-to-br from-green-400 to-green-600' :
-                          calculateEntryPoint(ratiosData.ratios, overview, liveData) === 'Average' ? 'bg-gradient-to-br from-yellow-400 to-orange-500' :
-                          'bg-gradient-to-br from-red-400 to-red-600'
-                        }`}>
-                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                          </svg>
+                    {/* Entry Point */}
+                    <div className="bg-white rounded-lg p-5 shadow-sm border border-slate-200 hover:shadow-md transition-all">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            calculateEntryPoint(ratiosData.ratios, overview, liveData) === 'Good' ? 'bg-gradient-to-br from-emerald-400 to-emerald-600' :
+                            calculateEntryPoint(ratiosData.ratios, overview, liveData) === 'Average' ? 'bg-gradient-to-br from-amber-400 to-amber-600' :
+                            'bg-gradient-to-br from-rose-400 to-rose-600'
+                          }`}>
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-bold text-slate-900 text-base mb-1">Entry Point</h4>
+                            <p className="text-sm text-slate-600 leading-relaxed">
+                              {getEntryPointDescription(calculateEntryPoint(ratiosData.ratios, overview, liveData))}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="text-white font-semibold text-lg">Entry Point</h4>
-                          <p className="text-purple-200 text-sm max-w-xs">
-                            {getEntryPointDescription(calculateEntryPoint(ratiosData.ratios, overview, liveData))}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className={`inline-flex px-4 py-2 rounded-lg font-bold text-sm shadow-lg ${
-                          calculateEntryPoint(ratiosData.ratios, overview, liveData) === 'Good' ? 'bg-green-500 text-white' :
-                          calculateEntryPoint(ratiosData.ratios, overview, liveData) === 'Average' ? 'bg-yellow-500 text-black' :
-                          'bg-red-500 text-white'
+                        <div className={`px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap ${
+                          calculateEntryPoint(ratiosData.ratios, overview, liveData) === 'Good' ? 'bg-emerald-100 text-emerald-800' :
+                          calculateEntryPoint(ratiosData.ratios, overview, liveData) === 'Average' ? 'bg-amber-100 text-amber-800' :
+                          'bg-rose-100 text-rose-800'
                         }`}>
                           {calculateEntryPoint(ratiosData.ratios, overview, liveData)}
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Red Flags */}
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300 group">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300 ${
-                          calculateRedFlags(ratiosData.ratios, overview) === 'Low' ? 'bg-gradient-to-br from-green-400 to-green-600' :
-                          calculateRedFlags(ratiosData.ratios, overview) === 'Medium' ? 'bg-gradient-to-br from-yellow-400 to-orange-500' :
-                          'bg-gradient-to-br from-red-400 to-red-600'
-                        }`}>
-                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                          </svg>
+                    {/* Red Flags */}
+                    <div className="bg-white rounded-lg p-5 shadow-sm border border-slate-200 hover:shadow-md transition-all">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            calculateRedFlags(ratiosData.ratios, overview) === 'Low' ? 'bg-gradient-to-br from-emerald-400 to-emerald-600' :
+                            calculateRedFlags(ratiosData.ratios, overview) === 'Medium' ? 'bg-gradient-to-br from-amber-400 to-amber-600' :
+                            'bg-gradient-to-br from-rose-400 to-rose-600'
+                          }`}>
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                            </svg>
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-bold text-slate-900 text-base mb-1">Red Flags</h4>
+                            <p className="text-sm text-slate-600 leading-relaxed">
+                              {getRedFlagsDescription(calculateRedFlags(ratiosData.ratios, overview))}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="text-white font-semibold text-lg">Red Flags</h4>
-                          <p className="text-purple-200 text-sm max-w-xs">
-                            {getRedFlagsDescription(calculateRedFlags(ratiosData.ratios, overview))}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className={`inline-flex px-4 py-2 rounded-lg font-bold text-sm shadow-lg ${
-                          calculateRedFlags(ratiosData.ratios, overview) === 'Low' ? 'bg-green-500 text-white' :
-                          calculateRedFlags(ratiosData.ratios, overview) === 'Medium' ? 'bg-yellow-500 text-black' :
-                          'bg-red-500 text-white'
+                        <div className={`px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap ${
+                          calculateRedFlags(ratiosData.ratios, overview) === 'Low' ? 'bg-emerald-100 text-emerald-800' :
+                          calculateRedFlags(ratiosData.ratios, overview) === 'Medium' ? 'bg-amber-100 text-amber-800' :
+                          'bg-rose-100 text-rose-800'
                         }`}>
                           {calculateRedFlags(ratiosData.ratios, overview)}
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Powered by footer */}
-                <div className="relative z-10 mt-6 pt-4 border-t border-white/20">
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center space-x-2 text-purple-200">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>Powered by advanced financial algorithms</span>
-                    </div>
-                    <div className="text-purple-300 text-xs">
-                      Updated: {new Date().toLocaleDateString()}
-                    </div>
+                  {/* Footer */}
+                  <div className="mt-6 pt-4 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
+                    <span>Last updated: {new Date().toLocaleDateString()}</span>
+                    <span className="text-indigo-600 font-medium">6 Metrics Analyzed</span>
                   </div>
                 </div>
               </div>
