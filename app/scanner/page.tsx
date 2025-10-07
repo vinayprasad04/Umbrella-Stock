@@ -84,8 +84,7 @@ interface StockData {
   sector: string;
   industry: string;
   currentPrice: number;
-  marketCap: number;
-  marketCapFormatted: string;
+  marketCap: number; // Market Cap in Cr from ratios["Market Cap"]
   faceValue: number;
   peRatio: number | null;
   oneMonthReturn: number | null;
@@ -175,12 +174,12 @@ export default function ScannerPage() {
     maxPB: '',
     minDividendYield: '',
     maxDividendYield: '',
-    sortBy: 'meta.marketCapitalization',
+    sortBy: 'marketCap',
     sortOrder: 'desc' as 'asc' | 'desc'
   });
 
   // UI states
-  const [selectedLimit, setSelectedLimit] = useState<number>(20);
+  const [selectedLimit, setSelectedLimit] = useState<number>(10);
   const [sectorSearch, setSectorSearch] = useState<string>('');
   const [niftyIndicesSearch, setNiftyIndicesSearch] = useState<string>('');
   const [expandedFilters, setExpandedFilters] = useState<{ [key: string]: boolean }>({
@@ -427,7 +426,7 @@ export default function ScannerPage() {
           maxPB: '',
           minDividendYield: '',
           maxDividendYield: '',
-          sortBy: 'meta.marketCapitalization',
+          sortBy: 'marketCap',
           sortOrder: 'desc'
         });
         fetchStocks(1, selectedLimit);
@@ -485,7 +484,7 @@ export default function ScannerPage() {
         maxPB: '',
         minDividendYield: '',
         maxDividendYield: '',
-        sortBy: 'meta.marketCapitalization',
+        sortBy: 'marketCap',
         sortOrder: 'desc' as 'desc'
       };
 
@@ -853,7 +852,7 @@ export default function ScannerPage() {
       maxPB: '',
       minDividendYield: '',
       maxDividendYield: '',
-      sortBy: 'meta.marketCapitalization',
+      sortBy: 'marketCap',
       sortOrder: 'desc' as 'desc'
     };
 
@@ -867,7 +866,7 @@ export default function ScannerPage() {
       const queryParams = new URLSearchParams({
         page: '1',
         limit: selectedLimit.toString(),
-        sortBy: 'meta.marketCapitalization',
+        sortBy: 'marketCap',
         sortOrder: 'desc'
       });
 
@@ -2406,8 +2405,8 @@ export default function ScannerPage() {
                           Sector
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                          <button onClick={() => handleSort('meta.marketCapitalization')} className="flex items-center gap-1 hover:text-indigo-600">
-                            Market Cap {getSortIcon('meta.marketCapitalization')}
+                          <button onClick={() => handleSort('marketCap')} className="flex items-center gap-1 hover:text-indigo-600">
+                            Market Cap (Cr.) {getSortIcon('marketCap')}
                           </button>
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
@@ -2498,7 +2497,7 @@ export default function ScannerPage() {
                             </td>
                             <td className="px-4 py-4">
                               <div className="text-sm font-semibold text-slate-900">
-                                {stock.marketCapFormatted}
+                                {stock.marketCap ? stock.marketCap.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '-'}
                               </div>
                             </td>
                             <td className="px-4 py-4">

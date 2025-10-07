@@ -89,6 +89,7 @@ export default async function handler(
 
     // Note: All ratio filters will be applied in application code due to string vs number issue in DB
     // Store the filter values for later use
+    const marketCapFilter = (minMarketCap || maxMarketCap) ? { min: minMarketCap ? parseFloat(minMarketCap) : 0, max: maxMarketCap ? parseFloat(maxMarketCap) : Infinity } : null;
     const peFilter = (minPE || maxPE) ? { min: minPE ? parseFloat(minPE) : 0, max: maxPE ? parseFloat(maxPE) : Infinity } : null;
     const roceFilter = (minROCE || maxROCE) ? { min: minROCE ? parseFloat(minROCE) : 0, max: maxROCE ? parseFloat(maxROCE) : Infinity } : null;
     const roeFilter = (minROE || maxROE) ? { min: minROE ? parseFloat(minROE) : 0, max: maxROE ? parseFloat(maxROE) : Infinity } : null;
@@ -96,7 +97,7 @@ export default async function handler(
     const pbFilter = (minPB || maxPB) ? { min: minPB ? parseFloat(minPB) : 0, max: maxPB ? parseFloat(maxPB) : Infinity } : null;
     const divYieldFilter = (minDividendYield || maxDividendYield) ? { min: minDividendYield ? parseFloat(minDividendYield) : 0, max: maxDividendYield ? parseFloat(maxDividendYield) : Infinity } : null;
 
-    const hasRatioFilter = peFilter || roceFilter || roeFilter || debtFilter || pbFilter || divYieldFilter;
+    const hasRatioFilter = marketCapFilter || peFilter || roceFilter || roeFilter || debtFilter || pbFilter || divYieldFilter;
 
     // Parse pagination parameters
     const pageNumber = Math.max(1, parseInt(page));
@@ -143,16 +144,8 @@ export default async function handler(
       }
     }
 
-    // Market Cap range filter
-    if (minMarketCap || maxMarketCap) {
-      filterQuery['meta.marketCapitalization'] = {};
-      if (minMarketCap) {
-        filterQuery['meta.marketCapitalization'].$gte = parseFloat(minMarketCap);
-      }
-      if (maxMarketCap) {
-        filterQuery['meta.marketCapitalization'].$lte = parseFloat(maxMarketCap);
-      }
-    }
+    // Market Cap filter is now handled in application code (after fetching)
+    // because Market Cap is stored in ratios as a formatted string
 
     // Price range filter
     if (minPrice || maxPrice) {
@@ -214,10 +207,21 @@ export default async function handler(
 
     // Transform data to include calculated metrics
     let transformedStocks = stocks.map((stock: any) => {
-      let marketCapInCrores = stock.meta?.marketCapitalization || 0;
-
       // Extract ratios from the ratios object if available
       const ratios = stock.ratios || {};
+
+      // Get Market Cap from ratios (in Cr format like "₹83679 Cr.")
+      let marketCapValue = 0;
+      if (ratios['Market Cap']) {
+        const marketCapStr = String(ratios['Market Cap']);
+        // Clean the string: remove ₹, Cr., Cr, commas, spaces
+        const cleaned = marketCapStr
+          .replace(/₹/g, '')
+          .replace(/\s*Cr\.?/g, '')
+          .replace(/,/g, '')
+          .trim();
+        marketCapValue = parseFloat(cleaned) || 0;
+      }
 
       // Use Stock P/E from ratios object (actual stock data), not calculated
       const peRatio = ratios['Stock P/E'] ? parseFloat(ratios['Stock P/E']) : null;
@@ -229,8 +233,7 @@ export default async function handler(
         sector: stock.additionalInfo?.sector || 'Others',
         industry: stock.additionalInfo?.industry || 'Others',
         currentPrice: stock.meta?.currentPrice || 0,
-        marketCap: marketCapInCrores,
-        marketCapFormatted: `₹${(marketCapInCrores / 100).toFixed(2)}L Cr`,
+        marketCap: marketCapValue, // Now using ratios["Market Cap"] instead of meta.marketCapitalization
         faceValue: stock.meta?.faceValue || 0,
         peRatio: peRatio,
         dataQuality: stock.dataQuality,
@@ -254,6 +257,12 @@ export default async function handler(
     // Apply ratio filters in application code (due to string vs number issue in DB)
     if (hasRatioFilter) {
       transformedStocks = transformedStocks.filter((stock: any) => {
+        // Market Cap filter
+        if (marketCapFilter) {
+          if (stock.marketCap == null || stock.marketCap === 0) return false;
+          if (stock.marketCap < marketCapFilter.min || stock.marketCap > marketCapFilter.max) return false;
+        }
+
         // P/E filter
         if (peFilter) {
           if (stock.peRatio == null) return false;

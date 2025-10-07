@@ -774,8 +774,21 @@ export default function StockEditPage() {
                           <p className="text-lg font-semibold text-gray-900">₹{parsedStockDetail.meta.currentPrice}</p>
                         </div>
                         <div className="bg-purple-50 p-4 rounded-lg">
-                          <p className="text-sm text-gray-600">Market Cap</p>
-                          <p className="text-lg font-semibold text-gray-900">₹{parsedStockDetail.meta.marketCapitalization.toLocaleString()} Cr</p>
+                          <p className="text-sm text-gray-600">Market Cap (Cr.)</p>
+                          <p className="text-lg font-semibold text-gray-900">
+                            {parsedStockDetail.ratios?.['Market Cap']
+                              ? (() => {
+                                  const cleaned = String(parsedStockDetail.ratios['Market Cap'])
+                                    .replace(/₹/g, '')
+                                    .replace(/\s*Cr\.?/g, '')
+                                    .replace(/,/g, '')
+                                    .trim();
+                                  const value = parseFloat(cleaned) || 0;
+                                  return value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                })()
+                              : (parsedStockDetail.meta?.marketCapitalization?.toLocaleString() || '-')
+                            }
+                          </p>
                         </div>
                         {parsedStockDetail.meta.numberOfShares && (
                           <div className="bg-yellow-50 p-4 rounded-lg">
