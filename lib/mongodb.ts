@@ -36,6 +36,15 @@ async function connectDB(): Promise<typeof mongoose> {
 
   try {
     cached!.conn = await cached!.promise;
+
+    // Initialize cron job after successful connection (server-side only)
+    if (typeof window === 'undefined') {
+      try {
+        require('./cron/init-on-startup');
+      } catch (error) {
+        console.log('Note: Cron initialization skipped (expected during build)');
+      }
+    }
   } catch (e) {
     cached!.promise = null;
     throw e;

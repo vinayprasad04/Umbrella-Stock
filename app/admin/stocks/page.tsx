@@ -62,6 +62,9 @@ export default function StocksDashboard() {
   const [perPage, setPerPage] = useState(50);
   const [sortBy, setSortBy] = useState('symbol');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [newsFilter, setNewsFilter] = useState('all');
+  const [newsStats, setNewsStats] = useState<{total: number, withNews: number, withoutNews: number}>({total: 0, withNews: 0, withoutNews: 0});
+  const [stocksWithNews, setStocksWithNews] = useState<Set<string>>(new Set());
 
   const fetchData = useCallback(async () => {
     try {
@@ -113,9 +116,32 @@ export default function StocksDashboard() {
     }
   }, [page, search, sectorFilter, exchangeFilter, dataFilter, dataQualityFilter, ratiosFilter, niftyIndicesFilter, perPage, sortBy, sortOrder]);
 
+  const fetchNewsStats = useCallback(async () => {
+    try {
+      const result = await ApiClient.get('/admin/stocks/news?limit=10000');
+      if (result.success) {
+        const newsMap = new Map<string, number>();
+        result.data.activities.forEach((activity: any) => {
+          const count = newsMap.get(activity.stockSymbol) || 0;
+          newsMap.set(activity.stockSymbol, count + 1);
+        });
+
+        setStocksWithNews(new Set(newsMap.keys()));
+        setNewsStats({
+          total: result.data.total || 0,
+          withNews: newsMap.size,
+          withoutNews: 0 // Will be calculated from total stocks
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching news stats:', error);
+    }
+  }, []);
+
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+    fetchNewsStats();
+  }, [fetchData, fetchNewsStats]);
 
   const handleSelectAll = (checked: boolean) => {
     if (data?.stocks) {
@@ -406,12 +432,22 @@ export default function StocksDashboard() {
     );
   }
 
+  // Apply news filter
+  const filteredStocks = data?.stocks?.filter(stock => {
+    if (newsFilter === 'has-news') {
+      return stocksWithNews.has(stock.symbol);
+    } else if (newsFilter === 'no-news') {
+      return !stocksWithNews.has(stock.symbol);
+    }
+    return true; // 'all'
+  }) || [];
+
   return (
     <AdminDashboardLayout currentPage="stocks">
       <div className="p-6">
           {/* Stats Cards */}
           {data && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
@@ -459,6 +495,38 @@ export default function StocksDashboard() {
                   </div>
                 </div>
               </div>
+
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="ml-5">
+                    <p className="text-sm font-medium text-gray-500">Stocks With News</p>
+                    <p className="text-2xl font-semibold text-gray-900">{newsStats.withNews.toLocaleString()}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="w-8 h-8 bg-orange-500 rounded-md flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="ml-5">
+                    <p className="text-sm font-medium text-gray-500">Total News Articles</p>
+                    <p className="text-2xl font-semibold text-gray-900">{newsStats.total.toLocaleString()}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -474,6 +542,7 @@ export default function StocksDashboard() {
                   setDataFilter('all');
                   setDataQualityFilter('PENDING_VERIFICATION');
                   setRatiosFilter('all');
+                  setNewsFilter('all');
                   setNiftyIndicesFilter([]);
                   setSortBy('symbol');
                   setSortOrder('asc');
@@ -527,6 +596,22 @@ export default function StocksDashboard() {
                     { value: 'all', label: 'All' },
                     { value: 'true', label: 'Has Ratios' },
                     { value: 'false', label: 'No Ratios' }
+                  ]}
+                  placeholder="All"
+                  triggerClassName="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
+                />
+              </div>
+
+              <div className="lg:col-span-1 xl:col-span-1">
+                <CustomSelect
+                  label="News"
+                  value={newsFilter}
+                  onValueChange={setNewsFilter}
+                  options={[
+                    { value: 'all', label: 'All' },
+                    { value: 'has-news', label: 'Has News' },
+                    { value: 'no-news', label: 'No News' }
                   ]}
                   placeholder="All"
                   triggerClassName="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -709,7 +794,7 @@ export default function StocksDashboard() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {data?.stocks && data.stocks.length > 0 ? data.stocks.map((stock) => (
+                  {filteredStocks && filteredStocks.length > 0 ? filteredStocks.map((stock) => (
                     <tr key={stock.symbol} className={`hover:bg-gray-50 ${selectedStocks.includes(stock.symbol) ? 'bg-blue-50' : ''}`}>
                       <td className="px-4 py-2 whitespace-nowrap">
                         <Checkbox
@@ -768,19 +853,27 @@ export default function StocksDashboard() {
                         )}
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap text-sm font-medium">
-                        <Link
-                          href={`/admin/stocks/${stock.symbol}`}
-                          className="text-purple-600 hover:text-purple-900 mr-4"
-                        >
-                          {stock.hasActualData ? 'Edit' : 'Add Data'}
-                        </Link>
-                        <Link
-                          href={`/stocks/${stock.symbol}`}
-                          className="text-green-600 hover:text-green-900"
-                          target="_blank"
-                        >
-                          View
-                        </Link>
+                        <div className="flex items-center gap-3">
+                          <Link
+                            href={`/admin/stocks/${stock.symbol}`}
+                            className="text-purple-600 hover:text-purple-900"
+                          >
+                            {stock.hasActualData ? 'Edit' : 'Add Data'}
+                          </Link>
+                          <Link
+                            href={`/stocks/${stock.symbol}`}
+                            className="text-green-600 hover:text-green-900"
+                            target="_blank"
+                          >
+                            View
+                          </Link>
+                          <Link
+                            href={`/admin/stock-news/${stock.symbol}`}
+                            className="text-orange-600 hover:text-orange-900"
+                          >
+                            News
+                          </Link>
+                        </div>
                       </td>
                     </tr>
                   )) : (

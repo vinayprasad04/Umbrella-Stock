@@ -47,7 +47,10 @@
       "Bash(awk:*)",
       "Bash(python:*)",
       "Bash(mongosh:*)",
-      "Bash(mongo:*)"
+      "Bash(mongo:*)",
+      "Bash(npm run sync-activities:*)",
+      "Bash(npm run sync-activities-test:*)",
+      "Bash(npm run check-news-stats:*)"
     ],
     "deny": [],
     "ask": [],

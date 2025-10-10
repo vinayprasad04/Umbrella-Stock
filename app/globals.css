@@ -124,3 +124,86 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Enhanced prose styling for news content with tables */
+@layer utilities {
+  .prose table {
+    @apply w-full border-collapse my-4 text-sm;
+  }
+
+  .prose table thead {
+    @apply bg-gray-50;
+  }
+
+  .prose table th {
+    @apply border border-gray-300 px-4 py-2 text-left font-semibold text-gray-900;
+  }
+
+  .prose table td {
+    @apply border border-gray-200 px-4 py-2 text-gray-700;
+  }
+
+  .prose table tbody tr:nth-child(even) {
+    @apply bg-gray-50;
+  }
+
+  .prose table tbody tr:hover {
+    @apply bg-blue-50 transition-colors;
+  }
+
+  .prose p {
+    @apply my-2;
+  }
+
+  .prose ul, .prose ol {
+    @apply my-2 ml-4;
+  }
+
+  .prose li {
+    @apply my-1;
+  }
+
+  .prose strong, .prose b {
+    @apply font-semibold text-gray-900;
+  }
+
+  .prose em, .prose i {
+    @apply italic;
+  }
+
+  .prose a {
+    @apply text-blue-600 hover:text-blue-800 underline;
+  }
+
+  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    @apply font-bold text-gray-900 my-3;
+  }
+
+  .prose h1 {
+    @apply text-2xl;
+  }
+
+  .prose h2 {
+    @apply text-xl;
+  }
+
+  .prose h3 {
+    @apply text-lg;
+  }
+
+  .prose blockquote {
+    @apply border-l-4 border-gray-300 pl-4 my-3 italic text-gray-700;
+  }
+
+  .prose code {
+    @apply bg-gray-100 px-1 py-0.5 rounded text-sm font-mono;
+  }
+
+  .prose pre {
+    @apply bg-gray-100 p-3 rounded my-3 overflow-x-auto;
+  }
+
+  .prose pre code {
+    @apply bg-transparent p-0;
+  }
+}

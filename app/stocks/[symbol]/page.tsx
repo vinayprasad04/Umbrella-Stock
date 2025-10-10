@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import Header from '@/components/Header';
 import AdvancedStockChart from '@/components/AdvancedStockChart';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import StockNews from '@/components/StockNews';
 import { formatCurrency, formatPercentage, formatNumber } from '@/lib/api-utils';
 import { useAuth } from '@/lib/AuthContext';
 import { ClientAuth } from '@/lib/auth';
@@ -923,6 +924,9 @@ export default function StockDetailPage() {
                 )}
               </div>
             )}
+
+            {/* Stock News Component - Moved to last */}
+            <StockNews symbol={symbol} />
           </div>
 
           <div
