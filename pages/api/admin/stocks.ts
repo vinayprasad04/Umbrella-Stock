@@ -76,6 +76,7 @@ export default async function handler(
     const hasRatios = req.query.hasRatios as string || '';
     const niftyIndex = req.query.niftyIndex as string || '';
     const niftyIndices = req.query.niftyIndices as string || '';
+    const newsFilter = req.query.newsFilter as string || '';
     const sortBy = req.query.sortBy as string || 'symbol';
     const sortOrder = req.query.sortOrder as string || 'asc';
 
@@ -161,6 +162,31 @@ export default async function handler(
       }
     }
 
+    // Get stocks with news if news filter is applied
+    let stocksWithNewsSet: Set<string> | null = null;
+    if (newsFilter === 'has-news' || newsFilter === 'no-news') {
+      console.log('🎯 Fetching stocks with news for news filter...');
+      const StockActivity = (await import('@/lib/models/StockActivity')).default;
+      const stocksWithNewsData = await StockActivity.aggregate([
+        { $match: { isActive: true } },
+        { $group: { _id: '$stockSymbol' } }
+      ]);
+      stocksWithNewsSet = new Set(stocksWithNewsData.map((item: any) => item._id));
+      console.log('📋 Found stocks with news:', stocksWithNewsSet.size, 'stocks');
+    }
+
+    // Helper function to apply news filter
+    const applyNewsFilter = (symbolsArray: string[]): string[] => {
+      if (!stocksWithNewsSet) return symbolsArray;
+
+      if (newsFilter === 'has-news') {
+        return symbolsArray.filter(symbol => stocksWithNewsSet!.has(symbol));
+      } else if (newsFilter === 'no-news') {
+        return symbolsArray.filter(symbol => !stocksWithNewsSet!.has(symbol));
+      }
+      return symbolsArray;
+    };
+
     if (dataQuality) {
       // When filtering by dataQuality, start with ActualEquityStockDetails
       console.log('🎯 Filtering by dataQuality, starting with ActualData...');
@@ -170,7 +196,11 @@ export default async function handler(
 
       console.log('📋 Found ActualData with quality', dataQuality + ':', actualData.length, 'records');
 
-      const qualifiedSymbols = actualData.map(a => a.symbol);
+      let qualifiedSymbols = actualData.map(a => a.symbol);
+
+      // Apply news filter if present
+      qualifiedSymbols = applyNewsFilter(qualifiedSymbols);
+      console.log('📋 After news filter:', qualifiedSymbols.length, 'records');
 
       if (qualifiedSymbols.length === 0) {
         // No stocks with this data quality
@@ -199,11 +229,24 @@ export default async function handler(
         isActive: true
       }).select('symbol').lean();
 
-      const symbolsWithData = stocksWithData.map(s => s.symbol);
+      let symbolsWithData = stocksWithData.map(s => s.symbol);
       console.log('📋 Found', symbolsWithData.length, 'stocks WITH actual data');
 
-      // Filter to exclude stocks that have actual data
-      filter.symbol = { $nin: symbolsWithData };
+      // Apply news filter to symbolsWithData if present
+      if (stocksWithNewsSet) {
+        if (newsFilter === 'has-news') {
+          // For "no actual data + has news": exclude stocks with data, but include only those with news
+          const newsSymbols = Array.from(stocksWithNewsSet);
+          filter.symbol = { $in: newsSymbols, $nin: symbolsWithData };
+        } else if (newsFilter === 'no-news') {
+          // For "no actual data + no news": exclude both stocks with data and stocks with news
+          const newsSymbols = Array.from(stocksWithNewsSet);
+          filter.symbol = { $nin: [...symbolsWithData, ...newsSymbols] };
+        }
+      } else {
+        // Filter to exclude stocks that have actual data
+        filter.symbol = { $nin: symbolsWithData };
+      }
 
       // Apply pagination at database level (only if not sorting by actual data fields)
       const skip = needsActualDataSort ? 0 : (page - 1) * limit;
@@ -228,7 +271,11 @@ export default async function handler(
 
       console.log('📋 Found ActualData with ratios/nifty filter:', actualData.length, 'records');
 
-      const qualifiedSymbols = actualData.map(a => a.symbol);
+      let qualifiedSymbols = actualData.map(a => a.symbol);
+
+      // Apply news filter if present
+      qualifiedSymbols = applyNewsFilter(qualifiedSymbols);
+      console.log('📋 After news filter:', qualifiedSymbols.length, 'records');
 
       if (qualifiedSymbols.length === 0) {
         // No stocks with this filter
@@ -250,6 +297,20 @@ export default async function handler(
       }
     } else {
       // Normal flow when not filtering by dataQuality or hasActualData=false
+      // Apply news filter to the base filter if present
+      if (stocksWithNewsSet) {
+        const newsSymbols = Array.from(stocksWithNewsSet);
+        if (newsFilter === 'has-news') {
+          filter.symbol = filter.symbol
+            ? { ...filter.symbol, $in: newsSymbols }
+            : { $in: newsSymbols };
+        } else if (newsFilter === 'no-news') {
+          filter.symbol = filter.symbol
+            ? { ...filter.symbol, $nin: newsSymbols }
+            : { $nin: newsSymbols };
+        }
+      }
+
       // For search queries with relevance, we need to get more results first, then sort and paginate
       const searchLimit = search ? Math.max(limit * 3, 150) : limit;
       const skip = search || needsActualDataSort ? 0 : (page - 1) * limit;
@@ -443,6 +504,10 @@ export default async function handler(
       const totalStocksCount = await EquityStock.countDocuments({ isActive: true });
       total = totalStocksCount - stocksWithDataCount;
       console.log('📊 Total calculation for No Data:', { totalStocksCount, stocksWithDataCount, total });
+    } else if (newsFilter === 'has-news' || newsFilter === 'no-news') {
+      // For news filter, count stocks that match the criteria
+      total = await EquityStock.countDocuments(filter);
+      console.log('📊 Total calculation for news filter:', { newsFilter, total });
     } else if (hasRatios === 'true' || hasRatios === 'false' || niftyIndex || niftyIndices) {
       // For ratios or nifty filter, count stocks that match the criteria
       total = await ActualStockDetail.countDocuments(actualDataFilter);

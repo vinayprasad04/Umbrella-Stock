@@ -76,6 +76,7 @@ export default function StocksDashboard() {
         ...(exchangeFilter && { exchange: exchangeFilter }),
         ...(dataFilter && dataFilter !== 'all' && { hasActualData: dataFilter }),
         ...(ratiosFilter && ratiosFilter !== 'all' && { hasRatios: ratiosFilter }),
+        ...(newsFilter && newsFilter !== 'all' && { newsFilter: newsFilter }),
         ...(niftyIndicesFilter.length > 0 && { niftyIndices: niftyIndicesFilter.join(',') }),
         sortBy: sortBy,
         sortOrder: sortOrder
@@ -114,7 +115,7 @@ export default function StocksDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, sectorFilter, exchangeFilter, dataFilter, dataQualityFilter, ratiosFilter, niftyIndicesFilter, perPage, sortBy, sortOrder]);
+  }, [page, search, sectorFilter, exchangeFilter, dataFilter, dataQualityFilter, ratiosFilter, newsFilter, niftyIndicesFilter, perPage, sortBy, sortOrder]);
 
   const fetchNewsStats = useCallback(async () => {
     try {
@@ -431,16 +432,6 @@ export default function StocksDashboard() {
       </div>
     );
   }
-
-  // Apply news filter
-  const filteredStocks = data?.stocks?.filter(stock => {
-    if (newsFilter === 'has-news') {
-      return stocksWithNews.has(stock.symbol);
-    } else if (newsFilter === 'no-news') {
-      return !stocksWithNews.has(stock.symbol);
-    }
-    return true; // 'all'
-  }) || [];
 
   return (
     <AdminDashboardLayout currentPage="stocks">
@@ -794,7 +785,7 @@ export default function StocksDashboard() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredStocks && filteredStocks.length > 0 ? filteredStocks.map((stock) => (
+                  {data?.stocks && data.stocks.length > 0 ? data.stocks.map((stock) => (
                     <tr key={stock.symbol} className={`hover:bg-gray-50 ${selectedStocks.includes(stock.symbol) ? 'bg-blue-50' : ''}`}>
                       <td className="px-4 py-2 whitespace-nowrap">
                         <Checkbox
