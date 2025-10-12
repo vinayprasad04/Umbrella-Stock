@@ -12,6 +12,7 @@
     "sync-mf-daily": "node scripts/sync-amfi-daily.js",
     "sync-activities": "node scripts/sync-stock-activities.js",
     "sync-activities-test": "node scripts/sync-test-stocks.js",
+    "sync-corporate-actions": "node scripts/sync-corporate-actions.js",
     "check-news-stats": "node scripts/check-news-stats.js",
     "import-tickertape-mapping": "node scripts/import-tickertape-mapping.js",
     "delete-all-news": "node scripts/delete-all-news.js",

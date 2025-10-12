@@ -864,6 +864,12 @@ export default function StocksDashboard() {
                           >
                             News
                           </Link>
+                          <Link
+                            href={`/admin/stock-corporate/${stock.symbol}`}
+                            className="text-blue-600 hover:text-blue-900"
+                          >
+                            Corporate
+                          </Link>
                         </div>
                       </td>
                     </tr>

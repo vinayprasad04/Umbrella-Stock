@@ -16,6 +16,18 @@ interface StockActivity {
   imageUrl?: string;
   tags?: string[];
   feedType?: string;
+  metadata?: {
+    dividendAmount?: number;
+    dividendType?: string;
+    subType?: string;
+    exDate?: string;
+    subject?: string;
+    broadcastTime?: string;
+    attachement?: string;
+    caseNo?: string;
+    orderDate?: string;
+    courtSource?: string;
+  };
 }
 
 interface StockNewsProps {
@@ -202,140 +214,218 @@ export default function StockNews({ symbol, activityType = 'news-article' }: Sto
             <LoadingSpinner size="md" />
           </div>
         ) : (
-          activities.map((activity) => (
-            <div
-              key={activity._id}
-              className="border border-gray-200 rounded-lg p-5 hover:shadow-md transition-all duration-200 bg-white"
-            >
-              <div className="flex gap-4">
-                {/* Image */}
-                {activity.imageUrl && (
-                  <div className="flex-shrink-0">
-                    <img
-                      src={activity.imageUrl}
-                      alt={activity.headline}
-                      className="w-24 h-24 object-cover rounded-lg"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
-                    />
-                  </div>
-                )}
+          activities.map((activity) => {
+            const isDividend = activity.activityType === 'dividend';
+            const isAnnouncement = activity.activityType === 'announcement';
+            const isLegalOrder = activity.activityType === 'legal-order';
+            const isCorporateAction = isDividend || isAnnouncement || isLegalOrder;
 
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  {/* Headline */}
-                  <h4 className="text-lg font-semibold text-gray-900 mb-2 leading-tight hover:text-blue-600 transition-colors">
-                    {activity.sourceUrl ? (
-                      <a
-                        href={activity.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:underline"
-                      >
-                        {activity.headline}
-                      </a>
+            return (
+              <div
+                key={activity._id}
+                className={`border border-gray-200 rounded-lg hover:shadow-md transition-all duration-200 bg-white ${
+                  isCorporateAction ? 'p-3' : 'p-4'
+                }`}
+              >
+                {isCorporateAction ? (
+                  // Compact layout for dividends, announcements, legal orders
+                  <div>
+                    {isDividend ? (
+                      // Special single-line layout for dividends on larger screens
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+                        <h4 className="font-semibold text-gray-900 text-base flex-shrink-0">
+                          {activity.headline}
+                        </h4>
+                        {activity.metadata && (
+                          <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-sm text-gray-600">
+                            {activity.metadata.subType && (
+                              <span className="flex items-center gap-1">
+                                <span className="font-medium text-gray-500">Type:</span>
+                                {activity.metadata.subType}
+                              </span>
+                            )}
+                            {activity.metadata.dividendAmount && (
+                              <span className="flex items-center gap-1">
+                                <span className="font-medium text-gray-500">Amount:</span>
+                                ₹{activity.metadata.dividendAmount}
+                              </span>
+                            )}
+                            {activity.metadata.exDate && (
+                              <span className="flex items-center gap-1">
+                                <span className="font-medium text-gray-500">Ex-Date:</span>
+                                {new Date(activity.metadata.exDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     ) : (
-                      activity.headline
+                      // Regular compact layout for announcements and legal orders
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-gray-900 mb-1 text-base">
+                            {activity.sourceUrl && !activity.sourceUrl.includes('tickertape.in') ? (
+                              <a
+                                href={activity.sourceUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-blue-600 hover:underline transition-colors"
+                              >
+                                {activity.headline}
+                              </a>
+                            ) : (
+                              activity.headline
+                            )}
+                          </h4>
+                          {activity.summary && (
+                            <div
+                              className="text-sm text-gray-600 prose prose-sm max-w-none [&_p]:my-1 [&_strong]:font-medium"
+                              dangerouslySetInnerHTML={{ __html: activity.summary.replace(/Tickertape/gi, '').replace(/tickertape\.in/gi, '') }}
+                            />
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="text-xs text-gray-500 whitespace-nowrap">
+                            {formatDate(activity.publishedAt)}
+                          </div>
+                          {activity.sourceUrl && !activity.sourceUrl.includes('tickertape.in') && (
+                            <a
+                              href={activity.sourceUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors flex-shrink-0"
+                              title="View source"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                              </svg>
+                            </a>
+                          )}
+                        </div>
+                      </div>
                     )}
-                  </h4>
-
-                  {/* Summary */}
-                  {activity.summary && (
-                    <div className="mb-3">
-                      <div className="relative">
-                        <div
-                          className={`text-sm text-gray-600 prose prose-sm max-w-none ${
-                            !expandedNews.has(activity._id) ? 'line-clamp-3' : ''
-                          }`}
-                          dangerouslySetInnerHTML={{ __html: activity.summary }}
-                          style={{
-                            '--tw-prose-body': '#4b5563',
-                            '--tw-prose-headings': '#1f2937',
-                            '--tw-prose-links': '#2563eb',
-                            '--tw-prose-bold': '#1f2937',
-                            '--tw-prose-counters': '#6b7280',
-                            '--tw-prose-bullets': '#d1d5db',
-                            '--tw-prose-quotes': '#1f2937',
-                            '--tw-prose-code': '#1f2937',
-                            '--tw-prose-th-borders': '#d1d5db',
-                            '--tw-prose-td-borders': '#e5e7eb',
-                          } as React.CSSProperties}
+                  </div>
+                ) : (
+                  // Regular layout for news
+                  <div className="flex gap-3">
+                    {activity.imageUrl && (
+                      <div className="flex-shrink-0">
+                        <img
+                          src={activity.imageUrl}
+                          alt={activity.headline}
+                          className="w-20 h-20 object-cover rounded-lg"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
                         />
                       </div>
-                      {activity.summary.length > 200 && (
-                        <button
-                          onClick={() => toggleExpanded(activity._id)}
-                          className="text-blue-600 hover:text-blue-800 text-xs font-medium inline-flex items-center gap-1 mt-1"
-                        >
-                          {expandedNews.has(activity._id) ? (
-                            <>
-                              Show less
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                              </svg>
-                            </>
-                          ) : (
-                            <>
-                              Read more
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                              </svg>
-                            </>
+                    )}
+
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-base font-semibold text-gray-900 mb-1.5 leading-tight hover:text-blue-600 transition-colors">
+                        {activity.sourceUrl && !activity.sourceUrl.includes('tickertape.in') ? (
+                          <a
+                            href={activity.sourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:underline"
+                          >
+                            {activity.headline}
+                          </a>
+                        ) : (
+                          activity.headline
+                        )}
+                      </h4>
+
+                      {activity.summary && (
+                        <div className="mb-2">
+                          <div className="relative">
+                            <div
+                              className={`text-sm text-gray-600 prose prose-sm max-w-none ${
+                                !expandedNews.has(activity._id) ? 'line-clamp-2' : ''
+                              }`}
+                              dangerouslySetInnerHTML={{ __html: activity.summary }}
+                              style={{
+                                '--tw-prose-body': '#4b5563',
+                                '--tw-prose-headings': '#1f2937',
+                                '--tw-prose-links': '#2563eb',
+                                '--tw-prose-bold': '#1f2937',
+                              } as React.CSSProperties}
+                            />
+                          </div>
+                          {activity.summary.length > 200 && (
+                            <button
+                              onClick={() => toggleExpanded(activity._id)}
+                              className="text-blue-600 hover:text-blue-800 text-xs font-medium inline-flex items-center gap-1 mt-0.5"
+                            >
+                              {expandedNews.has(activity._id) ? (
+                                <>
+                                  Show less
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                  </svg>
+                                </>
+                              ) : (
+                                <>
+                                  Read more
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                  </svg>
+                                </>
+                              )}
+                            </button>
                           )}
-                        </button>
+                        </div>
                       )}
-                    </div>
-                  )}
 
-                  {/* Meta Info */}
-                  <div className="flex items-center gap-4 text-xs text-gray-500">
-                    {activity.source && (
-                      <div className="flex items-center">
-                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
-                        </svg>
-                        <span className="font-medium">{activity.source}</span>
+                      <div className="flex items-center gap-4 text-xs text-gray-500">
+                        {activity.source && !activity.source.includes('Tickertape') && (
+                          <div className="flex items-center">
+                            <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clipRule="evenodd" />
+                            </svg>
+                            <span className="font-medium">{activity.source}</span>
+                          </div>
+                        )}
+
+                        <div className="flex items-center">
+                          <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                          </svg>
+                          <span>{formatDate(activity.publishedAt)}</span>
+                        </div>
+
+                        {activity.tags && activity.tags.length > 0 && (
+                          <div className="flex items-center">
+                            <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                            </svg>
+                            <span>{activity.tags.join(', ')}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {activity.sourceUrl && !activity.sourceUrl.includes('tickertape.in') && (
+                      <div className="flex-shrink-0">
+                        <a
+                          href={activity.sourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                          title="Read full article"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
+                        </a>
                       </div>
                     )}
-
-                    <div className="flex items-center">
-                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                      </svg>
-                      <span>{formatDate(activity.publishedAt)}</span>
-                    </div>
-
-                    {activity.tags && activity.tags.length > 0 && (
-                      <div className="flex items-center">
-                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
-                        </svg>
-                        <span>{activity.tags.join(', ')}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* External Link Icon */}
-                {activity.sourceUrl && (
-                  <div className="flex-shrink-0">
-                    <a
-                      href={activity.sourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
-                      title="Read full article"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                      </svg>
-                    </a>
                   </div>
                 )}
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
