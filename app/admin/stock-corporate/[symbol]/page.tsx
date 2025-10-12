@@ -46,6 +46,9 @@ export default function StockCorporateActionsPage() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAction, setEditingAction] = useState<CorporateAction | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [paginatedActions, setPaginatedActions] = useState<CorporateAction[]>([]);
 
   useEffect(() => {
     // Check auth
@@ -78,6 +81,16 @@ export default function StockCorporateActionsPage() {
   useEffect(() => {
     filterActions();
   }, [activeTab, actions]);
+
+  useEffect(() => {
+    paginateActions();
+  }, [filteredActions, currentPage, itemsPerPage]);
+
+  const paginateActions = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    setPaginatedActions(filteredActions.slice(startIndex, endIndex));
+  };
 
   const fetchStockInfo = async () => {
     try {
@@ -115,6 +128,7 @@ export default function StockCorporateActionsPage() {
   };
 
   const filterActions = () => {
+    setCurrentPage(1); // Reset to page 1 when changing tabs
     if (activeTab === 'all') {
       setFilteredActions(actions);
     } else if (activeTab === 'news') {
@@ -123,6 +137,13 @@ export default function StockCorporateActionsPage() {
       setFilteredActions(actions.filter(a => a.activityType === activeTab));
     }
   };
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
+  };
+
+  const totalPages = Math.ceil(filteredActions.length / itemsPerPage);
 
   const handleSync = async () => {
     if (!stock?.screenerId) {
@@ -510,9 +531,73 @@ export default function StockCorporateActionsPage() {
             )}
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow">
+          <>
+            {/* Pagination Controls Top */}
+            <div className="bg-white rounded-lg shadow mb-4 p-4 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-600">
+                  Showing {filteredActions.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredActions.length)} of {filteredActions.length} items
+                </span>
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600">Items per page:</label>
+                  <select
+                    value={itemsPerPage}
+                    onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                    className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={30}>30</option>
+                    <option value={40}>40</option>
+                    <option value={50}>50</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Page Navigation */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="First page"
+                >
+                  «
+                </button>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Previous page"
+                >
+                  ‹
+                </button>
+                <span className="text-sm text-gray-600 px-3">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Next page"
+                >
+                  ›
+                </button>
+                <button
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Last page"
+                >
+                  »
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow">
             <div className="divide-y divide-gray-200">
-              {filteredActions.map((action) => (
+              {paginatedActions.map((action) => (
                 <div key={action._id} className="p-6 hover:bg-gray-50 transition-colors">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -580,6 +665,55 @@ export default function StockCorporateActionsPage() {
               ))}
             </div>
           </div>
+
+          {/* Pagination Controls Bottom */}
+          <div className="bg-white rounded-lg shadow mt-4 p-4 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-600">
+                Showing {filteredActions.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredActions.length)} of {filteredActions.length} items
+              </span>
+            </div>
+
+            {/* Page Navigation */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                className="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="First page"
+              >
+                «
+              </button>
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Previous page"
+              >
+                ‹
+              </button>
+              <span className="text-sm text-gray-600 px-3">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Next page"
+              >
+                ›
+              </button>
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Last page"
+              >
+                »
+              </button>
+            </div>
+          </div>
+          </>
         )}
 
         {/* Modal */}
