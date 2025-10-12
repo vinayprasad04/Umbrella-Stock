@@ -13,6 +13,8 @@ export interface IEquityStock extends Document {
   isActive: boolean;
   hasActualData: boolean;
   lastUpdated: Date;
+  screenerSlug?: string; // Slug for Screener.in URL (e.g., "/stocks/reliance-industries-RELI")
+  screenerId?: string; // Stock ID from Screener.in (e.g., "RELI")
 }
 
 const EquityStockSchema: Schema = new Schema({
@@ -70,6 +72,14 @@ const EquityStockSchema: Schema = new Schema({
   lastUpdated: {
     type: Date,
     default: Date.now
+  },
+  screenerSlug: {
+    type: String,
+    index: true
+  },
+  screenerId: {
+    type: String,
+    index: true
   }
 }, {
   timestamps: true

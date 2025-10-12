@@ -4,14 +4,20 @@
  * This script fetches the latest news and activities from Tickertape API
  * and stores them in MongoDB. Run this daily to keep activities updated.
  *
+ * Features:
+ * - Smart incremental sync: 50 news for new stocks, 20 for existing stocks
+ * - Uses correct Tickertape symbol mapping (screenerId field)
+ * - Stops early when duplicates are found for stocks with existing news
+ * - Batch processing: 10 stocks at a time
+ *
  * Usage:
  * - node scripts/sync-stock-activities.js
- * - Or add to package.json: "sync-activities": "node scripts/sync-stock-activities.js"
+ * - Or: npm run sync-activities
  *
  * For automated daily sync, use cron:
- * - Linux/Mac: Add to crontab: 0 2 * * * cd /path/to/project && node scripts/sync-stock-activities.js
+ * - Linux/Mac: 0 2 * * * cd /path/to/project && npm run sync-activities
  * - Windows: Use Task Scheduler
- * - Or use a service like Vercel Cron, GitHub Actions, etc.
+ * - Cloud: Vercel Cron, GitHub Actions, etc.
  */
 
 const mongoose = require('mongoose');
@@ -31,14 +37,15 @@ if (!MONGODB_URI) {
 
 // Configuration
 const CONFIG = {
-  types: ['news-article', 'news-video'],
-  count: 50, // Fetch last 50 activities per stock
   batchSize: 10, // Process 10 stocks at a time
   delayBetweenBatches: 2000, // 2 seconds delay between batches
-  requestTimeout: 10000 // 10 seconds timeout per request
+  delayBetweenRequests: 500, // 500ms delay between individual requests
+  requestTimeout: 10000, // 10 seconds timeout per request
+  maxNewsForNewStock: 50, // Maximum news for stocks WITHOUT any news
+  maxNewsForExistingStock: 20 // Maximum news for stocks WITH existing news
 };
 
-// Define Schema (same as StockActivity model)
+// Define Schemas
 const StockActivitySchema = new mongoose.Schema({
   stockSymbol: { type: String, required: true, uppercase: true, index: true },
   activityType: { type: String, required: true, index: true },
@@ -51,9 +58,7 @@ const StockActivitySchema = new mongoose.Schema({
   tags: [String],
   feedType: { type: String },
   version: { type: String },
-  isActive: { type: Boolean, default: true },
-  sentiment: { type: String },
-  priority: { type: Number, default: 0 }
+  isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
 StockActivitySchema.index({ stockSymbol: 1, publishedAt: -1 });
@@ -63,6 +68,7 @@ const StockActivity = mongoose.models.StockActivity || mongoose.model('StockActi
 
 const EquityStockSchema = new mongoose.Schema({
   symbol: { type: String, required: true, unique: true },
+  screenerId: { type: String }, // Tickertape symbol (e.g., RELI for RELIANCE)
   isActive: { type: Boolean, default: true }
 });
 
@@ -71,11 +77,19 @@ const EquityStock = mongoose.models.EquityStock || mongoose.model('EquityStock',
 // Helper function to delay execution
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Fetch activities for a single stock
-async function syncActivitiesForStock(symbol) {
+// Fetch activities for a single stock using Tickertape API
+async function syncActivitiesForStock(stock, hasExistingNews) {
+  const { symbol, screenerId } = stock;
+
   try {
-    // Note: Don't use 'types' parameter - API returns 400 error with it
-    const url = `https://analyze.api.tickertape.in/v2/stocks/feed/${symbol}?offset=1&count=${CONFIG.count}`;
+    // Use screenerId (Tickertape symbol) if available, otherwise use NSE symbol
+    const tickertapeSymbol = screenerId || symbol;
+
+    // Determine count based on whether stock has existing news
+    const count = hasExistingNews ? CONFIG.maxNewsForExistingStock : CONFIG.maxNewsForNewStock;
+
+    // Tickertape API URL
+    const url = `https://analyze.api.tickertape.in/v2/stocks/feed/${tickertapeSymbol}?offset=1&count=${count}`;
 
     const response = await axios.get(url, {
       timeout: CONFIG.requestTimeout,
@@ -86,8 +100,14 @@ async function syncActivitiesForStock(symbol) {
 
     // Note: API has typo "sucess" instead of "success"
     if (!response.data?.sucess || !response.data?.data?.items) {
-      console.log(`  ⚠️  ${symbol}: No data received`);
-      return { symbol, added: 0, skipped: 0, error: 'No data' };
+      return {
+        symbol,
+        added: 0,
+        skipped: 0,
+        error: 'No data',
+        hasExistingNews,
+        status: 'error'
+      };
     }
 
     const items = response.data.data.items;
@@ -113,24 +133,41 @@ async function syncActivitiesForStock(symbol) {
         added++;
       } catch (error) {
         if (error.code === 11000) {
-          skipped++;
+          skipped++; // Duplicate
+          // If stock has existing news and we hit a duplicate, stop processing
+          if (hasExistingNews) {
+            break;
+          }
         } else {
           console.error(`    ❌ Error processing item: ${error.message}`);
         }
       }
     }
 
-    return { symbol, added, skipped, status: 'success' };
+    // Small delay between requests
+    await delay(CONFIG.delayBetweenRequests);
+
+    return { symbol, added, skipped, status: 'success', hasExistingNews };
 
   } catch (error) {
-    console.log(`  ❌ ${symbol}: ${error.message}`);
-    return { symbol, added: 0, skipped: 0, error: error.message, status: 'error' };
+    const errorMsg = error.response?.status
+      ? `HTTP ${error.response.status}`
+      : error.message;
+
+    return {
+      symbol,
+      added: 0,
+      skipped: 0,
+      error: errorMsg,
+      status: 'error',
+      hasExistingNews
+    };
   }
 }
 
 // Main sync function
 async function syncAllActivities() {
-  console.log('🚀 Starting stock activities sync...\n');
+  console.log('🚀 Starting stock activities sync from Tickertape API...\n');
   console.log(`⏰ Started at: ${new Date().toLocaleString()}\n`);
 
   try {
@@ -138,14 +175,38 @@ async function syncAllActivities() {
     await mongoose.connect(MONGODB_URI);
     console.log('✅ Connected to MongoDB\n');
 
-    // Fetch all active stocks
-    const stocks = await EquityStock.find({ isActive: true }).select('symbol').lean();
-    console.log(`📊 Found ${stocks.length} active stocks to sync\n`);
+    // Fetch active stocks with screenerId (Tickertape symbol mapping)
+    const stocks = await EquityStock.find({
+      isActive: true
+    }).select('symbol screenerId').lean();
+
+    console.log(`📊 Found ${stocks.length} active stocks\n`);
 
     if (stocks.length === 0) {
       console.log('⚠️  No active stocks found. Exiting...');
       return;
     }
+
+    // Count stocks with screenerId mapping
+    const stocksWithMapping = stocks.filter(s => s.screenerId).length;
+    const stocksWithoutMapping = stocks.filter(s => !s.screenerId).length;
+
+    console.log(`   ✅ Stocks with Tickertape mapping: ${stocksWithMapping}`);
+    console.log(`   ⚠️  Stocks without mapping: ${stocksWithoutMapping}`);
+    if (stocksWithoutMapping > 0) {
+      console.log(`   💡 Run "npm run import-screener-slugs" to add mappings\n`);
+    }
+
+    // Check which stocks already have news
+    console.log('🔍 Checking which stocks already have news...');
+    const stocksWithNews = await StockActivity.distinct('stockSymbol');
+    const stocksWithNewsSet = new Set(stocksWithNews);
+
+    const stocksWithoutNews = stocks.filter(s => !stocksWithNewsSet.has(s.symbol));
+    const stocksWithExistingNews = stocks.filter(s => stocksWithNewsSet.has(s.symbol));
+
+    console.log(`   📰 Stocks with existing news: ${stocksWithExistingNews.length} (will fetch up to ${CONFIG.maxNewsForExistingStock} latest)`);
+    console.log(`   🆕 Stocks without news: ${stocksWithoutNews.length} (will fetch up to ${CONFIG.maxNewsForNewStock})\n`);
 
     // Process stocks in batches
     const batches = [];
@@ -162,8 +223,11 @@ async function syncAllActivities() {
       const batch = batches[i];
       console.log(`📦 Processing batch ${i + 1}/${batches.length} (${batch.length} stocks)...`);
 
-      // Process batch in parallel
-      const batchPromises = batch.map(stock => syncActivitiesForStock(stock.symbol));
+      // Process batch in parallel (Tickertape API can handle it)
+      const batchPromises = batch.map(stock => {
+        const hasExistingNews = stocksWithNewsSet.has(stock.symbol);
+        return syncActivitiesForStock(stock, hasExistingNews);
+      });
       const batchResults = await Promise.all(batchPromises);
 
       // Aggregate results
@@ -173,7 +237,8 @@ async function syncAllActivities() {
           totalAdded += result.added;
           totalSkipped += result.skipped;
           if (result.added > 0) {
-            console.log(`  ✅ ${result.symbol}: +${result.added} new, ${result.skipped} skipped`);
+            const newsType = result.hasExistingNews ? '🔄 update' : '🆕 new';
+            console.log(`  ✅ ${result.symbol} (${newsType}): +${result.added} new, ${result.skipped} skipped`);
           }
         } else {
           totalErrors++;
@@ -187,12 +252,22 @@ async function syncAllActivities() {
       }
     }
 
+    // Calculate stats
+    const newStocksProcessed = results.filter(r => !r.hasExistingNews && r.status === 'success');
+    const existingStocksProcessed = results.filter(r => r.hasExistingNews && r.status === 'success');
+    const newStocksWithNews = newStocksProcessed.filter(r => r.added > 0).length;
+    const existingStocksUpdated = existingStocksProcessed.filter(r => r.added > 0).length;
+
     // Print summary
     console.log('\n' + '='.repeat(60));
     console.log('📊 SYNC SUMMARY');
     console.log('='.repeat(60));
     console.log(`✅ Total stocks processed: ${stocks.length}`);
-    console.log(`➕ New activities added: ${totalAdded}`);
+    console.log(`   🆕 Stocks without existing news: ${stocksWithoutNews.length}`);
+    console.log(`      - Got news for: ${newStocksWithNews} stocks`);
+    console.log(`   🔄 Stocks with existing news: ${stocksWithExistingNews.length}`);
+    console.log(`      - Updated with new news: ${existingStocksUpdated} stocks`);
+    console.log(`\n➕ Total new activities added: ${totalAdded}`);
     console.log(`⏭️  Activities skipped (duplicates): ${totalSkipped}`);
     console.log(`❌ Errors: ${totalErrors}`);
     console.log('='.repeat(60));
@@ -200,10 +275,13 @@ async function syncAllActivities() {
     // Log stocks with errors
     const errorStocks = results.filter(r => r.status === 'error');
     if (errorStocks.length > 0) {
-      console.log('\n❌ Stocks with errors:');
-      errorStocks.forEach(stock => {
+      console.log('\n❌ Stocks with errors (first 20):');
+      errorStocks.slice(0, 20).forEach(stock => {
         console.log(`  - ${stock.symbol}: ${stock.error}`);
       });
+      if (errorStocks.length > 20) {
+        console.log(`  ... and ${errorStocks.length - 20} more`);
+      }
     }
 
     console.log(`\n⏰ Completed at: ${new Date().toLocaleString()}`);

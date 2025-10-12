@@ -13,6 +13,8 @@
     "sync-activities": "node scripts/sync-stock-activities.js",
     "sync-activities-test": "node scripts/sync-test-stocks.js",
     "check-news-stats": "node scripts/check-news-stats.js",
+    "import-tickertape-mapping": "node scripts/import-tickertape-mapping.js",
+    "delete-all-news": "node scripts/delete-all-news.js",
     "postinstall": "node scripts/postinstall.js"
   },
   "dependencies": {
