@@ -17,6 +17,7 @@ interface MultiSelectProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  size?: 'sm' | 'md';
 }
 
 // Custom styles to match your design system
@@ -91,6 +92,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
   placeholder = "Select options...",
   className,
   disabled = false,
+  size = 'md',
 }) => {
   const selectedOptions = React.useMemo(() => {
     return options.filter(option => value.includes(option.value));
@@ -103,6 +105,50 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
     const newValues = newValue.map(option => option.value);
     onChange(newValues);
   };
+
+  // Create size-specific styles
+  const sizeStyles: StylesConfig<MultiSelectOption, true> = React.useMemo(() => {
+    const fontSize = size === 'sm' ? '0.875rem' : '1rem';
+    const minHeight = size === 'sm' ? '36px' : '40px';
+
+    return {
+      ...customStyles,
+      control: (provided, state) => ({
+        ...provided,
+        minHeight,
+        fontSize,
+        borderColor: state.isFocused ? '#8b5cf6' : '#d1d5db',
+        borderWidth: '1px',
+        borderRadius: '0.5rem',
+        boxShadow: state.isFocused ? '0 0 0 1px #8b5cf6' : 'none',
+        '&:hover': {
+          borderColor: '#8b5cf6',
+        },
+      }),
+      multiValueLabel: (provided) => ({
+        ...provided,
+        fontSize,
+        color: '#374151',
+      }),
+      option: (provided, state) => ({
+        ...provided,
+        fontSize,
+        backgroundColor: state.isSelected
+          ? '#8b5cf6'
+          : state.isFocused
+          ? '#f3f4f6'
+          : 'white',
+        color: state.isSelected ? 'white' : '#374151',
+        ':active': {
+          backgroundColor: '#8b5cf6',
+        },
+      }),
+      placeholder: (provided) => ({
+        ...provided,
+        fontSize,
+      }),
+    };
+  }, [size]);
 
   return (
     <div className={cn("space-y-1", className)}>
@@ -117,7 +163,7 @@ export const MultiSelect: React.FC<MultiSelectProps> = ({
         value={selectedOptions}
         onChange={handleChange}
         placeholder={placeholder}
-        styles={customStyles}
+        styles={sizeStyles}
         isDisabled={disabled}
         closeMenuOnSelect={false}
         hideSelectedOptions={false}

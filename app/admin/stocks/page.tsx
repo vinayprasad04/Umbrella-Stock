@@ -62,9 +62,11 @@ export default function StocksDashboard() {
   const [perPage, setPerPage] = useState(50);
   const [sortBy, setSortBy] = useState('symbol');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [newsFilter, setNewsFilter] = useState('all');
-  const [newsStats, setNewsStats] = useState<{total: number, withNews: number, withoutNews: number}>({total: 0, withNews: 0, withoutNews: 0});
-  const [stocksWithNews, setStocksWithNews] = useState<Set<string>>(new Set());
+  const [activityFilter, setActivityFilter] = useState<string[]>([]);
+  const [syncingNews, setSyncingNews] = useState(false);
+  const [syncingCorporate, setSyncingCorporate] = useState(false);
+  const [syncingStocks, setSyncingStocks] = useState<Set<string>>(new Set());
+  const [syncProgress, setSyncProgress] = useState<{current: number, total: number} | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -76,7 +78,7 @@ export default function StocksDashboard() {
         ...(exchangeFilter && { exchange: exchangeFilter }),
         ...(dataFilter && dataFilter !== 'all' && { hasActualData: dataFilter }),
         ...(ratiosFilter && ratiosFilter !== 'all' && { hasRatios: ratiosFilter }),
-        ...(newsFilter && newsFilter !== 'all' && { newsFilter: newsFilter }),
+        ...(activityFilter.length > 0 && { activityFilter: activityFilter.join(',') }),
         ...(niftyIndicesFilter.length > 0 && { niftyIndices: niftyIndicesFilter.join(',') }),
         sortBy: sortBy,
         sortOrder: sortOrder
@@ -115,34 +117,12 @@ export default function StocksDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, sectorFilter, exchangeFilter, dataFilter, dataQualityFilter, ratiosFilter, newsFilter, niftyIndicesFilter, perPage, sortBy, sortOrder]);
+  }, [page, search, sectorFilter, exchangeFilter, dataFilter, dataQualityFilter, ratiosFilter, activityFilter, niftyIndicesFilter, perPage, sortBy, sortOrder]);
 
-  const fetchNewsStats = useCallback(async () => {
-    try {
-      const result = await ApiClient.get('/admin/stocks/news?limit=10000');
-      if (result.success) {
-        const newsMap = new Map<string, number>();
-        result.data.activities.forEach((activity: any) => {
-          const count = newsMap.get(activity.stockSymbol) || 0;
-          newsMap.set(activity.stockSymbol, count + 1);
-        });
-
-        setStocksWithNews(new Set(newsMap.keys()));
-        setNewsStats({
-          total: result.data.total || 0,
-          withNews: newsMap.size,
-          withoutNews: 0 // Will be calculated from total stocks
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching news stats:', error);
-    }
-  }, []);
 
   useEffect(() => {
     fetchData();
-    fetchNewsStats();
-  }, [fetchData, fetchNewsStats]);
+  }, [fetchData]);
 
   const handleSelectAll = (checked: boolean) => {
     if (data?.stocks) {
@@ -188,6 +168,98 @@ export default function StocksDashboard() {
       alert('Failed to update stock statuses');
     } finally {
       setBulkUpdating(false);
+    }
+  };
+
+  const handleBulkSyncNews = async () => {
+    if (selectedStocks.length === 0) return;
+
+    try {
+      setSyncingNews(true);
+      setSyncProgress({ current: 0, total: selectedStocks.length });
+
+      for (let i = 0; i < selectedStocks.length; i++) {
+        const symbol = selectedStocks[i];
+        setSyncingStocks(prev => new Set([...Array.from(prev), symbol]));
+        setSyncProgress({ current: i + 1, total: selectedStocks.length });
+
+        try {
+          await ApiClient.post('/admin/stocks/activities/sync', {
+            symbols: [symbol],
+            types: ['news-article', 'news-video'],
+            count: 50
+          });
+
+          // Wait 2 seconds before next sync
+          if (i < selectedStocks.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+          }
+        } catch (error) {
+          console.error(`Failed to sync news for ${symbol}:`, error);
+        } finally {
+          setSyncingStocks(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(symbol);
+            return newSet;
+          });
+        }
+      }
+
+      alert(`News sync completed for ${selectedStocks.length} stocks`);
+      setSelectedStocks([]);
+      setShowBulkActions(false);
+    } catch (error) {
+      console.error('Bulk news sync error:', error);
+      alert('Failed to sync news');
+    } finally {
+      setSyncingNews(false);
+      setSyncProgress(null);
+      setSyncingStocks(new Set());
+    }
+  };
+
+  const handleBulkSyncCorporate = async () => {
+    if (selectedStocks.length === 0) return;
+
+    try {
+      setSyncingCorporate(true);
+      setSyncProgress({ current: 0, total: selectedStocks.length });
+
+      for (let i = 0; i < selectedStocks.length; i++) {
+        const symbol = selectedStocks[i];
+        setSyncingStocks(prev => new Set([...Array.from(prev), symbol]));
+        setSyncProgress({ current: i + 1, total: selectedStocks.length });
+
+        try {
+          await ApiClient.post('/admin/stocks/corporate/sync', {
+            symbol: symbol
+          });
+
+          // Wait 2 seconds before next sync
+          if (i < selectedStocks.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+          }
+        } catch (error) {
+          console.error(`Failed to sync corporate actions for ${symbol}:`, error);
+        } finally {
+          setSyncingStocks(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(symbol);
+            return newSet;
+          });
+        }
+      }
+
+      alert(`Corporate actions sync completed for ${selectedStocks.length} stocks`);
+      setSelectedStocks([]);
+      setShowBulkActions(false);
+    } catch (error) {
+      console.error('Bulk corporate sync error:', error);
+      alert('Failed to sync corporate actions');
+    } finally {
+      setSyncingCorporate(false);
+      setSyncProgress(null);
+      setSyncingStocks(new Set());
     }
   };
 
@@ -497,8 +569,8 @@ export default function StocksDashboard() {
                     </div>
                   </div>
                   <div className="ml-5">
-                    <p className="text-sm font-medium text-gray-500">Stocks With News</p>
-                    <p className="text-2xl font-semibold text-gray-900">{newsStats.withNews.toLocaleString()}</p>
+                    <p className="text-sm font-medium text-gray-500">Active Stocks</p>
+                    <p className="text-2xl font-semibold text-gray-900">{data?.stocks?.length || 0}</p>
                   </div>
                 </div>
               </div>
@@ -508,13 +580,13 @@ export default function StocksDashboard() {
                   <div className="flex-shrink-0">
                     <div className="w-8 h-8 bg-orange-500 rounded-md flex items-center justify-center">
                       <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                       </svg>
                     </div>
                   </div>
                   <div className="ml-5">
-                    <p className="text-sm font-medium text-gray-500">Total News Articles</p>
-                    <p className="text-2xl font-semibold text-gray-900">{newsStats.total.toLocaleString()}</p>
+                    <p className="text-sm font-medium text-gray-500">Displayed Results</p>
+                    <p className="text-2xl font-semibold text-gray-900">{data?.stocks?.length || 0} / {data?.total || 0}</p>
                   </div>
                 </div>
               </div>
@@ -533,7 +605,7 @@ export default function StocksDashboard() {
                   setDataFilter('all');
                   setDataQualityFilter('PENDING_VERIFICATION');
                   setRatiosFilter('all');
-                  setNewsFilter('all');
+                  setActivityFilter([]);
                   setNiftyIndicesFilter([]);
                   setSortBy('symbol');
                   setSortOrder('asc');
@@ -594,23 +666,27 @@ export default function StocksDashboard() {
                 />
               </div>
 
-              <div className="lg:col-span-1 xl:col-span-1">
-                <CustomSelect
-                  label="News"
-                  value={newsFilter}
-                  onValueChange={setNewsFilter}
+              <div className="lg:col-span-2 xl:col-span-2">
+                <MultiSelect
+                  label="Activities"
+                  value={activityFilter}
+                  onChange={setActivityFilter}
                   options={[
-                    { value: 'all', label: 'All' },
                     { value: 'has-news', label: 'Has News' },
-                    { value: 'no-news', label: 'No News' }
+                    { value: 'no-news', label: 'No News' },
+                    { value: 'has-dividends', label: 'Has Dividends' },
+                    { value: 'no-dividends', label: 'No Dividends' },
+                    { value: 'has-announcements', label: 'Has Announcements' },
+                    { value: 'no-announcements', label: 'No Announcements' },
+                    { value: 'has-legal-orders', label: 'Has Legal Orders' },
+                    { value: 'no-legal-orders', label: 'No Legal Orders' }
                   ]}
-                  placeholder="All"
-                  triggerClassName="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
+                  placeholder="Select activity filters"
+                  size="sm"
                 />
               </div>
 
-              <div className="md:col-span-2 lg:col-span-2 xl:col-span-3">
+              <div className="md:col-span-2 lg:col-span-2 xl:col-span-2">
                 <MultiSelect
                   label="Nifty Indices"
                   options={[
@@ -653,7 +729,7 @@ export default function StocksDashboard() {
                 />
               </div>
 
-              <div className="lg:col-span-1 xl:col-span-1">
+              <div className="max-w-[120px]">
                 <CustomSelect
                   label="Per Page"
                   value={perPage.toString()}
@@ -669,12 +745,12 @@ export default function StocksDashboard() {
                     { value: '200', label: '200' }
                   ]}
                   placeholder="50"
-                  triggerClassName="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg"
+                  triggerClassName="w-full px-2 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                  contentClassName="bg-white border border-gray-200 rounded-lg shadow-lg text-sm"
                 />
               </div>
 
-              <div className="flex items-end lg:col-span-1 xl:col-span-1">
+              <div className="flex items-end">
                 <button
                   onClick={() => {
                     setSearch('');
@@ -711,28 +787,62 @@ export default function StocksDashboard() {
                     <span className="text-sm text-gray-600">Bulk Actions:</span>
                     <button
                       onClick={() => handleBulkStatusUpdate('VERIFIED')}
-                      disabled={bulkUpdating}
+                      disabled={bulkUpdating || syncingNews || syncingCorporate}
                       className="bg-green-600 text-white px-3 py-1 text-sm rounded hover:bg-green-700 disabled:opacity-50"
                     >
                       Mark as Verified
                     </button>
                     <button
                       onClick={() => handleBulkStatusUpdate('PENDING_VERIFICATION')}
-                      disabled={bulkUpdating}
+                      disabled={bulkUpdating || syncingNews || syncingCorporate}
                       className="bg-yellow-600 text-white px-3 py-1 text-sm rounded hover:bg-yellow-700 disabled:opacity-50"
                     >
                       Mark as Pending
                     </button>
                     <button
                       onClick={() => handleBulkStatusUpdate('EXCELLENT')}
-                      disabled={bulkUpdating}
+                      disabled={bulkUpdating || syncingNews || syncingCorporate}
                       className="bg-blue-600 text-white px-3 py-1 text-sm rounded hover:bg-blue-700 disabled:opacity-50"
                     >
                       Mark as Excellent
                     </button>
                     <button
+                      onClick={handleBulkSyncNews}
+                      disabled={bulkUpdating || syncingNews || syncingCorporate}
+                      className="bg-indigo-600 text-white px-3 py-1 text-sm rounded hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-1"
+                    >
+                      {syncingNews ? (
+                        <>
+                          <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          <span>Syncing News ({syncProgress?.current}/{syncProgress?.total})</span>
+                        </>
+                      ) : (
+                        '📰 Sync News'
+                      )}
+                    </button>
+                    <button
+                      onClick={handleBulkSyncCorporate}
+                      disabled={bulkUpdating || syncingNews || syncingCorporate}
+                      className="bg-purple-600 text-white px-3 py-1 text-sm rounded hover:bg-purple-700 disabled:opacity-50 flex items-center gap-1"
+                    >
+                      {syncingCorporate ? (
+                        <>
+                          <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          <span>Syncing Corporate ({syncProgress?.current}/{syncProgress?.total})</span>
+                        </>
+                      ) : (
+                        '🔄 Sync Corporate'
+                      )}
+                    </button>
+                    <button
                       onClick={() => setSelectedStocks([])}
-                      disabled={bulkUpdating}
+                      disabled={bulkUpdating || syncingNews || syncingCorporate}
                       className="bg-gray-600 text-white px-3 py-1 text-sm rounded hover:bg-gray-700 disabled:opacity-50"
                     >
                       Clear Selection
@@ -786,18 +896,29 @@ export default function StocksDashboard() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {data?.stocks && data.stocks.length > 0 ? data.stocks.map((stock) => (
-                    <tr key={stock.symbol} className={`hover:bg-gray-50 ${selectedStocks.includes(stock.symbol) ? 'bg-blue-50' : ''}`}>
+                    <tr key={stock.symbol} className={`hover:bg-gray-50 ${selectedStocks.includes(stock.symbol) ? 'bg-blue-50' : ''} ${syncingStocks.has(stock.symbol) ? 'bg-indigo-50' : ''}`}>
                       <td className="px-4 py-2 whitespace-nowrap">
                         <Checkbox
                           checked={selectedStocks.includes(stock.symbol)}
                           onCheckedChange={() => handleSelectStock(stock.symbol)}
+                          disabled={syncingStocks.has(stock.symbol)}
                         />
                       </td>
                       <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {stock.symbol}
-                        {stock.exchange && (
-                          <div className="text-xs text-gray-500">{stock.exchange}</div>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {syncingStocks.has(stock.symbol) && (
+                            <svg className="animate-spin h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                          )}
+                          <div>
+                            {stock.symbol}
+                            {stock.exchange && (
+                              <div className="text-xs text-gray-500">{stock.exchange}</div>
+                            )}
+                          </div>
+                        </div>
                       </td>
                       <td className="px-4 py-2 text-sm text-gray-900" style={{ maxWidth: '150px' }}>
                         <div className="max-w-xs truncate" title={stock.companyName}>
