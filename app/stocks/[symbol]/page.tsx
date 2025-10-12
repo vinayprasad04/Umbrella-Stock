@@ -30,6 +30,9 @@ export default function StockDetailPage() {
   // Financial data tabs state
   const [activeFinancialTab, setActiveFinancialTab] = useState<'profit-loss' | 'balance-sheet' | 'cash-flow' | 'quarterly'>('profit-loss');
 
+  // News tabs state
+  const [activeNewsTab, setActiveNewsTab] = useState<'news' | 'dividends' | 'announcements' | 'legal-orders'>('news');
+
   const { data: liveData, isLoading: loadingLive, error: liveError } = useQuery({
     queryKey: ['stockLive', symbol],
     queryFn: async () => {
@@ -925,8 +928,70 @@ export default function StockDetailPage() {
               </div>
             )}
 
-            {/* Stock News Component - Moved to last */}
-            <StockNews symbol={symbol} />
+            {/* Stock News Component with Tabs - Moved to last */}
+            <div className="card">
+              {/* Tab Headers */}
+              <div className="border-b border-gray-200 mb-6">
+                <nav className="-mb-px flex space-x-8">
+                  <button
+                    onClick={() => setActiveNewsTab('news')}
+                    className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
+                      activeNewsTab === 'news'
+                        ? 'border-blue-500 text-blue-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    📰 News
+                  </button>
+                  <button
+                    onClick={() => setActiveNewsTab('dividends')}
+                    className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
+                      activeNewsTab === 'dividends'
+                        ? 'border-green-500 text-green-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    💰 Dividends
+                  </button>
+                  <button
+                    onClick={() => setActiveNewsTab('announcements')}
+                    className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
+                      activeNewsTab === 'announcements'
+                        ? 'border-purple-500 text-purple-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    📢 Announcements
+                  </button>
+                  <button
+                    onClick={() => setActiveNewsTab('legal-orders')}
+                    className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
+                      activeNewsTab === 'legal-orders'
+                        ? 'border-red-500 text-red-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    ⚖️ Legal Orders
+                  </button>
+                </nav>
+              </div>
+
+              {/* Tab Content */}
+              <div className="tab-content">
+                {activeNewsTab === 'news' && (
+                  <StockNews symbol={symbol} activityType="news-article" />
+                )}
+                {activeNewsTab === 'dividends' && (
+                  <StockNews symbol={symbol} activityType="dividend" />
+                )}
+                {activeNewsTab === 'announcements' && (
+                  <StockNews symbol={symbol} activityType="announcement" />
+                )}
+                {activeNewsTab === 'legal-orders' && (
+                  <StockNews symbol={symbol} activityType="legal-order" />
+                )}
+              </div>
+            </div>
           </div>
 
           <div
