@@ -1,10 +1,4 @@
-// Email service utility for sending verification emails
-// Note: This uses console.log for development. In production, integrate with services like:
-// - Nodemailer with SMTP
-// - SendGrid
-// - AWS SES
-// - Resend
-// etc.
+import nodemailer from 'nodemailer';
 
 interface EmailOptions {
   to: string;
@@ -13,41 +7,31 @@ interface EmailOptions {
   text?: string;
 }
 
+// Create reusable transporter
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
   try {
-    // For development: Log email details
-    console.log('📧 Email would be sent:');
-    console.log('To:', options.to);
-    console.log('Subject:', options.subject);
-    console.log('HTML:', options.html);
-    console.log('---');
+    console.log('📧 Sending email to:', options.to);
 
-    // TODO: In production, replace this with actual email sending service
-    // Example with Nodemailer:
-    /*
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-
-    await transporter.sendMail({
-      from: process.env.EMAIL_FROM,
+    const info = await transporter.sendMail({
+      from: `"Umbrella Stock" <${process.env.EMAIL_USER}>`,
       to: options.to,
       subject: options.subject,
       html: options.html,
       text: options.text,
     });
-    */
 
-    // Simulate successful email send
+    console.log('✅ Email sent successfully:', info.messageId);
     return true;
   } catch (error) {
-    console.error('Failed to send email:', error);
+    console.error('❌ Failed to send email:', error);
     return false;
   }
 }
