@@ -49,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
       const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`;
 
-      const emailHtml = generateVerificationEmail(normalizedEmail, verificationUrl);
+      const emailHtml = await generateVerificationEmail(normalizedEmail, verificationUrl);
       await sendEmail({
         to: normalizedEmail,
         subject: 'Verify Your Email - Umbrella Stock',
@@ -79,7 +79,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
     const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`;
 
-    const emailHtml = generateVerificationEmail(normalizedEmail, verificationUrl);
+    const emailHtml = await generateVerificationEmail(normalizedEmail, verificationUrl);
     const emailSent = await sendEmail({
       to: normalizedEmail,
       subject: 'Verify Your Email - Umbrella Stock',

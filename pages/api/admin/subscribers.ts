@@ -179,7 +179,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
     const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`;
 
-    const emailHtml = generateVerificationEmail(subscriber.email, verificationUrl);
+    const emailHtml = await generateVerificationEmail(subscriber.email, verificationUrl);
     const emailSent = await sendEmail({
       to: subscriber.email,
       subject: 'Verify Your Email - Umbrella Stock',

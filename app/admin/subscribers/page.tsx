@@ -32,6 +32,17 @@ interface SubscribersData {
   };
 }
 
+interface EmailTemplate {
+  name: string;
+  subject: string;
+  heading: string;
+  bodyText: string;
+  buttonText: string;
+  footerText: string;
+  primaryColor: string;
+  isActive: boolean;
+}
+
 export default function SubscribersManagement() {
   const [data, setData] = useState<SubscribersData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,10 +52,69 @@ export default function SubscribersManagement() {
   const [perPage, setPerPage] = useState(20);
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [showTemplateEditor, setShowTemplateEditor] = useState(false);
+  const [template, setTemplate] = useState<EmailTemplate>({
+    name: 'verification',
+    subject: 'Verify Your Email - Umbrella Stock',
+    heading: 'Verify Your Email Address',
+    bodyText: 'Thank you for subscribing to Umbrella Stock! To complete your subscription and start receiving market insights, investment updates, and exclusive content, please verify your email address by clicking the button below.',
+    buttonText: 'Verify Email Address',
+    footerText: "If you didn't subscribe to Umbrella Stock, you can safely ignore this email.",
+    primaryColor: '#FF6B2C',
+    isActive: true,
+  });
+  const [templateSaving, setTemplateSaving] = useState(false);
 
   useEffect(() => {
     fetchSubscribers();
+    fetchEmailTemplate();
   }, [page, search, statusFilter, perPage, sortBy, sortOrder]);
+
+  const fetchEmailTemplate = async () => {
+    try {
+      const response = await ApiClient.get('/admin/email-template?name=verification');
+      if (response.success && response.data) {
+        setTemplate(response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch email template:', error);
+    }
+  };
+
+  const handleSaveTemplate = async () => {
+    try {
+      setTemplateSaving(true);
+
+      // Try to update first
+      const response = await ApiClient.put('/admin/email-template', template);
+
+      if (response.success) {
+        alert('Email template saved successfully!');
+        setShowTemplateEditor(false);
+        fetchEmailTemplate();
+      }
+    } catch (error: any) {
+      // If template doesn't exist, create it
+      if (error.error?.includes('not found')) {
+        try {
+          const createResponse = await ApiClient.post('/admin/email-template', template);
+          if (createResponse.success) {
+            alert('Email template created successfully!');
+            setShowTemplateEditor(false);
+            fetchEmailTemplate();
+          }
+        } catch (createError) {
+          console.error('Failed to create template:', createError);
+          alert('Failed to create email template');
+        }
+      } else {
+        console.error('Failed to save template:', error);
+        alert('Failed to save email template');
+      }
+    } finally {
+      setTemplateSaving(false);
+    }
+  };
 
   const fetchSubscribers = async () => {
     try {
@@ -155,14 +225,128 @@ export default function SubscribersManagement() {
   return (
     <AdminDashboardLayout currentPage="subscribers">
       <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Subscribers Management</h1>
-            <p className="mt-2 text-sm text-gray-600">
-              Manage newsletter subscribers and email verifications
-            </p>
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header with Template Editor Button */}
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Subscriber Management</h2>
+              <p className="mt-1 text-sm text-gray-600">Manage subscribers and email templates</p>
+            </div>
+            <button
+              onClick={() => setShowTemplateEditor(!showTemplateEditor)}
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+            >
+              <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              {showTemplateEditor ? 'Hide' : 'Edit'} Email Template
+            </button>
           </div>
+
+          {/* Email Template Editor */}
+          {showTemplateEditor && (
+            <div className="mb-8 bg-white shadow rounded-lg p-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Email Template Settings</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email Subject
+                  </label>
+                  <input
+                    type="text"
+                    value={template.subject}
+                    onChange={(e) => setTemplate({ ...template, subject: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email Heading
+                  </label>
+                  <input
+                    type="text"
+                    value={template.heading}
+                    onChange={(e) => setTemplate({ ...template, heading: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email Body Text
+                  </label>
+                  <textarea
+                    value={template.bodyText}
+                    onChange={(e) => setTemplate({ ...template, bodyText: e.target.value })}
+                    rows={4}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Button Text
+                  </label>
+                  <input
+                    type="text"
+                    value={template.buttonText}
+                    onChange={(e) => setTemplate({ ...template, buttonText: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Footer Text
+                  </label>
+                  <textarea
+                    value={template.footerText}
+                    onChange={(e) => setTemplate({ ...template, footerText: e.target.value })}
+                    rows={2}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Primary Color (Hex)
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="color"
+                      value={template.primaryColor}
+                      onChange={(e) => setTemplate({ ...template, primaryColor: e.target.value })}
+                      className="h-10 w-20 border border-gray-300 rounded cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={template.primaryColor}
+                      onChange={(e) => setTemplate({ ...template, primaryColor: e.target.value })}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-orange-500 focus:border-orange-500"
+                      placeholder="#FF6B2C"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end space-x-3 pt-4 border-t">
+                  <button
+                    onClick={() => setShowTemplateEditor(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSaveTemplate}
+                    disabled={templateSaving}
+                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  >
+                    {templateSaving ? 'Saving...' : 'Save Template'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Statistics Cards */}
           {data && (
