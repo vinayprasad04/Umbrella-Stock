@@ -2,6 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import connectDB from '@/lib/mongodb';
 import Subscriber from '@/lib/models/Subscriber';
 import { AuthUtils } from '@/lib/auth';
+import { sendEmail, generateVerificationEmail } from '@/lib/emailService';
+import crypto from 'crypto';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -151,6 +153,46 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     return res.status(200).json({
       success: true,
       message: 'Subscriber verified successfully',
+      data: subscriber,
+    });
+  }
+
+  if (action === 'resend-email' && id) {
+    const subscriber = await Subscriber.findById(id);
+    if (!subscriber) {
+      return res.status(404).json({ success: false, error: 'Subscriber not found' });
+    }
+
+    if (subscriber.isVerified) {
+      return res.status(400).json({ success: false, error: 'Subscriber is already verified' });
+    }
+
+    // Generate new token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    subscriber.verificationToken = verificationToken;
+    subscriber.verificationTokenExpiry = verificationTokenExpiry;
+    await subscriber.save();
+
+    // Send verification email
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`;
+
+    const emailHtml = generateVerificationEmail(subscriber.email, verificationUrl);
+    const emailSent = await sendEmail({
+      to: subscriber.email,
+      subject: 'Verify Your Email - Umbrella Stock',
+      html: emailHtml,
+    });
+
+    if (!emailSent) {
+      return res.status(500).json({ success: false, error: 'Failed to send verification email' });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Verification email sent successfully',
       data: subscriber,
     });
   }

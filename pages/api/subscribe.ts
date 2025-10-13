@@ -37,35 +37,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
       }
 
-      // If not verified and token expired, generate new token
-      if (existingSubscriber.verificationTokenExpiry < new Date()) {
-        const verificationToken = crypto.randomBytes(32).toString('hex');
-        const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+      // If not verified, always generate new token and resend email
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-        existingSubscriber.verificationToken = verificationToken;
-        existingSubscriber.verificationTokenExpiry = verificationTokenExpiry;
-        await existingSubscriber.save();
+      existingSubscriber.verificationToken = verificationToken;
+      existingSubscriber.verificationTokenExpiry = verificationTokenExpiry;
+      await existingSubscriber.save();
 
-        // Send new verification email
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
-        const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`;
+      // Send new verification email
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `http://localhost:${process.env.PORT || 3000}`;
+      const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`;
 
-        const emailHtml = generateVerificationEmail(normalizedEmail, verificationUrl);
-        await sendEmail({
-          to: normalizedEmail,
-          subject: 'Verify Your Email - Umbrella Stock',
-          html: emailHtml,
-        });
+      const emailHtml = generateVerificationEmail(normalizedEmail, verificationUrl);
+      await sendEmail({
+        to: normalizedEmail,
+        subject: 'Verify Your Email - Umbrella Stock',
+        html: emailHtml,
+      });
 
-        return res.status(200).json({
-          success: true,
-          message: 'Verification email has been resent. Please check your inbox.',
-        });
-      }
-
-      return res.status(400).json({
-        success: false,
-        error: 'This email is already subscribed. Please check your inbox for the verification email.',
+      return res.status(200).json({
+        success: true,
+        message: 'Your email is already registered but not verified. We have resent the verification email. Please check your inbox.',
+        resent: true,
       });
     }
 

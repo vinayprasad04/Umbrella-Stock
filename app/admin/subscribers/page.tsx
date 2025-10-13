@@ -104,6 +104,27 @@ export default function SubscribersManagement() {
     }
   };
 
+  const handleResendEmail = async (id: string, email: string) => {
+    if (!confirm(`Resend verification email to ${email}?`)) {
+      return;
+    }
+
+    try {
+      const response = await ApiClient.post('/admin/subscribers', {
+        action: 'resend-email',
+        id,
+      });
+
+      if (response.success) {
+        alert('Verification email sent successfully!');
+        fetchSubscribers();
+      }
+    } catch (error: any) {
+      console.error('Failed to resend email:', error);
+      alert(error.error || 'Failed to resend verification email');
+    }
+  };
+
   const handleDelete = async (id: string, email: string) => {
     if (!confirm(`Are you sure you want to delete subscriber: ${email}?`)) {
       return;
@@ -357,13 +378,22 @@ export default function SubscribersManagement() {
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div className="flex items-center justify-end gap-2">
                               {!subscriber.isVerified && (
-                                <button
-                                  onClick={() => handleVerify(subscriber._id)}
-                                  className="text-green-600 hover:text-green-900 font-medium"
-                                  title="Verify"
-                                >
-                                  Verify
-                                </button>
+                                <>
+                                  <button
+                                    onClick={() => handleVerify(subscriber._id)}
+                                    className="text-green-600 hover:text-green-900 font-medium"
+                                    title="Verify"
+                                  >
+                                    Verify
+                                  </button>
+                                  <button
+                                    onClick={() => handleResendEmail(subscriber._id, subscriber.email)}
+                                    className="text-purple-600 hover:text-purple-900 font-medium"
+                                    title="Resend verification email"
+                                  >
+                                    Resend Email
+                                  </button>
+                                </>
                               )}
                               <button
                                 onClick={() => handleToggleActive(subscriber._id)}
