@@ -76,6 +76,10 @@ export default function SettingsPage() {
     loading: true,
   });
   const [unsubscribing, setUnsubscribing] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteReason, setDeleteReason] = useState('');
+  const [deleting, setDeleting] = useState(false);
 
   // Load user settings
   useEffect(() => {
@@ -186,6 +190,38 @@ export default function SettingsPage() {
       setError(error.response?.data?.error || 'Failed to update subscription');
     } finally {
       setUnsubscribing(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!deletePassword) {
+      setError('Password is required to delete account');
+      return;
+    }
+
+    try {
+      setDeleting(true);
+      setError('');
+
+      const token = ClientAuth.getAccessToken();
+      const response = await axios.post('/api/user/delete-account',
+        { password: deletePassword, reason: deleteReason },
+        { headers: { Authorization: `Bearer ${token}` }}
+      );
+
+      if (response.data.success) {
+        setSuccess('Account deleted successfully. You will be logged out.');
+        setShowDeleteModal(false);
+        // Logout and redirect
+        setTimeout(() => {
+          ClientAuth.clearTokens();
+          window.location.href = '/';
+        }, 2000);
+      }
+    } catch (error: any) {
+      setError(error.response?.data?.error || 'Failed to delete account');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -691,10 +727,25 @@ export default function SettingsPage() {
                             <FontAwesomeIcon icon={faDownload} className="w-4 h-4 mr-2" />
                             Download Your Data
                           </button>
-                          <button className="flex items-center text-red-600 hover:text-red-700 text-sm">
-                            <FontAwesomeIcon icon={faTrash} className="w-4 h-4 mr-2" />
-                            Delete Account
-                          </button>
+                        </div>
+                      </div>
+
+                      {/* Danger Zone */}
+                      <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6 mt-6">
+                        <div className="flex items-start">
+                          <FontAwesomeIcon icon={faTrash} className="w-5 h-5 text-red-600 mt-1 mr-3" />
+                          <div className="flex-1">
+                            <h3 className="font-medium text-red-900 mb-2">Danger Zone</h3>
+                            <p className="text-sm text-red-700 mb-4">
+                              Once you delete your account, there is no going back. Your account will be deactivated and your data will be preserved for legal purposes but you won't be able to access it.
+                            </p>
+                            <button
+                              onClick={() => setShowDeleteModal(true)}
+                              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-medium transition-colors"
+                            >
+                              Delete My Account
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -705,6 +756,74 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
+
+        {/* Delete Account Modal */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-md w-full p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Delete Account</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                This action cannot be undone. Your account will be permanently deactivated.
+              </p>
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Confirm Password *
+                  </label>
+                  <input
+                    type="password"
+                    value={deletePassword}
+                    onChange={(e) => setDeletePassword(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                    placeholder="Enter your password"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Reason (Optional)
+                  </label>
+                  <textarea
+                    value={deleteReason}
+                    onChange={(e) => setDeleteReason(e.target.value)}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                    placeholder="Tell us why you're leaving..."
+                  />
+                </div>
+              </div>
+
+              {error && (
+                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-600">
+                  {error}
+                </div>
+              )}
+
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setDeletePassword('');
+                    setDeleteReason('');
+                    setError('');
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                  disabled={deleting}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={deleting || !deletePassword}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                >
+                  {deleting ? 'Deleting...' : 'Delete Account'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </UserDashboardLayout>
   );

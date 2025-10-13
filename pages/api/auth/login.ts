@@ -48,16 +48,25 @@ export default async function handler(
     }
 
     // Find user
-    const user = await User.findOne({ 
+    const user = await User.findOne({
       email: email.toLowerCase(),
-      isActive: true 
+      isActive: true,
+      deletedAt: null  // Exclude soft-deleted accounts
     });
-    
+
     if (!user) {
       return res.status(401).json({
         success: false,
         error: 'Invalid credentials',
       });
+    }
+
+    // Check if email is verified (skip for admin users)
+    if (user.role === 'USER' && !user.isEmailVerified) {
+      return res.status(403).json({
+        success: false,
+        error: 'Please verify your email before logging in. Check your inbox for the verification link.',
+      } as any);
     }
 
     // For the initial admin user, check plain text password

@@ -43,6 +43,14 @@ export interface IUser extends Document {
   passwordResetToken?: string;
   passwordResetExpires?: Date;
   passwordChangedAt?: Date;
+
+  // Email Verification
+  emailVerificationToken?: string;
+  emailVerificationExpires?: Date;
+
+  // Soft Delete
+  deletedAt?: Date;
+  deleteReason?: string;
 }
 
 const UserSchema: Schema = new Schema({
@@ -121,7 +129,15 @@ const UserSchema: Schema = new Schema({
   // Password Management
   passwordResetToken: String,
   passwordResetExpires: Date,
-  passwordChangedAt: Date
+  passwordChangedAt: Date,
+
+  // Email Verification
+  emailVerificationToken: String,
+  emailVerificationExpires: Date,
+
+  // Soft Delete
+  deletedAt: Date,
+  deleteReason: String
 }, {
   timestamps: true
 });
