@@ -1,6 +1,8 @@
 import { Inter } from 'next/font/google';
 import QueryProvider from '@/lib/react-query';
 import { AuthProvider } from '@/lib/AuthContext';
+import Subscribe from '@/components/Subscribe';
+import Footer from '@/components/Footer';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -21,7 +23,13 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <QueryProvider>
-            {children}
+            <div className="flex flex-col min-h-screen">
+              <main className="flex-grow">
+                {children}
+              </main>
+              <Subscribe />
+              <Footer />
+            </div>
           </QueryProvider>
         </AuthProvider>
       </body>
