@@ -13,6 +13,7 @@ interface User {
   role: 'ADMIN' | 'DATA_ENTRY' | 'SUBSCRIBER' | 'USER';
   permissions: string[];
   isActive: boolean;
+  isEmailVerified?: boolean;
   lastLogin?: string;
   createdAt: string;
   phone?: string;
@@ -178,6 +179,25 @@ export default function UsersManagement() {
       }
     } catch (error) {
       console.error('Error updating user role:', error);
+    }
+  };
+
+  const handleResendVerification = async (userId: string, email: string) => {
+    if (!confirm(`Resend verification email to ${email}?`)) {
+      return;
+    }
+
+    try {
+      const result = await ApiClient.post('/admin/users/resend-verification', { userId });
+
+      if (result.success) {
+        alert('Verification email sent successfully!');
+      } else {
+        alert(result.error || 'Failed to send verification email');
+      }
+    } catch (error: any) {
+      console.error('Error resending verification email:', error);
+      alert(error.error || 'Failed to send verification email');
     }
   };
 
@@ -396,6 +416,9 @@ export default function UsersManagement() {
                     Status
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Email Verified
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Activity
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -437,12 +460,32 @@ export default function UsersManagement() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        user.isActive 
-                          ? 'bg-green-100 text-green-800' 
+                        user.isActive
+                          ? 'bg-green-100 text-green-800'
                           : 'bg-red-100 text-red-800'
                       }`}>
                         {user.isActive ? 'Active' : 'Inactive'}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center space-x-2">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          user.isEmailVerified
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {user.isEmailVerified ? 'Verified' : 'Not Verified'}
+                        </span>
+                        {!user.isEmailVerified && user.role === 'USER' && (
+                          <button
+                            onClick={() => handleResendVerification(user.id, user.email)}
+                            className="text-blue-600 hover:text-blue-900 text-xs underline"
+                            title="Resend verification email"
+                          >
+                            Resend
+                          </button>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {user.lastLogin && (

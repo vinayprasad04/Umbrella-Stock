@@ -21,6 +21,7 @@ interface UserListItem {
   role: string;
   permissions: string[];
   isActive: boolean;
+  isEmailVerified?: boolean;
   lastLogin?: string;
   createdAt: string;
   phone?: string;
@@ -112,6 +113,7 @@ export default async function handler(
         role: user.role,
         permissions: user.permissions,
         isActive: user.isActive,
+        isEmailVerified: user.isEmailVerified,
         lastLogin: user.lastLogin?.toISOString(),
         createdAt: (user.createdAt as any).toISOString(),
         phone: user.phone,
