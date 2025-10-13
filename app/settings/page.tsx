@@ -23,7 +23,8 @@ import {
   faDesktop,
   faLock,
   faTrash,
-  faDownload
+  faDownload,
+  faEnvelope
 } from '@fortawesome/free-solid-svg-icons';
 import { ClientAuth } from '@/lib/auth';
 import axios from 'axios';
@@ -69,6 +70,12 @@ export default function SettingsPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [activeTab, setActiveTab] = useState('account');
+  const [newsletterStatus, setNewsletterStatus] = useState({
+    isSubscribed: false,
+    isVerified: false,
+    loading: true,
+  });
+  const [unsubscribing, setUnsubscribing] = useState(false);
 
   // Load user settings
   useEffect(() => {
@@ -131,6 +138,57 @@ export default function SettingsPage() {
     loadSettings();
   }, [user, isAuthenticated]);
 
+  // Load newsletter status
+  useEffect(() => {
+    const loadNewsletterStatus = async () => {
+      if (!isAuthenticated) return;
+
+      try {
+        const token = ClientAuth.getAccessToken();
+        const response = await axios.get('/api/user/unsubscribe', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.data.success) {
+          setNewsletterStatus({
+            isSubscribed: response.data.data.isSubscribed,
+            isVerified: response.data.data.isVerified,
+            loading: false,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to load newsletter status:', error);
+        setNewsletterStatus(prev => ({ ...prev, loading: false }));
+      }
+    };
+
+    loadNewsletterStatus();
+  }, [isAuthenticated]);
+
+  const handleUnsubscribe = async (action: 'unsubscribe' | 'resubscribe') => {
+    try {
+      setUnsubscribing(true);
+      const token = ClientAuth.getAccessToken();
+
+      const response = await axios.post('/api/user/unsubscribe',
+        { action },
+        { headers: { Authorization: `Bearer ${token}` }}
+      );
+
+      if (response.data.success) {
+        setSuccess(response.data.message);
+        setNewsletterStatus(prev => ({
+          ...prev,
+          isSubscribed: action === 'resubscribe',
+        }));
+      }
+    } catch (error: any) {
+      setError(error.response?.data?.error || 'Failed to update subscription');
+    } finally {
+      setUnsubscribing(false);
+    }
+  };
+
   const handleSave = async () => {
     if (!settings) return;
     
@@ -192,6 +250,7 @@ export default function SettingsPage() {
     { id: 'trading', label: 'Trading', icon: faChartLine },
     { id: 'display', label: 'Display', icon: faEye },
     { id: 'notifications', label: 'Notifications', icon: faBell },
+    { id: 'newsletter', label: 'Newsletter', icon: faEnvelope },
     { id: 'privacy', label: 'Privacy', icon: faShield },
   ];
 
@@ -509,6 +568,79 @@ export default function SettingsPage() {
                         </div>
                       ))}
                     </div>
+                  </div>
+                )}
+
+                {/* Newsletter */}
+                {activeTab === 'newsletter' && (
+                  <div className="p-6">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-6">Newsletter Subscription</h2>
+
+                    {newsletterStatus.loading ? (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                      </div>
+                    ) : (
+                      <div className="space-y-6">
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                          <div className="flex items-start">
+                            <FontAwesomeIcon icon={faEnvelope} className="w-5 h-5 text-blue-600 mt-0.5 mr-3" />
+                            <div>
+                              <h3 className="font-medium text-blue-900">Newsletter Status</h3>
+                              <p className="text-sm text-blue-700 mt-1">
+                                {newsletterStatus.isSubscribed ? (
+                                  newsletterStatus.isVerified ? (
+                                    "You are subscribed and verified to receive our newsletter updates."
+                                  ) : (
+                                    "You are subscribed but not verified. Please check your email to verify your subscription."
+                                  )
+                                ) : (
+                                  "You are not subscribed to our newsletter. Subscribe from the footer to receive updates."
+                                )}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {newsletterStatus.isSubscribed && (
+                          <div className="border border-gray-200 rounded-lg p-6">
+                            <h3 className="font-medium text-gray-900 mb-4">Subscription Management</h3>
+                            <p className="text-sm text-gray-600 mb-4">
+                              Unsubscribing will stop all newsletter emails. Your account will remain active, but you won't receive:
+                            </p>
+                            <ul className="text-sm text-gray-600 mb-6 space-y-2 ml-4">
+                              <li>• Market insights and analysis</li>
+                              <li>• Platform updates and new features</li>
+                              <li>• Investment tips and resources</li>
+                              <li>• Exclusive opportunities</li>
+                            </ul>
+                            <button
+                              onClick={() => handleUnsubscribe('unsubscribe')}
+                              disabled={unsubscribing}
+                              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                            >
+                              {unsubscribing ? 'Processing...' : 'Unsubscribe from Newsletter'}
+                            </button>
+                          </div>
+                        )}
+
+                        {!newsletterStatus.isSubscribed && newsletterStatus.isVerified && (
+                          <div className="border border-gray-200 rounded-lg p-6">
+                            <h3 className="font-medium text-gray-900 mb-4">Resubscribe</h3>
+                            <p className="text-sm text-gray-600 mb-4">
+                              You previously unsubscribed from our newsletter. Would you like to resubscribe?
+                            </p>
+                            <button
+                              onClick={() => handleUnsubscribe('resubscribe')}
+                              disabled={unsubscribing}
+                              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                            >
+                              {unsubscribing ? 'Processing...' : 'Resubscribe to Newsletter'}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
 
