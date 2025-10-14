@@ -21,12 +21,17 @@ export default function Login() {
 
   // Redirect if already authenticated
   useEffect(() => {
+    // Only redirect if we have valid authentication
     if (!isLoading && isAuthenticated && user) {
-      // Redirect based on user role
-      if (['ADMIN', 'DATA_ENTRY'].includes(user.role)) {
-        router.replace('/admin/dashboard');
-      } else {
-        router.replace('/dashboard');
+      // Double-check we have a valid token before redirecting
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        // Redirect based on user role
+        if (['ADMIN', 'DATA_ENTRY'].includes(user.role)) {
+          router.replace('/admin/dashboard');
+        } else {
+          router.replace('/dashboard');
+        }
       }
     }
   }, [isAuthenticated, user, isLoading, router]);

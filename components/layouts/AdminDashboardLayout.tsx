@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/lib/AuthContext';
 
 interface User {
   id: string;
@@ -21,11 +22,12 @@ export default function AdminDashboardLayout({ children, currentPage }: AdminDas
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { logout } = useAuth();
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     const userStr = localStorage.getItem('user');
-    
+
     if (!token || !userStr) {
       router.push('/login');
       return;
@@ -34,7 +36,7 @@ export default function AdminDashboardLayout({ children, currentPage }: AdminDas
     try {
       const userData = JSON.parse(userStr);
       setUser(userData);
-      
+
       if (!['ADMIN', 'DATA_ENTRY'].includes(userData.role)) {
         router.push('/login');
         return;
@@ -48,9 +50,8 @@ export default function AdminDashboardLayout({ children, currentPage }: AdminDas
   }, [router]);
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
-    router.push('/login');
+    // Use AuthContext logout for proper cleanup and hard redirect
+    logout();
   };
 
   if (loading) {

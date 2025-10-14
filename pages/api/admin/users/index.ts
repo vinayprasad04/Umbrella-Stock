@@ -88,7 +88,7 @@ export default async function handler(
       const skip = (page - 1) * limit;
       
       const users = await User.find(filter)
-        .select('email name role permissions isActive lastLogin createdAt phone department totalMfDataEntered totalMfDataVerified')
+        .select('email name role permissions isActive isEmailVerified lastLogin createdAt phone department totalMfDataEntered totalMfDataVerified')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)

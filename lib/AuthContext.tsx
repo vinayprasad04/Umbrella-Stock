@@ -111,12 +111,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
+    // Clear all auth-related data
     ClientAuth.clearTokens();
     setUser(null);
-    
-    // Redirect to login page
+
+    // Clear any remaining localStorage items
     if (typeof window !== 'undefined') {
-      window.location.href = '/login';
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('tokenExpiry');
+      localStorage.removeItem('refreshExpiry');
+      localStorage.removeItem('user');
+
+      // Use replace instead of href to prevent back button issues
+      window.location.replace('/login');
     }
   };
 

@@ -283,7 +283,7 @@ export default function SettingsPage() {
 
   const tabs = [
     { id: 'account', label: 'Account', icon: faUser },
-    { id: 'trading', label: 'Trading', icon: faChartLine },
+    // { id: 'trading', label: 'Trading', icon: faChartLine },
     { id: 'display', label: 'Display', icon: faEye },
     { id: 'notifications', label: 'Notifications', icon: faBell },
     { id: 'newsletter', label: 'Newsletter', icon: faEnvelope },
@@ -525,8 +525,8 @@ export default function SettingsPage() {
                           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                           <option value="en">English</option>
-                          <option value="hi">Hindi</option>
-                          <option value="mr">Marathi</option>
+                          {/* <option value="hi">Hindi</option>
+                          <option value="mr">Marathi</option> */}
                         </select>
                       </div>
 
@@ -538,12 +538,12 @@ export default function SettingsPage() {
                           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                           <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
-                          <option value="America/New_York">America/New_York (EST)</option>
-                          <option value="Europe/London">Europe/London (GMT)</option>
+                          {/* <option value="America/New_York">America/New_York (EST)</option>
+                          <option value="Europe/London">Europe/London (GMT)</option> */}
                         </select>
                       </div>
 
-                      <div>
+                      {/* <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Compact View</label>
                         <div className="flex items-center">
                           <button
@@ -560,7 +560,7 @@ export default function SettingsPage() {
                             Use compact layout for tables and lists
                           </span>
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 )}
@@ -720,7 +720,7 @@ export default function SettingsPage() {
                         </button>
                       </div>
 
-                      <div className="bg-gray-50 rounded-lg p-4 mt-6">
+                      {/* <div className="bg-gray-50 rounded-lg p-4 mt-6">
                         <h3 className="font-medium text-gray-900 mb-4">Data Management</h3>
                         <div className="space-y-3">
                           <button className="flex items-center text-blue-600 hover:text-blue-700 text-sm">
@@ -728,7 +728,7 @@ export default function SettingsPage() {
                             Download Your Data
                           </button>
                         </div>
-                      </div>
+                      </div> */}
 
                       {/* Danger Zone */}
                       <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6 mt-6">
