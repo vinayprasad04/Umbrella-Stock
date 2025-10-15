@@ -52,7 +52,8 @@
       "Bash(npm run sync-activities-test:*)",
       "Bash(npm run check-news-stats:*)",
       "Bash(npm run:*)",
-      "Bash(rd:*)"
+      "Bash(rd:*)",
+      "Bash(move:*)"
     ],
     "deny": [],
     "ask": [],
