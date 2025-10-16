@@ -3,8 +3,9 @@ import connectDB from '@/lib/mongodb';
 import { APIResponse } from '@/types';
 import { getTopGainers } from '@/lib/yahoo-finance-api';
 import { getNifty50StockBySymbol } from '@/lib/nifty50-symbols';
+import { withPublicSecurity } from '@/lib/security';
 
-export default async function handler(
+async function topGainersHandler(
   req: NextApiRequest,
   res: NextApiResponse<APIResponse<any>>
 ) {
@@ -64,4 +65,7 @@ export default async function handler(
     });
   }
 }
+
+// Apply public endpoint security (anti-scraping protection)
+export default withPublicSecurity(topGainersHandler);
 

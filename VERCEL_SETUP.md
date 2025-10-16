@@ -42,7 +42,30 @@ MONGODB_CONNECTION_URI=mongodb+srv://username:password@cluster.mongodb.net/datab
 ```
 Your MongoDB Atlas connection string.
 
-### 5. Other API Keys (if applicable)
+### 5. Security Configuration (CRITICAL)
+
+**Generate these secrets using:**
+```bash
+node -e "const crypto = require('crypto'); console.log('JWT_SECRET=' + crypto.randomBytes(64).toString('hex')); console.log('REFRESH_JWT_SECRET=' + crypto.randomBytes(64).toString('hex')); console.log('INTERNAL_API_SECRET=' + crypto.randomBytes(64).toString('hex')); console.log('PUBLIC_API_KEY=usk_' + crypto.randomBytes(32).toString('hex'));"
+```
+
+**Required Security Variables:**
+```
+JWT_SECRET=<64-character-hex-string>
+REFRESH_JWT_SECRET=<64-character-hex-string>
+INTERNAL_API_SECRET=<64-character-hex-string>
+PUBLIC_API_KEY=usk_<32-character-hex-string>
+ALLOWED_ORIGINS=https://your-domain.vercel.app,https://www.your-domain.vercel.app
+NODE_ENV=production
+```
+
+**IMPORTANT:**
+- JWT secrets must be at least 64 characters long
+- Never use default or weak secrets in production
+- Keep INTERNAL_API_SECRET private (for CRON jobs only)
+- PUBLIC_API_KEY is optional but recommended for API access control
+
+### 6. Other API Keys (if applicable)
 ```
 ALPHA_VANTAGE_API_KEY=your_alpha_vantage_api_key
 RAPID_API_KEY=your_rapid_api_key

@@ -4,6 +4,7 @@ import User from '@/lib/models/User';
 import { APIResponse } from '@/types';
 import bcrypt from 'bcryptjs';
 import { AuthUtils, AuthTokens } from '@/lib/auth';
+import { withAuthSecurity } from '@/lib/security';
 
 interface LoginRequest {
   email: string;
@@ -24,7 +25,7 @@ interface LoginResponse {
   refreshExpiresIn: number;
 }
 
-export default async function handler(
+async function loginHandler(
   req: NextApiRequest,
   res: NextApiResponse<APIResponse<LoginResponse>>
 ) {
@@ -69,17 +70,9 @@ export default async function handler(
       } as any);
     }
 
-    // For the initial admin user, check plain text password
-    // In production, you should hash passwords
-    let passwordMatch = false;
-    
-    if (email === 'vinay.qss@gmail.com' && password === '654321') {
-      passwordMatch = true;
-    } else {
-      // For other users, check hashed password
-      passwordMatch = await bcrypt.compare(password, user.password);
-    }
-    
+    // Check hashed password for all users (including admin)
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
     if (!passwordMatch) {
       return res.status(401).json({
         success: false,
@@ -119,10 +112,13 @@ export default async function handler(
     
   } catch (error: any) {
     console.error('❌ Login error:', error);
-    
+
     res.status(500).json({
       success: false,
       error: 'Login failed'
     });
   }
 }
+
+// Apply security middleware
+export default withAuthSecurity(loginHandler);

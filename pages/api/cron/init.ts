@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import { withInternalSecurity } from '@/lib/security';
 
 /**
  * Initialize Cron Job API
@@ -6,12 +7,13 @@ import { NextApiRequest, NextApiResponse } from 'next';
  * This endpoint should be called once when the server starts
  * It initializes the daily stock activities sync cron job
  *
- * Call this endpoint manually or from server startup script
+ * SECURITY: This endpoint requires X-Internal-Secret header
+ * Call this endpoint manually or from server startup script with proper authentication
  */
 
 let cronInitialized = false;
 
-export default async function handler(
+async function cronInitHandler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -49,3 +51,6 @@ export default async function handler(
     });
   }
 }
+
+// Apply internal security middleware
+export default withInternalSecurity(cronInitHandler);

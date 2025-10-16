@@ -17,13 +17,49 @@ export interface AuthTokens {
 }
 
 export class AuthUtils {
-  private static readonly JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-  private static readonly REFRESH_SECRET = process.env.REFRESH_JWT_SECRET || 'your-refresh-secret-key';
-  
+  private static readonly JWT_SECRET = this.getJWTSecret();
+  private static readonly REFRESH_SECRET = this.getRefreshSecret();
+
   // Access token expires in 15 minutes (more secure)
   private static readonly ACCESS_TOKEN_EXPIRY = '15m';
   // Refresh token expires in 4 hours
   private static readonly REFRESH_TOKEN_EXPIRY = '4h';
+
+  /**
+   * Get JWT secret with validation
+   */
+  private static getJWTSecret(): string {
+    const secret = process.env.JWT_SECRET;
+    if (!secret || secret === 'your-secret-key') {
+      console.error('⚠️  SECURITY WARNING: JWT_SECRET is not set or using default value. Please set a strong secret in your .env file.');
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error('JWT_SECRET must be set in production environment');
+      }
+      return 'your-secret-key'; // Only for development
+    }
+    if (secret.length < 32) {
+      console.warn('⚠️  WARNING: JWT_SECRET should be at least 32 characters long for better security.');
+    }
+    return secret;
+  }
+
+  /**
+   * Get refresh secret with validation
+   */
+  private static getRefreshSecret(): string {
+    const secret = process.env.REFRESH_JWT_SECRET;
+    if (!secret || secret === 'your-refresh-secret-key') {
+      console.error('⚠️  SECURITY WARNING: REFRESH_JWT_SECRET is not set or using default value. Please set a strong secret in your .env file.');
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error('REFRESH_JWT_SECRET must be set in production environment');
+      }
+      return 'your-refresh-secret-key'; // Only for development
+    }
+    if (secret.length < 32) {
+      console.warn('⚠️  WARNING: REFRESH_JWT_SECRET should be at least 32 characters long for better security.');
+    }
+    return secret;
+  }
 
   /**
    * Generate access and refresh tokens
