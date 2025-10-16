@@ -180,19 +180,22 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`;
 
     const emailHtml = await generateVerificationEmail(subscriber.email, verificationUrl);
-    const emailSent = await sendEmail({
+    const emailResult = await sendEmail({
       to: subscriber.email,
       subject: 'Verify Your Email - Umbrella Stock',
       html: emailHtml,
     });
 
-    if (!emailSent) {
-      return res.status(500).json({ success: false, error: 'Failed to send verification email' });
+    if (!emailResult.success) {
+      return res.status(500).json({
+        success: false,
+        error: emailResult.error || 'Failed to send verification email'
+      });
     }
 
     return res.status(200).json({
       success: true,
-      message: 'Verification email sent successfully',
+      message: `Verification email sent successfully to ${subscriber.email}`,
       data: subscriber,
     });
   }

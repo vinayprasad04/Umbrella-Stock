@@ -53,7 +53,12 @@
       "Bash(npm run check-news-stats:*)",
       "Bash(npm run:*)",
       "Bash(rd:*)",
-      "Bash(move:*)"
+      "Bash(move:*)",
+      "Bash(npm:*)",
+      "Bash(nvm list:*)",
+      "Bash(source ~/.nvm/nvm.sh)",
+      "Bash(nvm use:*)",
+      "Bash(nvm alias:*)"
     ],
     "deny": [],
     "ask": [],

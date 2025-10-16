@@ -50,11 +50,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`;
 
       const emailHtml = await generateVerificationEmail(normalizedEmail, verificationUrl);
-      await sendEmail({
+      const emailResult = await sendEmail({
         to: normalizedEmail,
         subject: 'Verify Your Email - Umbrella Stock',
         html: emailHtml,
       });
+
+      if (!emailResult.success) {
+        console.error('Failed to resend verification email to:', normalizedEmail, '- Error:', emailResult.error);
+      }
 
       return res.status(200).json({
         success: true,
@@ -80,15 +84,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`;
 
     const emailHtml = await generateVerificationEmail(normalizedEmail, verificationUrl);
-    const emailSent = await sendEmail({
+    const emailResult = await sendEmail({
       to: normalizedEmail,
       subject: 'Verify Your Email - Umbrella Stock',
       html: emailHtml,
     });
 
-    if (!emailSent) {
-      // If email fails, still return success but log it
-      console.error('Failed to send verification email to:', normalizedEmail);
+    if (!emailResult.success) {
+      // If email fails, log the error but still create the subscription
+      console.error('Failed to send verification email to:', normalizedEmail, '- Error:', emailResult.error);
     }
 
     return res.status(201).json({

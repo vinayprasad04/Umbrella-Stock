@@ -123,19 +123,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const verificationUrl = `${baseUrl}/verify-account?token=${emailVerificationToken}`;
 
     const emailHtml = generateAccountVerificationEmail(user.name, user.email, verificationUrl);
-    const emailSent = await sendEmail({
+    const emailResult = await sendEmail({
       to: user.email,
       subject: 'Verify Your Account - Umbrella Stock',
       html: emailHtml,
     });
 
-    if (!emailSent) {
-      return res.status(500).json({ success: false, error: 'Failed to send verification email' });
+    if (!emailResult.success) {
+      return res.status(500).json({
+        success: false,
+        error: emailResult.error || 'Failed to send verification email'
+      });
     }
 
     return res.status(200).json({
       success: true,
-      message: 'Verification email sent successfully',
+      message: `Verification email sent successfully to ${user.email}`,
     });
   } catch (error) {
     console.error('Resend verification error:', error);

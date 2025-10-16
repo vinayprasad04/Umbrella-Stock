@@ -9,6 +9,31 @@ interface EmailOptions {
   text?: string;
 }
 
+interface EmailResult {
+  success: boolean;
+  error?: string;
+  messageId?: string;
+}
+
+// Validate email credentials
+function validateEmailConfig(): { valid: boolean; error?: string } {
+  if (!process.env.EMAIL_USER || process.env.EMAIL_USER === 'your-email@gmail.com') {
+    return {
+      valid: false,
+      error: 'Email credentials not configured. Please set EMAIL_USER in your .env.local file with your Gmail address.'
+    };
+  }
+
+  if (!process.env.EMAIL_PASS || process.env.EMAIL_PASS === 'your-app-specific-password') {
+    return {
+      valid: false,
+      error: 'Email password not configured. Please set EMAIL_PASS in your .env.local file with your Gmail App Password. Visit https://support.google.com/accounts/answer/185833 to generate one.'
+    };
+  }
+
+  return { valid: true };
+}
+
 // Create reusable transporter
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -18,8 +43,18 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export async function sendEmail(options: EmailOptions): Promise<boolean> {
+export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
   try {
+    // First, validate credentials are configured
+    const validation = validateEmailConfig();
+    if (!validation.valid) {
+      console.error('❌ Email configuration error:', validation.error);
+      return {
+        success: false,
+        error: validation.error
+      };
+    }
+
     console.log('📧 Sending email to:', options.to);
 
     const info = await transporter.sendMail({
@@ -31,10 +66,30 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
     });
 
     console.log('✅ Email sent successfully:', info.messageId);
-    return true;
-  } catch (error) {
+    return {
+      success: true,
+      messageId: info.messageId
+    };
+  } catch (error: any) {
     console.error('❌ Failed to send email:', error);
-    return false;
+
+    // Parse specific error messages from nodemailer/Gmail
+    let errorMessage = 'Failed to send email. Please try again later.';
+
+    if (error.code === 'EAUTH') {
+      errorMessage = 'Gmail authentication failed. Please verify your EMAIL_USER and EMAIL_PASS are correct. Make sure you\'re using a Gmail App Password, not your regular password.';
+    } else if (error.code === 'ECONNECTION' || error.code === 'ETIMEDOUT') {
+      errorMessage = 'Failed to connect to Gmail servers. Please check your internet connection.';
+    } else if (error.responseCode === 535) {
+      errorMessage = 'Invalid Gmail credentials. Please check your App Password and ensure 2-Step Verification is enabled on your Google account.';
+    } else if (error.message) {
+      errorMessage = `Email error: ${error.message}`;
+    }
+
+    return {
+      success: false,
+      error: errorMessage
+    };
   }
 }
 

@@ -161,11 +161,15 @@ export default async function handler(
     const verificationUrl = `${baseUrl}/verify-account?token=${emailVerificationToken}`;
 
     const emailHtml = generateAccountVerificationEmail(newUser.name, newUser.email, verificationUrl);
-    await sendEmail({
+    const emailResult = await sendEmail({
       to: newUser.email,
       subject: 'Verify Your Account - Umbrella Stock',
       html: emailHtml,
     });
+
+    if (!emailResult.success) {
+      console.error('Failed to send signup verification email to:', newUser.email, '- Error:', emailResult.error);
+    }
 
     res.status(201).json({
       success: true,
