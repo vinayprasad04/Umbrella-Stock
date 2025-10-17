@@ -48,10 +48,11 @@
 
 **For Public APIs (Stock Data, Mutual Funds, etc.):**
 
-1. **Tiered Rate Limiting:**
-   - Without API Key: 20 requests/minute
-   - With API Key: 1000 requests/hour
-   - Prevents automated scraping while allowing legitimate use
+1. **Mandatory API Key Authentication:**
+   - **API Key REQUIRED** - No anonymous access allowed
+   - With Valid API Key: 1000 requests/hour
+   - Without API Key: Access denied immediately
+   - Complete protection against unauthorized scraping
 
 2. **Client Identification:**
    - Based on IP address + User Agent hash
@@ -66,9 +67,10 @@
    ```
 
 4. **API Key System:**
-   - Optional for public endpoints
-   - Provides higher rate limits
+   - **MANDATORY** for all public endpoints
+   - 1000 requests per hour with valid key
    - Format: `usk_<32-character-hex>`
+   - No access without valid API key
 
 ### Authentication Protection
 

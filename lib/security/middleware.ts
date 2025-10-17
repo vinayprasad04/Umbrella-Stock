@@ -7,16 +7,16 @@ import crypto from 'crypto';
  */
 class RateLimitStore {
   private store: Map<string, { count: number; resetTime: number }> = new Map();
-  private cleanupInterval: NodeJS.Timeout | null = null;
 
   constructor() {
     // Cleanup old entries every 5 minutes
-    this.cleanupInterval = setInterval(() => this.cleanup(), 5 * 60 * 1000);
+    setInterval(() => this.cleanup(), 5 * 60 * 1000);
   }
 
   private cleanup() {
     const now = Date.now();
-    for (const [key, value] of this.store.entries()) {
+    const entries = Array.from(this.store.entries());
+    for (const [key, value] of entries) {
       if (now > value.resetTime) {
         this.store.delete(key);
       }
@@ -136,11 +136,11 @@ export const RateLimitPresets = {
     message: 'API rate limit exceeded. Please check your subscription plan.',
   },
 
-  // Public: For public data endpoints without API key (20 requests per minute)
+  // Public: For public data endpoints without API key (DISABLED - API key required)
   publicWithoutKey: {
     windowMs: 60 * 1000, // 1 minute
-    max: 20,
-    message: 'Rate limit exceeded. Consider getting an API key for higher limits.',
+    max: 0, // No access without API key
+    message: 'API key required. Please include X-API-Key header in your request.',
   },
 };
 
@@ -316,6 +316,7 @@ export function validateInternalSecret(req: NextApiRequest, res: NextApiResponse
 
 /**
  * Combined Security Middleware for Public Endpoints
+ * REQUIRES API KEY - No anonymous access allowed
  */
 export async function publicEndpointSecurity(
   req: NextApiRequest,
@@ -329,15 +330,13 @@ export async function publicEndpointSecurity(
     return false; // OPTIONS request handled
   }
 
-  // Check if API key is provided
-  const hasValidApiKey = optionalApiKey(req);
+  // REQUIRE API key (mandatory)
+  if (!requireApiKey(req, res)) {
+    return false;
+  }
 
-  // Apply rate limiting (higher limit with API key)
-  const rateLimitConfig = hasValidApiKey
-    ? RateLimitPresets.publicWithKey
-    : RateLimitPresets.publicWithoutKey;
-
-  const allowed = await rateLimit(rateLimitConfig)(req, res);
+  // Apply rate limiting (with valid API key)
+  const allowed = await rateLimit(RateLimitPresets.publicWithKey)(req, res);
   if (!allowed) {
     return false;
   }

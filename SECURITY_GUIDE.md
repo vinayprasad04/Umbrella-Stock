@@ -35,9 +35,9 @@ This guide covers the comprehensive security implementation for the Umbrella Sto
 ✅ **Rate Limiting**
 - Strict rate limiting on authentication endpoints (5 requests/15 minutes)
 - Moderate rate limiting on forms (10 requests/hour)
-- Tiered rate limiting on public APIs:
-  - With API key: 1000 requests/hour
-  - Without API key: 20 requests/minute
+- Mandatory API key authentication for public APIs:
+  - With valid API key: 1000 requests/hour
+  - Without API key: **Access denied immediately**
 
 ✅ **CORS Protection**
 - Origin validation for allowed domains
@@ -53,10 +53,10 @@ This guide covers the comprehensive security implementation for the Umbrella Sto
 - Permissions-Policy
 
 ✅ **Anti-Scraping Protection**
-- Rate limiting based on IP + User Agent
-- Optional API key system for legitimate access
+- **Mandatory API key authentication** - No anonymous access
+- Rate limiting: 1000 requests/hour with valid API key
 - Request logging and monitoring
-- Automatic blocking of excessive requests
+- Complete protection against unauthorized scraping
 
 ✅ **Internal API Security**
 - Secret-based authentication for CRON jobs
@@ -146,9 +146,10 @@ The system now validates JWT secrets on startup:
 - Endpoints: User profile, settings
 
 **Public** (Data APIs):
-- With API Key: 1000 requests/hour
-- Without API Key: 20 requests/minute
+- With Valid API Key: 1000 requests/hour
+- Without API Key: **BLOCKED** (Access denied)
 - Endpoints: stocks, mutual funds, ETFs, search
+- **API Key is MANDATORY for all public endpoints**
 
 ---
 
@@ -367,10 +368,12 @@ fetch('https://api.yourdomain.com/api/stocks/top-gainers', {
 ```
 
 **Without API Key:**
-- Rate limit: 20 requests per minute
+- **ACCESS DENIED** - API key is mandatory for all public endpoints
+- Response: `401 Unauthorized - API key required`
 
 **With Valid API Key:**
 - Rate limit: 1000 requests per hour
+- Full access to all public data endpoints
 
 ### Generating API Keys
 

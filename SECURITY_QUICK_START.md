@@ -21,14 +21,19 @@ npm run dev
 ### Step 4: Test (1 minute)
 
 ```bash
-# Should work normally
+# Without API key - should be BLOCKED
 curl http://localhost:3000/api/stocks/top-gainers
+# Response: {"success":false,"error":"API key required..."}
 
-# Try 25 times rapidly - should rate limit after 20
-for i in {1..25}; do curl http://localhost:3000/api/stocks/top-gainers; done
+# With API key - should work
+curl -H "X-API-Key: usk_your_generated_key" http://localhost:3000/api/stocks/top-gainers
+# Response: Stock data
+
+# Try 1001 times with API key - should rate limit after 1000
+for i in {1..1001}; do curl -H "X-API-Key: usk_your_key" http://localhost:3000/api/stocks/top-gainers; done
 ```
 
-Done! Your API is now protected.
+Done! Your API is now completely protected - **NO ONE** can access without API key.
 
 ---
 
@@ -36,7 +41,7 @@ Done! Your API is now protected.
 
 ✅ **Login Endpoint** - Rate limited (5/15min), no more hard-coded admin password
 ✅ **CRON Endpoints** - Require secret header
-✅ **Public APIs** - Rate limited (20/min without API key)
+✅ **Public APIs** - **API KEY MANDATORY** (completely blocked without key)
 ✅ **Security Headers** - All responses include XSS, clickjacking protection
 ✅ **CORS** - Origin validation enabled
 
@@ -120,7 +125,7 @@ vercel --prod
 
 | Endpoint Type | Without API Key | With API Key |
 |--------------|----------------|--------------|
-| Public APIs | 20/minute | 1000/hour |
+| Public APIs | **BLOCKED** (API key required) | 1000/hour |
 | Auth (Login) | 5/15 minutes | N/A |
 | Forms | 10/hour | N/A |
 
@@ -139,7 +144,7 @@ vercel --prod
 1. **Admin Password:** Hard-coded admin bypass removed. Update your admin password in MongoDB.
 2. **CRON Jobs:** Now require `X-Internal-Secret` header.
 3. **Production:** App will not start without proper secrets.
-4. **API Keys:** Optional for public endpoints, gives 50x higher rate limit.
+4. **API Keys:** **MANDATORY** for all public endpoints - no access without valid key.
 
 ---
 
