@@ -58,7 +58,8 @@
       "Bash(nvm list:*)",
       "Bash(source ~/.nvm/nvm.sh)",
       "Bash(nvm use:*)",
-      "Bash(nvm alias:*)"
+      "Bash(nvm alias:*)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": [],
