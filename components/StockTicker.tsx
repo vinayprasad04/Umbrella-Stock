@@ -30,7 +30,6 @@ const AnimatedPrice = ({
     }
 
     // Start counting animation from startValue
-    console.log(`🎬 Starting counting animation from ${startValue}`);
     setDisplayValue(startValue);
 
     // Increment by 3 every second
@@ -45,7 +44,26 @@ const AnimatedPrice = ({
     };
   }, [value, hasActualValue, startValue]);
 
-  return <>{displayValue.toFixed(2)}</>;
+  // Split the number into digits for individual animation
+  const formattedValue = displayValue.toFixed(2);
+
+  return (
+    <span className="inline-flex overflow-hidden">
+      {formattedValue.split('').map((char, index) => (
+        <span
+          key={`${char}-${displayValue}-${index}`}
+          className="inline-block"
+          style={{
+            animation: !hasActualValue && char !== '.'
+              ? `slideUp 0.3s ease-out ${index * 0.03}s`
+              : 'none'
+          }}
+        >
+          {char}
+        </span>
+      ))}
+    </span>
+  );
 };
 
 interface StockTickerData {

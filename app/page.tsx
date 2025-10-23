@@ -30,6 +30,100 @@ interface ETF {
   fundHouse?: string;
 }
 
+// Loading Index Card with animated counting
+function LoadingIndexCard({ index }: { index: number }) {
+  const [displayValue, setDisplayValue] = useState(25000 + (index * 2000));
+  const [displayPercent, setDisplayPercent] = useState(0.5 + (index * 0.3));
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDisplayValue(prev => prev + 10);
+      setDisplayPercent(prev => prev + 0.01);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const formattedValue = displayValue.toFixed(2);
+  const formattedPercent = displayPercent.toFixed(2);
+  const indexNames = ['NIFTY 50', 'NIFTY BANK', 'NIFTY IT', 'NIFTY AUTO'];
+
+  return (
+    <div className="bg-white/70 backdrop-blur-md rounded-2xl p-3 border border-white/50 shadow-lg">
+      <div className="block md:flex md:items-start md:justify-between md:mb-2">
+        <div className="flex-1 min-w-0 md:pr-2">
+          <div className="text-gray-900 text-sm md:text-sm font-semibold mb-1 truncate leading-tight">
+            {indexNames[index]}
+          </div>
+          <div className="text-green-600 text-lg md:text-lg font-bold leading-tight mb-2 md:mb-0">
+            ₹<span className="inline-flex overflow-hidden">
+              {formattedValue.split('').map((char, idx) => (
+                <span
+                  key={`${char}-${displayValue}-${idx}`}
+                  className="inline-block"
+                  style={{
+                    animation: char !== '.' && char !== ','
+                      ? `slideUp 0.3s ease-out ${idx * 0.03}s`
+                      : 'none'
+                  }}
+                >
+                  {char}
+                </span>
+              ))}
+            </span>
+          </div>
+        </div>
+
+        <div className="flex justify-center md:justify-end mb-3 md:mb-0">
+          <div className="px-3 md:px-2 py-2 md:py-1 rounded-lg md:rounded-full text-white font-bold text-sm shadow-md bg-gradient-to-r from-green-500 to-green-600">
+            <span className="flex items-center whitespace-nowrap">
+              <span className="text-base md:text-sm mr-1">↗</span>
+              <span className="font-extrabold md:font-bold inline-flex overflow-hidden">
+                {formattedPercent.split('').map((char, idx) => (
+                  <span
+                    key={`${char}-${displayPercent}-${idx}`}
+                    className="inline-block"
+                    style={{
+                      animation: char !== '.'
+                        ? `slideUp 0.3s ease-out ${idx * 0.03}s`
+                        : 'none'
+                    }}
+                  >
+                    {char}
+                  </span>
+                ))}%
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between pt-2 md:pt-0 border-t md:border-t-0 border-gray-200/30">
+        <div className="font-medium text-green-600 text-xs md:text-xs">
+          +₹<span className="inline-flex overflow-hidden">
+            {(displayValue * 0.01).toFixed(2).split('').map((char, idx) => (
+              <span
+                key={`${char}-${displayValue}-change-${idx}`}
+                className="inline-block"
+                style={{
+                  animation: char !== '.'
+                    ? `slideUp 0.3s ease-out ${idx * 0.03}s`
+                    : 'none'
+                }}
+              >
+                {char}
+              </span>
+            ))}
+          </span>
+        </div>
+        <div className="text-gray-500 text-xs md:text-xs">
+          Loading...
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function HomePage() {
   const [marketOpen, setMarketOpen] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date());
@@ -136,7 +230,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 overflow-x-hidden">
       <Header />
       {/* Content wrapper with top padding to account for fixed header */}
-      <div className="pt-[104px] md:pt-[123px] lg:pt-[67px]">
+      <div className="pt-[104px] md:pt-[123px] lg:pt-[66px]">
         <StockTicker />
 
       {/* Hero Section */}
@@ -157,13 +251,9 @@ export default function HomePage() {
           {/* Live NIFTY Indices Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 mb-6 md:mb-12">
             {loadingIndices ? (
-              // Loading placeholders
+              // Loading placeholders with animated counting
               Array.from({ length: 4 }).map((_, index) => (
-                <div key={index} className="bg-white/70 backdrop-blur-md rounded-2xl p-3 border border-white/50 shadow-lg animate-pulse">
-                  <div className="h-4 bg-gray-300 rounded mb-2"></div>
-                  <div className="h-6 bg-gray-300 rounded mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded"></div>
-                </div>
+                <LoadingIndexCard key={index} index={index} />
               ))
             ) : indicesData && indicesData.length >= 4 ? (
               // Live indices data with charts
