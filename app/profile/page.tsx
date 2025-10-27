@@ -168,6 +168,42 @@ export default function ProfilePage() {
     setError('');
     setSuccess('');
 
+    // Frontend validation
+    if (!personalData.name || personalData.name.trim().length === 0) {
+      setError('Name is required');
+      return;
+    }
+
+    if (personalData.name.length > 40) {
+      setError('Name must not exceed 40 characters');
+      return;
+    }
+
+    if (profile?.email && profile.email.length > 60) {
+      setError('Email must not exceed 60 characters');
+      return;
+    }
+
+    if (personalData.phone && personalData.phone.length > 15) {
+      setError('Phone number must not exceed 15 characters');
+      return;
+    }
+
+    if (personalData.phone && personalData.phone.length > 0 && !/^[\+]?[0-9\s\-\(\)]+$/.test(personalData.phone)) {
+      setError('Invalid phone number format. Only numbers, spaces, +, -, and () are allowed');
+      return;
+    }
+
+    if (personalData.location && personalData.location.length > 150) {
+      setError('Location must not exceed 150 characters');
+      return;
+    }
+
+    if (personalData.bio && personalData.bio.length > 500) {
+      setError('Bio must not exceed 500 characters');
+      return;
+    }
+
     try {
       const token = ClientAuth.getAccessToken();
       const response = await axios.put('/api/user/profile', personalData, {
@@ -182,7 +218,9 @@ export default function ProfilePage() {
           setProfile({
             ...profile,
             name: personalData.name,
-            // Update other fields when API supports them
+            phone: personalData.phone,
+            location: personalData.location,
+            bio: personalData.bio,
           });
         }
       }
@@ -255,20 +293,26 @@ export default function ProfilePage() {
       return;
     }
 
+    const originalSizeKB = (file.size / 1024).toFixed(2);
+    console.log(`📸 Original image size: ${originalSizeKB}KB`);
+
     setIsUploadingAvatar(true);
 
     try {
-      // Resize and compress image
+      // Resize and compress image to KB size
       const compressedBlob = await resizeAndCompressImage(file, {
         maxWidth: 300,
         maxHeight: 300,
         quality: 0.8,
-        maxSizeKB: 10
+        maxSizeKB: 100 // Compress to maximum 100KB
       });
+
+      const compressedSizeKB = (compressedBlob.size / 1024).toFixed(2);
+      console.log(`✅ Compressed image size: ${compressedSizeKB}KB (reduced from ${originalSizeKB}KB)`);
 
       // Convert to base64
       const base64 = await convertBlobToBase64(compressedBlob);
-      
+
       // Create preview
       const previewUrl = URL.createObjectURL(compressedBlob);
       setAvatarPreview(previewUrl);
@@ -282,7 +326,7 @@ export default function ProfilePage() {
       });
 
       if (response.data.success) {
-        setSuccess('Profile picture updated successfully!');
+        setSuccess(`Profile picture updated successfully! (Compressed from ${originalSizeKB}KB to ${compressedSizeKB}KB)`);
         // Update profile state
         if (profile) {
           setProfile({
@@ -370,7 +414,7 @@ export default function ProfilePage() {
                   <input
                     type="file"
                     id="avatar-upload"
-                    accept="image/*"
+                    accept="image/jpeg,image/jpg,image/png"
                     onChange={handleAvatarUpload}
                     className="hidden"
                     disabled={isUploadingAvatar}
@@ -382,15 +426,28 @@ export default function ProfilePage() {
                         ? 'bg-gray-400 cursor-not-allowed'
                         : 'bg-blue-500 hover:bg-blue-600 cursor-pointer'
                     } rounded-full border-4 border-white shadow-lg flex items-center justify-center transition-colors`}
+                    title="Upload profile picture (JPG, JPEG, PNG only, max 2MB)"
                   >
                     <FontAwesomeIcon
                       icon={faCamera}
                       className={`w-4 h-4 text-white ${isUploadingAvatar ? 'animate-pulse' : ''}`}
                     />
                   </label>
-                  
+
                   <div className="absolute -top-1 -right-1 w-6 h-6 bg-emerald-400 rounded-full border-3 border-white flex items-center justify-center shadow-sm">
                     <div className="w-2 h-2 bg-white rounded-full"></div>
+                  </div>
+                </div>
+
+                {/* Avatar Upload Info */}
+                <div className="ml-8">
+                  <div className="bg-blue-500/10 backdrop-blur-sm border border-blue-200/30 rounded-lg px-3 py-2">
+                    <p className="text-xs text-blue-100 font-medium mb-1">📸 Photo Requirements:</p>
+                    <ul className="text-xs text-blue-100 space-y-0.5">
+                      <li>• JPG, JPEG, or PNG format</li>
+                      <li>• Maximum size: 2MB</li>
+                      <li>• Image will be compressed to ~100KB</li>
+                    </ul>
                   </div>
                 </div>
 
@@ -484,34 +541,77 @@ export default function ProfilePage() {
                 {isEditingPersonal ? (
                   <form onSubmit={handlePersonalSubmit} className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Full Name <span className="text-red-500">*</span>
+                        <span className="text-xs text-gray-500 ml-2">({personalData.name.length}/40 characters)</span>
+                      </label>
                       <input
                         type="text"
                         value={personalData.name}
-                        onChange={(e) => setPersonalData({...personalData, name: e.target.value})}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value.length <= 40) {
+                            setPersonalData({...personalData, name: value});
+                          }
+                        }}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
+                        minLength={1}
+                        maxLength={40}
                       />
+                      {personalData.name.length >= 35 && personalData.name.length < 40 && (
+                        <p className="text-xs text-orange-600 mt-1">Name is almost at the maximum length</p>
+                      )}
+                      {personalData.name.length === 40 && (
+                        <p className="text-xs text-red-600 mt-1">Maximum length reached</p>
+                      )}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Phone
+                        <span className="text-xs text-gray-500 ml-2">({personalData.phone.length}/15 characters)</span>
+                      </label>
                       <input
                         type="tel"
                         value={personalData.phone}
-                        onChange={(e) => setPersonalData({...personalData, phone: e.target.value})}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value.length <= 15) {
+                            setPersonalData({...personalData, phone: value});
+                          }
+                        }}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="+91 XXXXX XXXXX"
+                        maxLength={15}
                       />
+                      {personalData.phone.length === 15 && (
+                        <p className="text-xs text-red-600 mt-1">Maximum length reached</p>
+                      )}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Location
+                        <span className="text-xs text-gray-500 ml-2">({personalData.location.length}/150 characters)</span>
+                      </label>
                       <input
                         type="text"
                         value={personalData.location}
-                        onChange={(e) => setPersonalData({...personalData, location: e.target.value})}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value.length <= 150) {
+                            setPersonalData({...personalData, location: value});
+                          }
+                        }}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="City, Country"
+                        maxLength={150}
                       />
+                      {personalData.location.length >= 140 && personalData.location.length < 150 && (
+                        <p className="text-xs text-orange-600 mt-1">Location is almost at the maximum length</p>
+                      )}
+                      {personalData.location.length === 150 && (
+                        <p className="text-xs text-red-600 mt-1">Maximum length reached</p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>

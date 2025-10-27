@@ -156,60 +156,7 @@ export default async function handler(
       });
     });
 
-    // Search mutual funds (expanded list with popular funds)
-    const commonMutualFunds = [
-      // SBI Funds
-      { symbol: '120503', name: 'SBI Bluechip Fund Direct Growth', type: 'MUTUAL_FUND' as const },
-      { symbol: '120305', name: 'SBI Large & Midcap Fund Direct Growth', type: 'MUTUAL_FUND' as const },
-      { symbol: '120577', name: 'SBI Small Cap Fund Direct Growth', type: 'MUTUAL_FUND' as const },
-      
-      // HDFC Funds
-      { symbol: '119551', name: 'HDFC Index Fund Sensex Direct Growth', type: 'MUTUAL_FUND' as const },
-      { symbol: '118556', name: 'HDFC Equity Fund Direct Growth', type: 'MUTUAL_FUND' as const },
-      { symbol: '118825', name: 'HDFC Mid-Cap Opportunities Fund Direct Growth', type: 'MUTUAL_FUND' as const },
-      
-      // Axis Funds
-      { symbol: '120716', name: 'Axis Bluechip Fund Direct Growth', type: 'MUTUAL_FUND' as const },
-      { symbol: '120578', name: 'Axis Long Term Equity Fund Direct Growth', type: 'MUTUAL_FUND' as const },
-      
-      // ICICI Prudential Funds
-      { symbol: '118989', name: 'ICICI Prudential Bluechip Fund Direct Growth', type: 'MUTUAL_FUND' as const },
-      { symbol: '120344', name: 'ICICI Prudential Technology Fund Direct Growth', type: 'MUTUAL_FUND' as const },
-      
-      // Kotak Funds
-      { symbol: '118772', name: 'Kotak Standard Multicap Fund Direct Growth', type: 'MUTUAL_FUND' as const },
-      { symbol: '118742', name: 'Kotak Equity Opportunities Fund Direct Growth', type: 'MUTUAL_FUND' as const },
-      { symbol: '120472', name: 'Kotak Bluechip Fund Direct Growth', type: 'MUTUAL_FUND' as const },
-      { symbol: '118965', name: 'Kotak Small Cap Fund Direct Growth', type: 'MUTUAL_FUND' as const },
-      
-      // Other Popular Funds
-      { symbol: '119200', name: 'Mirae Asset Large Cap Fund Direct Growth', type: 'MUTUAL_FUND' as const },
-      { symbol: '125494', name: 'Parag Parikh Long Term Equity Fund Direct Growth', type: 'MUTUAL_FUND' as const },
-      { symbol: '120505', name: 'UTI Nifty Fund Direct Growth', type: 'MUTUAL_FUND' as const },
-      { symbol: '119174', name: 'DSP Midcap Fund Direct Growth', type: 'MUTUAL_FUND' as const },
-    ];
-
-    // Improved mutual fund search with flexible matching
-    const matchingMutualFunds = commonMutualFunds.filter(mf => {
-      const symbolMatch = mf.symbol.includes(searchTerm);
-      const nameMatch = mf.name.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      // Check if all search words are present in the name
-      const wordsMatch = searchWords.length > 1 ? 
-        searchWords.every(word => mf.name.toLowerCase().includes(word.toLowerCase())) : 
-        false;
-      
-      return symbolMatch || nameMatch || wordsMatch;
-    });
-
-    console.log(`Found ${matchingMutualFunds.length} mutual funds for search term: ${searchTerm}`);
-
-    results.push(...matchingMutualFunds.map(mf => ({
-      symbol: mf.symbol,
-      name: mf.name,
-      type: mf.type,
-      description: 'Mutual Fund investment option'
-    })));
+    // Mutual funds search removed - only stocks are supported
 
     // Sort results by relevance (exact matches first, then partial matches)
     results.sort((a, b) => {

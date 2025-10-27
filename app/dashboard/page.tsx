@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import UserDashboardLayout from '@/components/layouts/UserDashboardLayout';
 import Link from 'next/link';
+import axios from 'axios';
 
 interface User {
   id: string;
@@ -12,8 +13,15 @@ interface User {
   permissions: string[];
 }
 
+interface DashboardStats {
+  totalStocks: number;
+  totalSectors: number;
+}
+
 export default function UserDashboard() {
   const [user, setUser] = useState<User | null>(null);
+  const [stats, setStats] = useState<DashboardStats>({ totalStocks: 0, totalSectors: 0 });
+  const [loadingStats, setLoadingStats] = useState(true);
 
   useEffect(() => {
     const userStr = localStorage.getItem('user');
@@ -25,6 +33,23 @@ export default function UserDashboard() {
         console.error('Error parsing user data:', error);
       }
     }
+  }, []);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await axios.get('/api/dashboard/stats');
+        if (response.data.success) {
+          setStats(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+
+    fetchStats();
   }, []);
   return (
     <UserDashboardLayout currentPage="dashboard">
@@ -147,35 +172,7 @@ export default function UserDashboard() {
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Mutual Funds</p>
-                  <p className="text-2xl font-semibold text-gray-900">2,847</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">ETFs</p>
-                  <p className="text-2xl font-semibold text-gray-900">156</p>
-                </div>
-              </div>
-            </div>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <div className="flex items-center">
                 <div className="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
@@ -185,21 +182,33 @@ export default function UserDashboard() {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-500">Sectors</p>
-                  <p className="text-2xl font-semibold text-gray-900">12</p>
+                  <p className="text-2xl font-semibold text-gray-900">
+                    {loadingStats ? (
+                      <span className="inline-block w-16 h-8 bg-gray-200 animate-pulse rounded"></span>
+                    ) : (
+                      stats.totalSectors.toLocaleString()
+                    )}
+                  </p>
                 </div>
               </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center">
+                <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                   </svg>
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">Active Funds</p>
-                  <p className="text-2xl font-semibold text-gray-900">2,234</p>
+                  <p className="text-sm font-medium text-gray-500">Stocks Tracked</p>
+                  <p className="text-2xl font-semibold text-gray-900">
+                    {loadingStats ? (
+                      <span className="inline-block w-20 h-8 bg-gray-200 animate-pulse rounded"></span>
+                    ) : (
+                      stats.totalStocks.toLocaleString()
+                    )}
+                  </p>
                 </div>
               </div>
             </div>
@@ -221,7 +230,7 @@ export default function UserDashboard() {
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">Viewed SBI Bluechip Fund</p>
+                    <p className="text-sm font-medium text-gray-900">Viewed Reliance Industries</p>
                     <p className="text-xs text-gray-500">2 hours ago</p>
                   </div>
                 </div>
@@ -232,7 +241,7 @@ export default function UserDashboard() {
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">Compared ETF Performance</p>
+                    <p className="text-sm font-medium text-gray-900">Compared Stock Performance</p>
                     <p className="text-xs text-gray-500">Yesterday</p>
                   </div>
                 </div>
@@ -243,7 +252,7 @@ export default function UserDashboard() {
                     </svg>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">Downloaded Fund Report</p>
+                    <p className="text-sm font-medium text-gray-900">Added to Watchlist</p>
                     <p className="text-xs text-gray-500">3 days ago</p>
                   </div>
                 </div>
@@ -255,7 +264,7 @@ export default function UserDashboard() {
               <h3 className="text-lg font-semibold text-gray-900 mb-6">Quick Actions</h3>
               <div className="grid grid-cols-2 gap-4">
                 <Link
-                  href="/mutual-funds"
+                  href="/stocks"
                   className="flex flex-col items-center p-4 rounded-lg border-2 border-dashed border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors group"
                 >
                   <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center group-hover:bg-blue-600">
@@ -263,31 +272,31 @@ export default function UserDashboard() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                   </div>
-                  <span className="text-sm font-medium text-gray-700 mt-2">Browse Funds</span>
+                  <span className="text-sm font-medium text-gray-700 mt-2">Browse Stocks</span>
                 </Link>
 
                 <Link
-                  href="/stocks/gainers"
+                  href="/dashboard/watchlist"
                   className="flex flex-col items-center p-4 rounded-lg border-2 border-dashed border-gray-200 hover:border-green-300 hover:bg-green-50 transition-colors group"
                 >
                   <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center group-hover:bg-green-600">
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                   </div>
-                  <span className="text-sm font-medium text-gray-700 mt-2">Top Gainers</span>
+                  <span className="text-sm font-medium text-gray-700 mt-2">My Watchlist</span>
                 </Link>
 
                 <Link
-                  href="/etfs"
+                  href="/scanner"
                   className="flex flex-col items-center p-4 rounded-lg border-2 border-dashed border-gray-200 hover:border-purple-300 hover:bg-purple-50 transition-colors group"
                 >
                   <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center group-hover:bg-purple-600">
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                   </div>
-                  <span className="text-sm font-medium text-gray-700 mt-2">View ETFs</span>
+                  <span className="text-sm font-medium text-gray-700 mt-2">Stock Scanner</span>
                 </Link>
 
                 <Link

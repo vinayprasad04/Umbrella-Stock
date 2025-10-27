@@ -35,7 +35,6 @@ interface SavedScreener {
 const sharesTradingMenu = [
   { label: 'Home', href: '/' },
   { label: 'Sectors', href: '/sectors' },
-  { label: 'Mutual Fund', href: '/mutual-funds' },
   { label: 'Scanner', href: '/scanner' }
 ];
 

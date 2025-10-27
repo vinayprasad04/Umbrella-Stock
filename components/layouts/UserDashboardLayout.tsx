@@ -145,7 +145,7 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
             {currentPage === 'dashboard' && <div className="ml-auto w-2 h-2 bg-blue-500 rounded-full opacity-75"></div>}
           </Link>
           
-          <Link
+          {/* <Link
             href="/mutual-funds"
             className={`group relative flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:shadow-sm border ${
               currentPage === 'mutual-funds'
@@ -164,9 +164,9 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
             </div>
             Mutual Funds
             <span className="ml-auto px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">2.8K</span>
-          </Link>
+          </Link> */}
 
-          <Link
+          {/* <Link
             href="/etfs"
             className={`group relative flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:shadow-sm border ${
               currentPage === 'etfs'
@@ -185,9 +185,9 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
             </div>
             ETFs
             <span className="ml-auto px-2 py-1 text-xs bg-emerald-100 text-emerald-700 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">156</span>
-          </Link>
+          </Link> */}
 
-          <Link
+          {/* <Link
             href="/sectors"
             className={`group relative flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:shadow-sm border ${
               currentPage === 'sectors'
@@ -206,13 +206,13 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
             </div>
             Sectors
             <span className="ml-auto px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">12</span>
-          </Link>
+          </Link> */}
 
           <div className="my-6">
             <div className="h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
           </div>
 
-          <Link
+          {/* <Link
             href="/stocks/gainers"
             className="group relative flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-green-600 hover:bg-white rounded-xl transition-all duration-200 hover:shadow-sm border border-transparent hover:border-green-200"
           >
@@ -238,7 +238,7 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
               <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
               <span className="text-xs text-red-600 font-medium">-1.8%</span>
             </div>
-          </Link>
+          </Link> */}
 
           <Link
             href="/dashboard/watchlist"

@@ -86,20 +86,21 @@ export const convertBlobToBase64 = (blob: Blob): Promise<string> => {
 };
 
 export const validateImageFile = (file: File): { isValid: boolean; error?: string } => {
-  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-  const maxSize = 10 * 1024 * 1024; // 10MB original file limit
+  const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+  const maxSize = 2 * 1024 * 1024; // 2MB original file limit
 
   if (!validTypes.includes(file.type)) {
     return {
       isValid: false,
-      error: 'Please select a valid image file (JPEG, PNG, or WebP)'
+      error: 'Please select a valid image file (JPG, JPEG, or PNG only)'
     };
   }
 
   if (file.size > maxSize) {
+    const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
     return {
       isValid: false,
-      error: 'Image file is too large. Please select an image smaller than 10MB'
+      error: `Image file is too large (${fileSizeMB}MB). Please select an image smaller than 2MB`
     };
   }
 

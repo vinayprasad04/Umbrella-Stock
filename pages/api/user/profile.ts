@@ -70,27 +70,66 @@ export default async function handler(
 
     if (req.method === 'PUT') {
       // Update user profile
-      const { name, phone, location, bio, preferences, notifications } = req.body;
+      const { name, email, phone, location, bio, preferences, notifications } = req.body;
 
-      // Validation
-      if (name && (typeof name !== 'string' || name.trim().length < 2)) {
+      // Validation for name
+      if (name && (typeof name !== 'string' || name.trim().length < 1)) {
         return res.status(400).json({
           success: false,
-          error: 'Name must be at least 2 characters long',
+          error: 'Name is required and must be at least 1 character',
         });
       }
 
-      if (phone && (typeof phone !== 'string' || !/^[\+]?[0-9\s\-\(\)]+$/.test(phone))) {
+      if (name && name.trim().length > 40) {
         return res.status(400).json({
           success: false,
-          error: 'Invalid phone number format',
+          error: 'Name must not exceed 40 characters',
         });
       }
 
+      // Validation for email
+      if (email && (typeof email !== 'string' || email.trim().length > 60)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Email must not exceed 60 characters',
+        });
+      }
+
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid email format',
+        });
+      }
+
+      // Validation for phone
+      if (phone && typeof phone === 'string' && phone.length > 15) {
+        return res.status(400).json({
+          success: false,
+          error: 'Phone number must not exceed 15 characters',
+        });
+      }
+
+      if (phone && phone.length > 0 && !/^[\+]?[0-9\s\-\(\)]+$/.test(phone)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid phone number format. Only numbers, spaces, +, -, and () are allowed',
+        });
+      }
+
+      // Validation for location
+      if (location && typeof location === 'string' && location.length > 150) {
+        return res.status(400).json({
+          success: false,
+          error: 'Location must not exceed 150 characters',
+        });
+      }
+
+      // Validation for bio
       if (bio && typeof bio === 'string' && bio.length > 500) {
         return res.status(400).json({
           success: false,
-          error: 'Bio must be less than 500 characters',
+          error: 'Bio must not exceed 500 characters',
         });
       }
 

@@ -26,7 +26,7 @@ export default function Footer() {
               <span className="text-xl font-bold text-white">Umbrella Stock</span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Your comprehensive platform for stock market analysis, mutual funds tracking, and portfolio management with real-time insights.
+              Your comprehensive platform for stock market analysis and portfolio management with real-time insights.
             </p>
             <div className="flex gap-4">
               <a
@@ -84,18 +84,6 @@ export default function Footer() {
                 <Link href="/stocks" className="text-sm hover:text-white transition-colors duration-200 flex items-center gap-2 group">
                   <span className="text-orange-500 group-hover:translate-x-1 transition-transform">›</span>
                   Stocks
-                </Link>
-              </li>
-              <li>
-                <Link href="/mutual-funds" className="text-sm hover:text-white transition-colors duration-200 flex items-center gap-2 group">
-                  <span className="text-orange-500 group-hover:translate-x-1 transition-transform">›</span>
-                  Mutual Funds
-                </Link>
-              </li>
-              <li>
-                <Link href="/etfs" className="text-sm hover:text-white transition-colors duration-200 flex items-center gap-2 group">
-                  <span className="text-orange-500 group-hover:translate-x-1 transition-transform">›</span>
-                  ETFs
                 </Link>
               </li>
               <li>

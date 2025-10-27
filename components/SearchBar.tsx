@@ -201,7 +201,7 @@ export default function SearchBar() {
         </div>
         <input
           type="text"
-          placeholder="Search stocks, mutual funds, ETFs..."
+          placeholder="Search stocks..."
           value={searchQuery}
           onChange={handleSearchChange}
           onFocus={() => setIsSearchFocused(true)}
@@ -223,7 +223,7 @@ export default function SearchBar() {
       {isSearchFocused && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg md:rounded-xl shadow-xl border border-gray-200 overflow-hidden animate-in slide-in-from-top-2 duration-300 z-[100] w-full md:w-[150%] max-h-[80vh]">
           <div className="p-4">
-            {searchQuery && (searchResults.length > 0 || mutualFundResults.length > 0 || equityResults.length > 0) ? (
+            {searchQuery && (searchResults.length > 0 || equityResults.length > 0) ? (
               // Search Results Layout - Table Style
               <>
                 {/* Search Type Filter */}
@@ -235,7 +235,7 @@ export default function SearchBar() {
                         searchType === 'all' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                     >
-                      All ({searchResults.length + mutualFundResults.length + equityResults.length})
+                      All ({searchResults.length + equityResults.length})
                     </button>
                     <button
                       onClick={() => setSearchType('stocks')}
@@ -253,17 +253,9 @@ export default function SearchBar() {
                     >
                       Equity Stocks ({equityResults.length})
                     </button>
-                    <button
-                      onClick={() => setSearchType('mutual-funds')}
-                      className={`text-xs px-3 py-1 rounded-full transition-colors whitespace-nowrap ${
-                        searchType === 'mutual-funds' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      Mutual Funds ({mutualFundResults.length})
-                    </button>
                   </div>
                   <div className="text-xs text-gray-500 px-3 py-1">
-                    {(isMutualFundsLoading || isEquityLoading) ? 'Loading...' : `Showing results for "${searchQuery}"`}
+                    {isEquityLoading ? 'Loading...' : `Showing results for "${searchQuery}"`}
                   </div>
                 </div>
                 <div className="max-h-60 md:max-h-80 overflow-y-auto">
@@ -342,51 +334,10 @@ export default function SearchBar() {
                       </div>
                     ))}
 
-                    {/* Show mutual funds if searchType is 'all' or 'mutual-funds' */}
-                    {(searchType === 'all' || searchType === 'mutual-funds') && mutualFundResults.map((fund, index) => (
-                      <div 
-                        key={`fund-${index}`} 
-                        className="flex items-center justify-between p-4 border-b border-gray-100 last:border-b-0 hover:bg-green-50 cursor-pointer transition-all duration-200"
-                        onMouseDown={() => handleMutualFundSelect(fund)}
-                      >
-                        <div className="flex items-center gap-4 flex-1">
-                          <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg flex items-center justify-center shadow-sm">
-                            <span className="text-white text-xs font-bold">
-                              {fund.fundHouse.substring(0, 2).toUpperCase()}
-                            </span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            {/* First line: Fund Name and NAV */}
-                            <div className="flex items-center justify-between">
-                              <span className="font-bold text-gray-900 text-sm leading-tight w-4/5 truncate">
-                                {fund.schemeName}
-                              </span>
-                              {fund.nav && fund.nav > 0 && (
-                                <div className="text-right w-1/5 flex-shrink-0 ml-2">
-                                  <div className="text-lg font-bold text-gray-900">
-                                    ₹{fund.nav.toFixed(2)}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                            {/* Second line: Fund house, category, subcategory */}
-                            <div className="flex items-center gap-2 mt-1">
-                              <div className="text-sm text-gray-600 truncate">{fund.fundHouse}</div>
-                              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
-                                Mutual Fund
-                              </span>
-                              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                                {fund.category}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
                   </div>
                 </div>
               </>
-            ) : searchQuery && searchResults.length === 0 && mutualFundResults.length === 0 && equityResults.length === 0 && !isMutualFundsLoading && !isEquityLoading ? (
+            ) : searchQuery && searchResults.length === 0 && equityResults.length === 0 && !isEquityLoading ? (
               // No Results Layout
               <>
                 <div className="text-center py-12">
@@ -397,7 +348,7 @@ export default function SearchBar() {
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">No Results Found</h3>
                   <p className="text-gray-600 mb-1">No results found matching &quot;{searchQuery}&quot;</p>
-                  <p className="text-sm text-gray-500">Try searching for a stock symbol, company name, mutual fund name, fund house, or equity stock</p>
+                  <p className="text-sm text-gray-500">Try searching for a stock symbol, company name, or equity stock</p>
                 </div>
               </>
             ) : (
@@ -405,14 +356,14 @@ export default function SearchBar() {
               <>
                 <div className="mb-4">
                   <h3 className="text-sm font-bold text-gray-900 mb-2">Quick Access</h3>
-                  <p className="text-xs text-gray-500">Popular stocks and trending searches</p>
+                  {/* <p className="text-xs text-gray-500">Popular stocks and trending searches</p> */}
                 </div>
                 
                 {/* Popular Categories */}
                 <div className="mb-6">
-                  <div className="text-xs font-medium text-gray-700 mb-2">Popular Searches</div>
+                  {/* <div className="text-xs font-medium text-gray-700 mb-2">Popular Searches</div> */}
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {['RELIANCE', 'TCS', 'HDFC', 'ICICI', 'Banking', 'IT Services', 'Large Cap', 'SBI'].map((category) => (
+                    {['RELIANCE', 'TCS', 'HDFC', 'ICICI', 'Banking', 'SBI'].map((category) => (
                       <button 
                         key={category} 
                         onClick={() => setSearchQuery(category)}
@@ -450,14 +401,10 @@ export default function SearchBar() {
                 
                 {/* Quick Links */}
                 <div className="mt-6 pt-4 border-t border-gray-200">
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 gap-2">
                     <Link href="/" className="text-left p-2 rounded-lg hover:bg-gray-50 transition-colors">
                       <div className="text-sm font-medium text-gray-900">📊 Market Overview</div>
                       <div className="text-xs text-gray-500">View all indices</div>
-                    </Link>
-                    <Link href="/mutual-funds" className="text-left p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                      <div className="text-sm font-medium text-gray-900">📈 Mutual Funds</div>
-                      <div className="text-xs text-gray-500">Browse all funds</div>
                     </Link>
                   </div>
                 </div>

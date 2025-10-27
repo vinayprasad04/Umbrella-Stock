@@ -238,7 +238,7 @@ export default function HomePage() {
         <div className="text-center mb-6 md:mb-12">
           <div className="inline-flex items-center px-3 md:px-4 py-2 bg-gradient-to-r from-[#FF6B2C]/10 to-blue-600/10 rounded-full text-xs md:text-sm font-medium text-gray-700 mb-4 md:mb-6 backdrop-blur-sm border border-white/50">
             <div className={`w-2 h-2 rounded-full mr-2 ${marketOpen ? 'bg-green-400' : 'bg-red-400'}`}></div>
-            <span className="hidden sm:inline">{marketOpen ? '🟢 Market Open' : '🔴 Market Closed'} • Live Updates • </span>{lastUpdated.toLocaleTimeString('en-IN')}
+            <span className="hidden sm:inline">{marketOpen ? '🟢 Market Open' : '🔴 Market Closed'} • Live Updates • </span><span suppressHydrationWarning>{lastUpdated.toLocaleTimeString('en-IN')}</span>
           </div>
           
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-900 mb-3 md:mb-4 leading-tight px-2">
@@ -441,7 +441,7 @@ export default function HomePage() {
 
 
         {/* Investment Opportunities */}
-        <section>
+        {/* <section>
           <div className="text-center mb-6 md:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-blue-800 mb-3 md:mb-4">
               Investment Opportunities
@@ -449,10 +449,11 @@ export default function HomePage() {
             <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-2xl mx-auto px-2">
               Explore diversified investment options including ETFs and mutual funds to build your portfolio
             </p>
-          </div>
+          </div> 
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
-            {/* ETFs Section */}
+          {/* ETFs and Mutual Funds sections hidden */}
+          {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
+
             <div className="bg-white/70 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-8 border border-white/50 shadow-xl">
               <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-8">
                 <div className="w-8 h-8 md:w-12 md:h-12 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-lg md:rounded-2xl flex items-center justify-center shadow-lg">
@@ -469,7 +470,7 @@ export default function HomePage() {
                   <LoadingSpinner />
                 </div>
               ) : etfsError ? (
-                <ErrorMessage 
+                <ErrorMessage
                   title="Unable to load ETFs"
                   message={(etfsError as Error)?.message || 'Failed to fetch ETF data. Please try again later.'}
                 />
@@ -491,9 +492,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right Column: Mutual Funds + Sectors */}
-            <div className="space-y-4 md:space-y-8">
-              {/* Enhanced Mutual Funds Section */}
+
+            <div className="space-y-4 md:space-y-8"> 
+            
               <div className="bg-gradient-to-br from-purple-50/80 to-pink-50/80 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-8 border border-purple-100/50 shadow-xl hover:shadow-2xl transition-all duration-500">
                 <div className="flex items-center justify-between mb-4 md:mb-8">
                   <div className="flex items-center gap-2 md:gap-3">
@@ -543,19 +544,19 @@ export default function HomePage() {
                         className="block group"
                       >
                         <div className="bg-white/70 backdrop-blur-sm rounded-xl md:rounded-2xl border border-white/60 p-4 md:p-6 hover:bg-white/90 hover:scale-[1.02] hover:shadow-lg transition-all duration-300 cursor-pointer relative overflow-hidden">
-                          {/* Gradient Background Effect */}
+                       
                           <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                           
                           <div className="flex items-center gap-4 relative z-10">
-                            {/* Fund Icon */}
+                          
                             <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                               <span className="text-white text-lg md:text-xl font-bold">
                                 {(fund.name || fund.schemeName)?.charAt(0) || 'F'}
                               </span>
                             </div>
                             
-                            {/* Fund Info */}
-                            <div className="flex-1 min-w-0">
+                           
+                             <div className="flex-1 min-w-0">
                               <h4 className="font-bold text-gray-900 text-sm md:text-base leading-tight mb-1 group-hover:text-purple-700 transition-colors duration-300">
                                 {fund.name || fund.schemeName}
                               </h4>
@@ -567,7 +568,7 @@ export default function HomePage() {
                               </div>
                             </div>
                             
-                            {/* Performance Metrics */}
+                           
                             <div className="text-right flex-shrink-0">
                               <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-2 md:p-3 border border-purple-100">
                                 <p className="text-sm md:text-base font-bold text-gray-900">
@@ -585,10 +586,10 @@ export default function HomePage() {
                                   {fund.returns1Y ? `${fund.returns1Y >= 0 ? '+' : ''}${fund.returns1Y.toFixed(1)}%` : 'N/A'}
                                 </div>
                               </div>
-                            </div>
+                            </div> 
                           </div>
                           
-                          {/* Performance Bar */}
+                        
                           {fund.returns1Y && (
                             <div className="mt-3 relative">
                               <div className="w-full bg-gray-200 rounded-full h-1.5">
@@ -601,14 +602,14 @@ export default function HomePage() {
                               </div>
                               <p className="text-xs text-gray-500 mt-1">1Y Performance</p>
                             </div>
-                          )}
+                          )} 
                         </div>
                       </Link>
                     ))}
                   </div>
                 )}
 
-                {/* Enhanced Call-to-Action */}
+             
                 <div className="mt-6 md:mt-8">
                   <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl md:rounded-2xl p-4 md:p-6 text-white relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-r from-purple-400/20 to-pink-500/20 animate-pulse"></div>
@@ -627,11 +628,11 @@ export default function HomePage() {
                       </a>
                     </div>
                   </div>
-                </div>
-              </div>
+                </div> 
+              </div> 
 
-              {/* Enhanced Sector Performance Section */}
-              <div className="bg-gradient-to-br from-indigo-50/80 to-purple-50/80 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-8 border border-indigo-100/50 shadow-xl hover:shadow-2xl transition-all duration-500">
+
+              {/* <div className="bg-gradient-to-br from-indigo-50/80 to-purple-50/80 backdrop-blur-md rounded-2xl md:rounded-3xl p-4 md:p-8 border border-indigo-100/50 shadow-xl hover:shadow-2xl transition-all duration-500">
                 <div className="flex items-center justify-between mb-4 md:mb-8">
                   <div className="flex items-center gap-2 md:gap-3">
                     <div className="w-10 h-10 md:w-14 md:h-14 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg relative overflow-hidden">
@@ -705,18 +706,18 @@ export default function HomePage() {
                           className="block group"
                         >
                           <div className="bg-white/70 backdrop-blur-sm rounded-xl md:rounded-2xl border border-white/60 p-4 md:p-5 hover:bg-white/90 hover:scale-[1.02] hover:shadow-lg transition-all duration-300 cursor-pointer relative overflow-hidden">
-                            {/* Gradient Background Effect */}
+                          
                             <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             
                             <div className="flex items-center gap-4 relative z-10">
-                              {/* Sector Icon */}
+                            
                               <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                                 <span className="text-lg md:text-xl">
                                   {getSectorIcon(sector.name)}
                                 </span>
                               </div>
                               
-                              {/* Sector Info */}
+                             
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
                                   <h4 className="font-bold text-gray-900 text-sm md:text-base group-hover:text-indigo-700 transition-colors duration-300">
@@ -728,7 +729,7 @@ export default function HomePage() {
                                 </div>
                                 <p className="text-xs text-gray-500 font-medium mb-2">{sector.stockCount} stocks</p>
                                 
-                                {/* Performance Bar */}
+                              
                                 <div className="w-full bg-gray-200 rounded-full h-2">
                                   <div 
                                     className={`h-2 rounded-full bg-gradient-to-r ${getSectorColor(sector.performance)} transition-all duration-500`}
@@ -737,7 +738,7 @@ export default function HomePage() {
                                 </div>
                               </div>
                               
-                              {/* Performance Metrics */}
+                            
                               <div className="text-right flex-shrink-0">
                                 <div className={`inline-flex items-center px-3 py-2 rounded-full text-sm md:text-base font-bold shadow-sm ${
                                   sector.performance >= 0 
@@ -759,7 +760,7 @@ export default function HomePage() {
                   </div>
                 )}
 
-                {/* Enhanced Call-to-Action */}
+               
                 <div className="mt-6 md:mt-8">
                   <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl md:rounded-2xl p-4 md:p-6 text-white relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-r from-indigo-400/20 to-purple-500/20 animate-pulse"></div>
@@ -779,10 +780,10 @@ export default function HomePage() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> 
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Market Insights Section */}
         <section className="mt-8 md:mt-16 mb-8 md:mb-12">

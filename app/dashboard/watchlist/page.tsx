@@ -806,7 +806,7 @@ export default function WatchlistPage() {
               <div className="absolute z-10 w-full mt-2 bg-white rounded-xl shadow-lg border border-gray-200">
                 <div className="p-4 text-center">
                   <div className="text-gray-500 text-sm">
-                    No stocks or mutual funds found for "{searchQuery}"
+                    No stocks found for "{searchQuery}"
                   </div>
                 </div>
               </div>
