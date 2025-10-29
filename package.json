@@ -15,8 +15,7 @@
     "sync-corporate-actions": "node scripts/sync-corporate-actions.js",
     "check-news-stats": "node scripts/check-news-stats.js",
     "import-tickertape-mapping": "node scripts/import-tickertape-mapping.js",
-    "delete-all-news": "node scripts/delete-all-news.js",
-    "postinstall": "node scripts/postinstall.js"
+    "delete-all-news": "node scripts/delete-all-news.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

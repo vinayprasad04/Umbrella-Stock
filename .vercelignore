@@ -1,0 +1,33 @@
+# Dependencies
+node_modules
+
+# Local environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage
+
+# Scripts
+scripts/test-*.js
+scripts/debug-*.js
+
+# Documentation
+*.md
+!README.md
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
