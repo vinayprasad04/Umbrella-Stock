@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import crypto from 'crypto';
-import dbConnect from '@/lib/dbConnect';
-import User from '@/models/User';
-import { verifyToken } from '@/lib/auth';
+import connectDB from '@/lib/mongodb';
+import User from '@/lib/models/User';
+import { AuthUtils } from '@/lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json({ success: false, error: 'Authentication required' });
     }
 
-    const decoded = verifyToken(token);
+    const decoded = AuthUtils.verifyAccessToken(token);
     if (!decoded) {
       return res.status(401).json({ success: false, error: 'Invalid token' });
     }
@@ -38,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Payment verified successfully - upgrade user to premium
-    await dbConnect();
+    await connectDB();
 
     const user = await User.findById(decoded.userId);
     if (!user) {

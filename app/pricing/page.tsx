@@ -101,7 +101,7 @@ export default function Pricing() {
           email: user.email,
         },
         notes: {
-          userId: user._id,
+          userId: user.id,
         },
         theme: {
           color: '#EA580C',

@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import Razorpay from 'razorpay';
-import { verifyToken } from '@/lib/auth';
+import { AuthUtils } from '@/lib/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json({ success: false, error: 'Authentication required' });
     }
 
-    const decoded = verifyToken(token);
+    const decoded = AuthUtils.verifyAccessToken(token);
     if (!decoded) {
       return res.status(401).json({ success: false, error: 'Invalid token' });
     }
