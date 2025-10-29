@@ -17,13 +17,13 @@ export default function FAQ() {
     // General
     {
       category: 'general',
-      question: 'What is Umbrella Stock?',
-      answer: 'Umbrella Stock is a comprehensive investment platform that provides real-time stock market data, mutual fund information, portfolio tracking, and advanced analytics tools. We help investors make informed decisions by providing accurate, timely data and powerful analytical tools.'
+      question: 'What is IncomeGrow Stock?',
+      answer: 'IncomeGrow Stock is a comprehensive investment platform that provides real-time stock market data, mutual fund information, portfolio tracking, and advanced analytics tools. We help investors make informed decisions by providing accurate, timely data and powerful analytical tools.'
     },
     {
       category: 'general',
-      question: 'Is Umbrella Stock free to use?',
-      answer: 'Yes! Umbrella Stock offers a free tier with access to essential features including real-time stock prices, basic mutual fund data, and portfolio tracking. We also offer premium plans with advanced features for serious investors.'
+      question: 'Is IncomeGrow Stock free to use?',
+      answer: 'Yes! IncomeGrow Stock offers a free tier with access to essential features including real-time stock prices, basic mutual fund data, and portfolio tracking. We also offer premium plans with advanced features for serious investors.'
     },
     {
       category: 'general',
@@ -35,7 +35,7 @@ export default function FAQ() {
     {
       category: 'account',
       question: 'How do I create an account?',
-      answer: 'Click on the "Sign Up" button in the top right corner, fill in your details including name, email, and password. You\'ll receive a verification email - click the link to verify your account and start using Umbrella Stock.'
+      answer: 'Click on the "Sign Up" button in the top right corner, fill in your details including name, email, and password. You\'ll receive a verification email - click the link to verify your account and start using IncomeGrow Stock.'
     },
     {
       category: 'account',
@@ -101,12 +101,12 @@ export default function FAQ() {
     {
       category: 'technical',
       question: 'Do you have a mobile app?',
-      answer: 'Currently, Umbrella Stock is a web-based platform optimized for mobile browsers. We\'re working on native iOS and Android apps that will be launched soon.'
+      answer: 'Currently, IncomeGrow Stock is a web-based platform optimized for mobile browsers. We\'re working on native iOS and Android apps that will be launched soon.'
     },
     {
       category: 'technical',
       question: 'Which browsers are supported?',
-      answer: 'Umbrella Stock works best on modern browsers including Chrome, Firefox, Safari, and Edge. We recommend using the latest version of your preferred browser for the best experience.'
+      answer: 'IncomeGrow Stock works best on modern browsers including Chrome, Firefox, Safari, and Edge. We recommend using the latest version of your preferred browser for the best experience.'
     },
     {
       category: 'technical',
@@ -169,7 +169,7 @@ export default function FAQ() {
               </div>
               <h1 className="text-4xl md:text-6xl font-bold mb-6">Frequently Asked Questions</h1>
               <p className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-                Find answers to common questions about Umbrella Stock
+                Find answers to common questions about IncomeGrow Stock
               </p>
             </div>
           </div>

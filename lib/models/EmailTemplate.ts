@@ -24,7 +24,7 @@ const EmailTemplateSchema = new Schema<IEmailTemplate>(
     subject: {
       type: String,
       required: true,
-      default: 'Verify Your Email - Umbrella Stock',
+      default: 'Verify Your Email - IncomeGrow Stock',
     },
     heading: {
       type: String,
@@ -34,7 +34,7 @@ const EmailTemplateSchema = new Schema<IEmailTemplate>(
     bodyText: {
       type: String,
       required: true,
-      default: 'Thank you for subscribing to Umbrella Stock! To complete your subscription and start receiving market insights, investment updates, and exclusive content, please verify your email address by clicking the button below.',
+      default: 'Thank you for subscribing to IncomeGrow Stock! To complete your subscription and start receiving market insights, investment updates, and exclusive content, please verify your email address by clicking the button below.',
     },
     buttonText: {
       type: String,
@@ -43,7 +43,7 @@ const EmailTemplateSchema = new Schema<IEmailTemplate>(
     },
     footerText: {
       type: String,
-      default: "If you didn't subscribe to Umbrella Stock, you can safely ignore this email.",
+      default: "If you didn't subscribe to IncomeGrow Stock, you can safely ignore this email.",
     },
     primaryColor: {
       type: String,

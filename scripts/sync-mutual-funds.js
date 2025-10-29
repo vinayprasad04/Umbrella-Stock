@@ -4,7 +4,7 @@
  * This script fetches mutual fund data from AMFI and MFAPI and syncs it to MongoDB.
  * 
  * Steps:
- * 1. Connect to local MongoDB (umbrella-stock database)
+ * 1. Connect to local MongoDB (incomegrow-stock database)
  * 2. Fetch latest scheme list from AMFI NAVAll.txt
  * 3. Parse NAV data and extract scheme details
  * 4. For each scheme, fetch additional data from MFAPI
@@ -17,7 +17,7 @@ const axios = require('axios');
 const { MongoClient } = require('mongodb');
 
 // Configuration
-const MONGODB_URI = process.env.MONGODB_CONNECTION_URI || 'mongodb+srv://root:12345678901@cluster0.mihlqek.mongodb.net/umbrella-stock?retryWrites=true&w=majority';
+const MONGODB_URI = process.env.MONGODB_CONNECTION_URI || 'mongodb+srv://root:12345678901@cluster0.mihlqek.mongodb.net/incomegrow-stock?retryWrites=true&w=majority';
 const AMFI_NAV_URL = 'https://www.amfiindia.com/spages/NAVAll.txt';
 const MFAPI_BASE_URL = 'https://api.mfapi.in/mf';
 const REQUEST_DELAY = 200; // 200ms delay between API calls
@@ -35,7 +35,7 @@ async function connectToMongoDB() {
     try {
         mongoClient = new MongoClient(MONGODB_URI);
         await mongoClient.connect();
-        db = mongoClient.db('umbrella-stock');
+        db = mongoClient.db('incomegrow-stock');
         console.log('✅ Connected to MongoDB successfully');
         
         // Clean up invalid documents and ensure indexes

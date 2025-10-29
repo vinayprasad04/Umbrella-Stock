@@ -45,11 +45,11 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Agreement to Terms</h2>
               <p className="text-gray-700 leading-relaxed mb-4">
-                By accessing and using Umbrella Stock ("the Service", "Platform", "Website"), you agree to be bound by these Terms of Service
+                By accessing and using IncomeGrow Stock ("the Service", "Platform", "Website"), you agree to be bound by these Terms of Service
                 ("Terms"). If you do not agree to these Terms, please do not use our Service.
               </p>
               <p className="text-gray-700 leading-relaxed mb-4">
-                These Terms constitute a legally binding agreement between you and Umbrella Stock. Please read them carefully.
+                These Terms constitute a legally binding agreement between you and IncomeGrow Stock. Please read them carefully.
               </p>
             </section>
 
@@ -57,7 +57,7 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Definitions</h2>
               <ul className="list-disc list-inside space-y-2 text-gray-700 mb-4">
-                <li><strong>"Service"</strong> refers to the Umbrella Stock platform and all its features</li>
+                <li><strong>"Service"</strong> refers to the IncomeGrow Stock platform and all its features</li>
                 <li><strong>"User"</strong> refers to any person accessing or using the Service</li>
                 <li><strong>"Account"</strong> refers to your registered user account on the Platform</li>
                 <li><strong>"Content"</strong> refers to all data, text, software, music, sound, photographs, graphics, video, messages, or other materials</li>
@@ -164,7 +164,7 @@ export default function TermsOfService() {
               <h3 className="text-xl font-semibold text-gray-800 mb-3 mt-6">6.1 Our Content</h3>
               <p className="text-gray-700 leading-relaxed mb-4">
                 All content on the Service, including text, graphics, logos, software, and data compilations, is owned by
-                Umbrella Stock or its licensors and protected by intellectual property laws.
+                IncomeGrow Stock or its licensors and protected by intellectual property laws.
               </p>
 
               <h3 className="text-xl font-semibold text-gray-800 mb-3 mt-6">6.2 User Content</h3>
@@ -227,7 +227,7 @@ export default function TermsOfService() {
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">10. Indemnification</h2>
               <p className="text-gray-700 leading-relaxed mb-4">
-                You agree to indemnify and hold harmless Umbrella Stock, its officers, directors, employees, and agents
+                You agree to indemnify and hold harmless IncomeGrow Stock, its officers, directors, employees, and agents
                 from any claims, damages, losses, or expenses arising from:
               </p>
               <ul className="list-disc list-inside space-y-2 text-gray-700 mb-4">
@@ -290,7 +290,7 @@ export default function TermsOfService() {
             <section className="mb-8">
               <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-xl">
                 <p className="text-gray-700 leading-relaxed font-semibold">
-                  By using Umbrella Stock, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.
+                  By using IncomeGrow Stock, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.
                 </p>
               </div>
             </section>

@@ -25,7 +25,7 @@ export default function CancellationRefund() {
             <section>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Overview</h2>
               <p className="text-gray-700 leading-relaxed">
-                This Cancellation and Refund Policy outlines the terms and conditions for cancellations and refunds for services provided through Umbrella Stock.
+                This Cancellation and Refund Policy outlines the terms and conditions for cancellations and refunds for services provided through IncomeGrow Stock.
               </p>
             </section>
 
@@ -230,7 +230,7 @@ export default function CancellationRefund() {
 
             <div className="mt-8 pt-8 border-t border-gray-200">
               <p className="text-sm text-gray-600 italic">
-                <strong>Note:</strong> This policy is part of our Terms of Service. By using Umbrella Stock services, you agree to this Cancellation and Refund Policy.
+                <strong>Note:</strong> This policy is part of our Terms of Service. By using IncomeGrow Stock services, you agree to this Cancellation and Refund Policy.
               </p>
             </div>
 

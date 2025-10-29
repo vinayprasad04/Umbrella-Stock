@@ -110,7 +110,7 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
             </div>
             <div className="ml-4">
               <h2 className="text-xl font-bold text-gray-800">
-                Umbrella Stock
+                IncomeGrow Stock
               </h2>
               <p className="text-sm text-gray-600 font-medium">Analytics Platform</p>
             </div>

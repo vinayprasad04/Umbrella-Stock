@@ -64,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const emailHtml = await generateVerificationEmail(normalizedEmail, verificationUrl);
       const emailResult = await sendEmail({
         to: normalizedEmail,
-        subject: 'Verify Your Email - Umbrella Stock',
+        subject: 'Verify Your Email - IncomeGrow Stock',
         html: emailHtml,
       });
 
@@ -98,7 +98,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const emailHtml = await generateVerificationEmail(normalizedEmail, verificationUrl);
     const emailResult = await sendEmail({
       to: normalizedEmail,
-      subject: 'Verify Your Email - Umbrella Stock',
+      subject: 'Verify Your Email - IncomeGrow Stock',
       html: emailHtml,
     });
 

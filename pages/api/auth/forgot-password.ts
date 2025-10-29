@@ -94,7 +94,7 @@ export default async function handler(
                 <!-- Header -->
                 <tr>
                   <td style="padding: 40px 40px 20px; text-align: center; background: linear-gradient(135deg, #FF6B2C 0%, #FF8A50 100%); border-radius: 8px 8px 0 0;">
-                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">Umbrella Stock</h1>
+                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">IncomeGrow Stock</h1>
                     <p style="margin: 10px 0 0; color: #ffffff; font-size: 16px; opacity: 0.9;">Password Reset Request</p>
                   </td>
                 </tr>
@@ -140,7 +140,7 @@ export default async function handler(
                 <tr>
                   <td style="padding: 30px 40px; text-align: center; background-color: #f9fafb; border-radius: 0 0 8px 8px;">
                     <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">
-                      © ${new Date().getFullYear()} Umbrella Stock. All rights reserved.
+                      © ${new Date().getFullYear()} IncomeGrow Stock. All rights reserved.
                     </p>
                     <p style="margin: 0; color: #9ca3af; font-size: 12px;">
                       This email was sent to ${email}
@@ -158,7 +158,7 @@ export default async function handler(
     // Send password reset email
     const emailResult = await sendEmail({
       to: email,
-      subject: 'Reset Your Password - Umbrella Stock',
+      subject: 'Reset Your Password - IncomeGrow Stock',
       html: emailHtml,
       text: `Reset your password by clicking this link: ${resetUrl}\n\nThis link will expire in 1 hour.\n\nIf you didn't request this, please ignore this email.`
     });

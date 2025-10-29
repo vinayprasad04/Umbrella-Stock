@@ -18,7 +18,7 @@ export default function AboutUs() {
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
             <div className="text-center">
               <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-100">
-                About Umbrella Stock
+                About IncomeGrow Stock
               </h1>
               <p className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
                 Empowering investors with comprehensive financial insights and real-time market data
@@ -53,7 +53,7 @@ export default function AboutUs() {
                 <h2 className="text-4xl font-bold text-gray-900 mb-6">Building the Future of Investment Research</h2>
                 <div className="space-y-4 text-gray-700 text-lg leading-relaxed">
                   <p>
-                    Umbrella Stock was founded with a simple yet powerful vision: to democratize access to
+                    IncomeGrow Stock was founded with a simple yet powerful vision: to democratize access to
                     financial information and empower every investor to make informed decisions about their
                     financial future.
                   </p>
@@ -268,7 +268,7 @@ export default function AboutUs() {
               <div className="relative">
                 <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Join Thousands of Smart Investors</h2>
                 <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-                  Start your journey to smarter investing today with Umbrella Stock
+                  Start your journey to smarter investing today with IncomeGrow Stock
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link

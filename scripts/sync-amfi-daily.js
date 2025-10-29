@@ -12,7 +12,7 @@ const axios = require('axios');
 const { MongoClient } = require('mongodb');
 
 // Configuration
-const MONGODB_URI = process.env.MONGODB_CONNECTION_URI || 'mongodb+srv://root:12345678901@cluster0.mihlqek.mongodb.net/umbrella-stock?retryWrites=true&w=majority';
+const MONGODB_URI = process.env.MONGODB_CONNECTION_URI || 'mongodb+srv://root:12345678901@cluster0.mihlqek.mongodb.net/incomegrow-stock?retryWrites=true&w=majority';
 const AMFI_BASE_URL = 'https://portal.amfiindia.com/DownloadNAVHistoryReport_Po.aspx';
 
 // MongoDB client
@@ -177,7 +177,7 @@ async function connectToMongoDB() {
   try {
     mongoClient = new MongoClient(MONGODB_URI);
     await mongoClient.connect();
-    db = mongoClient.db('umbrella-stock');
+    db = mongoClient.db('incomegrow-stock');
     console.log('✅ Connected to MongoDB successfully');
     
     // Ensure collection exists and has proper indexes

@@ -23,7 +23,7 @@ export default function Footer() {
                   className="w-5 h-5 object-contain filter brightness-0 invert"
                 />
               </div>
-              <span className="text-xl font-bold text-white">Umbrella Stock</span>
+              <span className="text-xl font-bold text-white">IncomeGrow Stock</span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed">
               Your comprehensive platform for stock market analysis and portfolio management with real-time insights.
@@ -205,7 +205,7 @@ export default function Footer() {
         <div className="py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm text-gray-400 text-center md:text-left">
-              <p>© {currentYear} Umbrella Stock. All rights reserved.</p>
+              <p>© {currentYear} IncomeGrow Stock. All rights reserved.</p>
               <p className="text-xs mt-1">
                 Market data provided for informational purposes only. Not investment advice.
               </p>

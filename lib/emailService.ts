@@ -58,7 +58,7 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
     console.log('📧 Sending email to:', options.to);
 
     const info = await transporter.sendMail({
-      from: `"Umbrella Stock" <${process.env.EMAIL_USER}>`,
+      from: `"IncomeGrow Stock" <${process.env.EMAIL_USER}>`,
       to: options.to,
       subject: options.subject,
       html: options.html,
@@ -118,7 +118,7 @@ export async function generateVerificationEmail(email: string, verificationUrl: 
                   <!-- Header -->
                   <tr>
                     <td style="padding: 40px 40px 20px; text-align: center; background: linear-gradient(135deg, ${template.primaryColor} 0%, ${gradientEnd} 100%); border-radius: 8px 8px 0 0;">
-                      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">Umbrella Stock</h1>
+                      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">IncomeGrow Stock</h1>
                       <p style="margin: 10px 0 0; color: #ffffff; font-size: 16px; opacity: 0.9;">Welcome to our community!</p>
                     </td>
                   </tr>
@@ -172,7 +172,7 @@ export async function generateVerificationEmail(email: string, verificationUrl: 
                   <tr>
                     <td style="padding: 30px 40px; text-align: center; background-color: #f9fafb; border-radius: 0 0 8px 8px;">
                       <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">
-                        © ${new Date().getFullYear()} Umbrella Stock. All rights reserved.
+                        © ${new Date().getFullYear()} IncomeGrow Stock. All rights reserved.
                       </p>
                       <p style="margin: 0; color: #9ca3af; font-size: 12px;">
                         This email was sent to ${email}
@@ -208,7 +208,7 @@ export async function generateVerificationEmail(email: string, verificationUrl: 
               <!-- Header -->
               <tr>
                 <td style="padding: 40px 40px 20px; text-align: center; background: linear-gradient(135deg, #FF6B2C 0%, #FF8A50 100%); border-radius: 8px 8px 0 0;">
-                  <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">Umbrella Stock</h1>
+                  <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">IncomeGrow Stock</h1>
                   <p style="margin: 10px 0 0; color: #ffffff; font-size: 16px; opacity: 0.9;">Welcome to our community!</p>
                 </td>
               </tr>
@@ -219,7 +219,7 @@ export async function generateVerificationEmail(email: string, verificationUrl: 
                   <h2 style="margin: 0 0 20px; color: #1f2937; font-size: 24px; font-weight: 600;">Verify Your Email Address</h2>
 
                   <p style="margin: 0 0 20px; color: #4b5563; font-size: 16px; line-height: 1.5;">
-                    Thank you for subscribing to Umbrella Stock! To complete your subscription and start receiving market insights, investment updates, and exclusive content, please verify your email address.
+                    Thank you for subscribing to IncomeGrow Stock! To complete your subscription and start receiving market insights, investment updates, and exclusive content, please verify your email address.
                   </p>
 
                   <p style="margin: 0 0 30px; color: #4b5563; font-size: 16px; line-height: 1.5;">
@@ -238,7 +238,7 @@ export async function generateVerificationEmail(email: string, verificationUrl: 
                   </table>
 
                   <p style="margin: 30px 0 0; color: #6b7280; font-size: 14px; line-height: 1.5;">
-                    If you didn't subscribe to Umbrella Stock, you can safely ignore this email.
+                    If you didn't subscribe to IncomeGrow Stock, you can safely ignore this email.
                   </p>
 
                   <p style="margin: 20px 0 0; color: #6b7280; font-size: 14px; line-height: 1.5;">
@@ -262,7 +262,7 @@ export async function generateVerificationEmail(email: string, verificationUrl: 
               <tr>
                 <td style="padding: 30px 40px; text-align: center; background-color: #f9fafb; border-radius: 0 0 8px 8px;">
                   <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">
-                    © ${new Date().getFullYear()} Umbrella Stock. All rights reserved.
+                    © ${new Date().getFullYear()} IncomeGrow Stock. All rights reserved.
                   </p>
                   <p style="margin: 0; color: #9ca3af; font-size: 12px;">
                     This email was sent to ${email}

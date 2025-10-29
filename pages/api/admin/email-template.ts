@@ -75,11 +75,11 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
 
   const template = await EmailTemplate.create({
     name,
-    subject: subject || 'Verify Your Email - Umbrella Stock',
+    subject: subject || 'Verify Your Email - IncomeGrow Stock',
     heading: heading || 'Verify Your Email Address',
-    bodyText: bodyText || 'Thank you for subscribing to Umbrella Stock! To complete your subscription and start receiving market insights, investment updates, and exclusive content, please verify your email address by clicking the button below.',
+    bodyText: bodyText || 'Thank you for subscribing to IncomeGrow Stock! To complete your subscription and start receiving market insights, investment updates, and exclusive content, please verify your email address by clicking the button below.',
     buttonText: buttonText || 'Verify Email Address',
-    footerText: footerText || "If you didn't subscribe to Umbrella Stock, you can safely ignore this email.",
+    footerText: footerText || "If you didn't subscribe to IncomeGrow Stock, you can safely ignore this email.",
     primaryColor: primaryColor || '#FF6B2C',
     isActive: true,
   });

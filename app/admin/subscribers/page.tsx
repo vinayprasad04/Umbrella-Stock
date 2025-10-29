@@ -55,11 +55,11 @@ export default function SubscribersManagement() {
   const [showTemplateEditor, setShowTemplateEditor] = useState(false);
   const [template, setTemplate] = useState<EmailTemplate>({
     name: 'verification',
-    subject: 'Verify Your Email - Umbrella Stock',
+    subject: 'Verify Your Email - IncomeGrow Stock',
     heading: 'Verify Your Email Address',
-    bodyText: 'Thank you for subscribing to Umbrella Stock! To complete your subscription and start receiving market insights, investment updates, and exclusive content, please verify your email address by clicking the button below.',
+    bodyText: 'Thank you for subscribing to IncomeGrow Stock! To complete your subscription and start receiving market insights, investment updates, and exclusive content, please verify your email address by clicking the button below.',
     buttonText: 'Verify Email Address',
-    footerText: "If you didn't subscribe to Umbrella Stock, you can safely ignore this email.",
+    footerText: "If you didn't subscribe to IncomeGrow Stock, you can safely ignore this email.",
     primaryColor: '#FF6B2C',
     isActive: true,
   });

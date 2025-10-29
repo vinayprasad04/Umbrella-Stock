@@ -199,7 +199,7 @@ require('dotenv').config({ path: '.env.local' });
 // MongoDB connection
 const connectDB = async () => {
   try {
-    const mongoUri = process.env.MONGODB_CONNECTION_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/umbrella-stock';
+    const mongoUri = process.env.MONGODB_CONNECTION_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/incomegrow-stock';
     await mongoose.connect(mongoUri);
     console.log('📦 Connected to MongoDB');
   } catch (error) {

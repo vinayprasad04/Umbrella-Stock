@@ -144,7 +144,7 @@ function SignupForm() {
                   />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-white">Join Umbrella Stock</h1>
+                  <h1 className="text-2xl font-bold text-white">Join IncomeGrow Stock</h1>
                   <p className="text-teal-200 text-sm">Create your account today</p>
                 </div>
               </div>

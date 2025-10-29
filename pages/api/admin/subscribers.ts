@@ -182,7 +182,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     const emailHtml = await generateVerificationEmail(subscriber.email, verificationUrl);
     const emailResult = await sendEmail({
       to: subscriber.email,
-      subject: 'Verify Your Email - Umbrella Stock',
+      subject: 'Verify Your Email - IncomeGrow Stock',
       html: emailHtml,
     });
 

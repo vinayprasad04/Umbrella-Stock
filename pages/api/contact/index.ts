@@ -43,7 +43,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       try {
         await sendEmail({
           to: email,
-          subject: 'Thank you for contacting Umbrella Stock',
+          subject: 'Thank you for contacting IncomeGrow Stock',
           html: `
             <!DOCTYPE html>
             <html>
@@ -64,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 </div>
                 <div class="content">
                   <p>Dear ${name},</p>
-                  <p>Thank you for reaching out to Umbrella Stock. We have received your message and our team will review it shortly.</p>
+                  <p>Thank you for reaching out to IncomeGrow Stock. We have received your message and our team will review it shortly.</p>
 
                   <p><strong>Your Message Details:</strong></p>
                   <p><strong>Subject:</strong> ${subject}</p>
@@ -74,11 +74,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                   <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}" class="button">Visit Our Website</a>
 
-                  <p style="margin-top: 30px;">Best regards,<br><strong>Umbrella Stock Team</strong></p>
+                  <p style="margin-top: 30px;">Best regards,<br><strong>IncomeGrow Stock Team</strong></p>
                 </div>
                 <div class="footer">
                   <p>This is an automated message, please do not reply to this email.</p>
-                  <p>&copy; ${new Date().getFullYear()} Umbrella Stock. All rights reserved.</p>
+                  <p>&copy; ${new Date().getFullYear()} IncomeGrow Stock. All rights reserved.</p>
                 </div>
               </div>
             </body>

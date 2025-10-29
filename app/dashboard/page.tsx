@@ -100,7 +100,7 @@ export default function UserDashboard() {
         key: data.keyId,
         amount: data.amount,
         currency: data.currency,
-        name: 'Umbrella Stock',
+        name: 'IncomeGrow Stock',
         description: 'Premium Annual Subscription',
         order_id: data.orderId,
         handler: async function (response: any) {

@@ -23,7 +23,7 @@ export default function Disclaimer() {
               </div>
               <h1 className="text-4xl md:text-6xl font-bold mb-6">Disclaimer</h1>
               <p className="text-xl md:text-2xl text-orange-100 max-w-3xl mx-auto leading-relaxed">
-                Important legal disclaimers regarding the use of Umbrella Stock
+                Important legal disclaimers regarding the use of IncomeGrow Stock
               </p>
             </div>
           </div>
@@ -43,7 +43,7 @@ export default function Disclaimer() {
                 <h3 className="text-xl font-bold text-yellow-900 mb-3">Please Read Carefully</h3>
                 <p className="text-yellow-800 leading-relaxed text-lg">
                   This disclaimer contains important information about the limitations and risks associated with using
-                  Umbrella Stock. By accessing or using our platform, you acknowledge that you have read, understood,
+                  IncomeGrow Stock. By accessing or using our platform, you acknowledge that you have read, understood,
                   and agree to this disclaimer.
                 </p>
               </div>
@@ -56,7 +56,7 @@ export default function Disclaimer() {
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">1. General Disclaimer</h2>
               <p className="text-gray-700 leading-relaxed mb-4">
-                The information provided on Umbrella Stock is for general informational purposes only. While we strive
+                The information provided on IncomeGrow Stock is for general informational purposes only. While we strive
                 to keep the information accurate and up-to-date, we make no representations or warranties of any kind,
                 express or implied, about the completeness, accuracy, reliability, suitability, or availability of the
                 information, products, services, or related graphics contained on the platform.
@@ -69,7 +69,7 @@ export default function Disclaimer() {
               <div className="bg-red-50 border border-red-200 rounded-xl p-6 mb-4">
                 <p className="text-red-800 font-bold mb-3">IMPORTANT: Not Investment Advice</p>
                 <p className="text-gray-700 leading-relaxed mb-4">
-                  <strong>None of the content on Umbrella Stock constitutes financial, investment, trading, tax, legal,
+                  <strong>None of the content on IncomeGrow Stock constitutes financial, investment, trading, tax, legal,
                   or any other type of professional advice.</strong> All information provided is for educational and
                   informational purposes only.
                 </p>
@@ -167,7 +167,7 @@ export default function Disclaimer() {
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">8. Regulatory Compliance</h2>
               <p className="text-gray-700 leading-relaxed mb-4">
-                <strong>Umbrella Stock is not a SEBI-registered investment advisor or portfolio manager.</strong>
+                <strong>IncomeGrow Stock is not a SEBI-registered investment advisor or portfolio manager.</strong>
               </p>
               <ul className="list-disc list-inside space-y-2 text-gray-700 mb-4">
                 <li>We do not facilitate trading or execute transactions</li>
@@ -181,7 +181,7 @@ export default function Disclaimer() {
             <section className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">9. User Responsibility</h2>
               <p className="text-gray-700 leading-relaxed mb-4">
-                By using Umbrella Stock, you acknowledge and agree that:
+                By using IncomeGrow Stock, you acknowledge and agree that:
               </p>
               <ul className="list-disc list-inside space-y-2 text-gray-700 mb-4">
                 <li>You are solely responsible for your investment decisions</li>
@@ -238,7 +238,7 @@ export default function Disclaimer() {
             <section className="mb-8">
               <div className="bg-orange-50 border-l-4 border-orange-500 p-6 rounded-r-xl">
                 <p className="text-gray-700 leading-relaxed">
-                  <strong>By using Umbrella Stock, you acknowledge that you have read, understood, and agree to this
+                  <strong>By using IncomeGrow Stock, you acknowledge that you have read, understood, and agree to this
                   disclaimer. If you do not agree with this disclaimer, you must immediately cease using the platform.</strong>
                 </p>
               </div>

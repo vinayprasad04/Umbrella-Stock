@@ -237,7 +237,7 @@ export default function APIDocumentation() {
               </div>
               <h1 className="text-4xl md:text-6xl font-bold mb-6">API Documentation</h1>
               <p className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-                Integrate Umbrella Stock data into your applications
+                Integrate IncomeGrow Stock data into your applications
               </p>
               <div className="mt-8 flex flex-wrap gap-4 justify-center">
                 <div className="bg-white/10 backdrop-blur-md rounded-xl px-6 py-3 border border-white/20">
@@ -270,7 +270,7 @@ export default function APIDocumentation() {
               <div className="flex-1">
                 <h2 className="text-2xl font-bold text-gray-900 mb-3">Getting Started</h2>
                 <p className="text-gray-700 leading-relaxed mb-4">
-                  The Umbrella Stock API is a RESTful API that provides access to real-time stock prices, mutual fund data,
+                  The IncomeGrow Stock API is a RESTful API that provides access to real-time stock prices, mutual fund data,
                   portfolio management, and more. All responses are in JSON format.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">

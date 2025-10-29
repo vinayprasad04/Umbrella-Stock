@@ -65,7 +65,7 @@ export default function Pricing() {
         key: data.keyId,
         amount: data.amount,
         currency: data.currency,
-        name: 'Umbrella Stock',
+        name: 'IncomeGrow Stock',
         description: 'Premium Annual Subscription',
         order_id: data.orderId,
         handler: async function (response: any) {
@@ -390,7 +390,7 @@ export default function Pricing() {
               Get Premium for <span className="font-bold text-yellow-300 text-3xl">₹99/year</span> - Save ₹900!
             </p>
             <p className="text-lg text-white/80 mb-8">
-              Join thousands of investors already using Umbrella Stock to make smarter investment decisions.
+              Join thousands of investors already using IncomeGrow Stock to make smarter investment decisions.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/signup">

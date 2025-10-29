@@ -21,7 +21,7 @@ function generateAccountVerificationEmail(name: string, email: string, verificat
             <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
               <tr>
                 <td style="padding: 40px 40px 20px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px 8px 0 0;">
-                  <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">Umbrella Stock</h1>
+                  <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">IncomeGrow Stock</h1>
                   <p style="margin: 10px 0 0; color: #ffffff; font-size: 16px; opacity: 0.9;">Welcome aboard, ${name}!</p>
                 </td>
               </tr>
@@ -29,7 +29,7 @@ function generateAccountVerificationEmail(name: string, email: string, verificat
                 <td style="padding: 40px;">
                   <h2 style="margin: 0 0 20px; color: #1f2937; font-size: 24px; font-weight: 600;">Verify Your Email Address</h2>
                   <p style="margin: 0 0 20px; color: #4b5563; font-size: 16px; line-height: 1.5;">
-                    Thank you for creating an account with Umbrella Stock! To complete your registration and start accessing all features, please verify your email address.
+                    Thank you for creating an account with IncomeGrow Stock! To complete your registration and start accessing all features, please verify your email address.
                   </p>
                   <p style="margin: 0 0 30px; color: #4b5563; font-size: 16px; line-height: 1.5;">
                     Click the button below to verify your account:
@@ -58,7 +58,7 @@ function generateAccountVerificationEmail(name: string, email: string, verificat
               <tr>
                 <td style="padding: 30px 40px; text-align: center; background-color: #f9fafb; border-radius: 0 0 8px 8px;">
                   <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">
-                    © ${new Date().getFullYear()} Umbrella Stock. All rights reserved.
+                    © ${new Date().getFullYear()} IncomeGrow Stock. All rights reserved.
                   </p>
                   <p style="margin: 0; color: #9ca3af; font-size: 12px;">
                     This email was sent to ${email}
@@ -125,7 +125,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const emailHtml = generateAccountVerificationEmail(user.name, user.email, verificationUrl);
     const emailResult = await sendEmail({
       to: user.email,
-      subject: 'Verify Your Account - Umbrella Stock',
+      subject: 'Verify Your Account - IncomeGrow Stock',
       html: emailHtml,
     });
 

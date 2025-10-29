@@ -25,7 +25,7 @@ export default function ShippingDelivery() {
             <section>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Overview</h2>
               <p className="text-gray-700 leading-relaxed">
-                Umbrella Stock is a digital service platform providing stock market analysis, research, and investment tools. As we provide digital services and products, this Shipping and Delivery Policy outlines how our services and digital products are delivered to users.
+                IncomeGrow Stock is a digital service platform providing stock market analysis, research, and investment tools. As we provide digital services and products, this Shipping and Delivery Policy outlines how our services and digital products are delivered to users.
               </p>
             </section>
 
@@ -34,7 +34,7 @@ export default function ShippingDelivery() {
 
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Digital Services - No Physical Shipping</h3>
 
-              <p className="text-gray-700 mb-3">Umbrella Stock provides exclusively digital services, including:</p>
+              <p className="text-gray-700 mb-3">IncomeGrow Stock provides exclusively digital services, including:</p>
               <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4 mb-4">
                 <li>Stock market analysis and insights</li>
                 <li>Investment research reports</li>
@@ -247,7 +247,7 @@ export default function ShippingDelivery() {
 
             <section>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Contact Information</h2>
-              <p className="text-gray-700 font-semibold mb-2">Umbrella Stock</p>
+              <p className="text-gray-700 font-semibold mb-2">IncomeGrow Stock</p>
               <ul className="space-y-2 text-gray-700">
                 <li><strong>Email:</strong> <a href="mailto:vinay.qss@gmail.com" className="text-blue-600 hover:text-blue-700">vinay.qss@gmail.com</a></li>
                 <li><strong>Website:</strong> <a href="https://www.stock.incomegrow.in/" className="text-blue-600 hover:text-blue-700">https://www.stock.incomegrow.in/</a></li>
@@ -257,7 +257,7 @@ export default function ShippingDelivery() {
 
             <div className="mt-8 pt-8 border-t border-gray-200">
               <p className="text-sm text-gray-600 italic">
-                <strong>Note:</strong> This policy applies exclusively to digital product and service delivery. No physical goods are shipped by Umbrella Stock.
+                <strong>Note:</strong> This policy applies exclusively to digital product and service delivery. No physical goods are shipped by IncomeGrow Stock.
               </p>
             </div>
 

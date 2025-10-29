@@ -50,7 +50,7 @@ export default function CookiePolicy() {
                 and provide information to website owners.
               </p>
               <p className="text-gray-700 leading-relaxed mb-4">
-                This Cookie Policy explains how Umbrella Stock uses cookies and similar technologies, what information
+                This Cookie Policy explains how IncomeGrow Stock uses cookies and similar technologies, what information
                 they collect, and how you can control them.
               </p>
             </section>

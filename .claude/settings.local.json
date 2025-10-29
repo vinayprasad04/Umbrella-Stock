@@ -60,7 +60,9 @@
       "Bash(nvm use:*)",
       "Bash(nvm alias:*)",
       "Bash(findstr:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(while read file)",
+      "Bash(do sed:*)"
     ],
     "deny": [],
     "ask": [],
