@@ -4,18 +4,21 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
+import ReCaptchaProvider from '@/components/ReCaptchaProvider';
 
 interface ForgotPasswordForm {
   email: string;
 }
 
-export default function ForgotPassword() {
+function ForgotPasswordForm() {
   const [form, setForm] = useState<ForgotPasswordForm>({ email: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const router = useRouter();
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,13 +26,25 @@ export default function ForgotPassword() {
     setError('');
     setSuccess('');
 
+    // Execute ReCaptcha
+    if (!executeRecaptcha) {
+      setError('ReCaptcha not loaded. Please refresh the page.');
+      setLoading(false);
+      return;
+    }
+
     try {
+      const recaptchaToken = await executeRecaptcha('forgot_password');
+
       const response = await fetch('/api/auth/forgot-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          recaptchaToken,
+        }),
       });
 
       const data = await response.json();
@@ -235,5 +250,13 @@ export default function ForgotPassword() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ForgotPassword() {
+  return (
+    <ReCaptchaProvider>
+      <ForgotPasswordForm />
+    </ReCaptchaProvider>
   );
 }

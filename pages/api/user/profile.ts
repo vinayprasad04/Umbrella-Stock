@@ -53,6 +53,7 @@ export default async function handler(
           joinedAt: user.createdAt,
           lastLoginAt: user.lastLoginAt,
           isEmailVerified: user.isEmailVerified,
+          passwordChangedAt: user.passwordChangedAt,
           preferences: user.preferences || {
             theme: 'light',
             language: 'en',

@@ -5,19 +5,22 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/lib/AuthContext';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
+import ReCaptchaProvider from '@/components/ReCaptchaProvider';
 
 interface LoginForm {
   email: string;
   password: string;
 }
 
-export default function Login() {
+function LoginForm() {
   const [form, setForm] = useState<LoginForm>({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { login, isAuthenticated, user, isLoading } = useAuth();
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -41,13 +44,25 @@ export default function Login() {
     setLoading(true);
     setError('');
 
+    // Execute ReCaptcha
+    if (!executeRecaptcha) {
+      setError('ReCaptcha not loaded. Please refresh the page.');
+      setLoading(false);
+      return;
+    }
+
     try {
+      const recaptchaToken = await executeRecaptcha('login');
+
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          recaptchaToken,
+        }),
       });
 
       const data = await response.json();
@@ -55,20 +70,20 @@ export default function Login() {
       if (data.success) {
         // Store tokens and user info using ClientAuth
         const { user, accessToken, refreshToken, expiresIn, refreshExpiresIn } = data.data;
-        
+
         // Use ClientAuth to store tokens properly
         const tokens = { accessToken, refreshToken, expiresIn, refreshExpiresIn };
-        
+
         // Store tokens with ClientAuth utility
         localStorage.setItem('authToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
         localStorage.setItem('tokenExpiry', (Date.now() + expiresIn).toString());
         localStorage.setItem('refreshExpiry', (Date.now() + refreshExpiresIn).toString());
         localStorage.setItem('user', JSON.stringify(user));
-        
+
         // Update AuthContext immediately
         login(tokens, user);
-        
+
         // Small delay to ensure AuthContext is updated before navigation
         setTimeout(() => {
           // Redirect based on user role
@@ -246,7 +261,7 @@ export default function Login() {
             {/* Divider */}
             <div className="my-6 flex items-center">
               <div className="flex-1 border-t border-white/20"></div>
-              <span className="px-4 text-sm text-gray-300">Demo Access</span>
+              <span className="px-4 text-sm text-gray-300">Access</span>
               <div className="flex-1 border-t border-white/20"></div>
             </div>
 
@@ -279,5 +294,13 @@ export default function Login() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Login() {
+  return (
+    <ReCaptchaProvider>
+      <LoginForm />
+    </ReCaptchaProvider>
   );
 }

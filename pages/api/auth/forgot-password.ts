@@ -4,9 +4,11 @@ import User from '@/lib/models/User';
 import { APIResponse } from '@/types';
 import crypto from 'crypto';
 import { sendEmail } from '@/lib/emailService';
+import { verifyRecaptcha } from '@/lib/recaptcha';
 
 interface ForgotPasswordRequest {
   email: string;
+  recaptchaToken?: string;
 }
 
 export default async function handler(
@@ -22,9 +24,20 @@ export default async function handler(
 
   try {
     await connectDB();
-    
-    const { email }: ForgotPasswordRequest = req.body;
-    
+
+    const { email, recaptchaToken }: ForgotPasswordRequest = req.body;
+
+    // Verify reCAPTCHA
+    if (recaptchaToken) {
+      const recaptchaResult = await verifyRecaptcha(recaptchaToken, 'forgot_password');
+      if (!recaptchaResult.success) {
+        return res.status(400).json({
+          success: false,
+          error: recaptchaResult.error || 'reCAPTCHA verification failed',
+        });
+      }
+    }
+
     if (!email) {
       return res.status(400).json({
         success: false,

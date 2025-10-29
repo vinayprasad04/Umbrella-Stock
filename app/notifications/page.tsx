@@ -42,7 +42,7 @@ export default function NotificationsPage() {
   const [filter, setFilter] = useState<'all' | 'unread' | 'read'>('all');
   const [typeFilter, setTypeFilter] = useState<'all' | Notification['type']>('all');
 
-  // Mock notifications data - replace with API call
+  // Load notifications from API
   useEffect(() => {
     const loadNotifications = async () => {
       if (!isAuthenticated || !user) {
@@ -50,76 +50,9 @@ export default function NotificationsPage() {
         return;
       }
 
-      // Mock data - replace with actual API call
-      const mockNotifications: Notification[] = [
-        {
-          id: '1',
-          title: 'Price Alert Triggered',
-          message: 'RELIANCE has reached your target price of ₹2,450',
-          type: 'price_alert',
-          priority: 'high',
-          read: false,
-          createdAt: new Date(Date.now() - 2 * 60 * 1000).toISOString(), // 2 minutes ago
-          data: { symbol: 'RELIANCE', price: 2450, target: 2450 }
-        },
-        {
-          id: '2',
-          title: 'Market Update',
-          message: 'Nifty 50 gains 1.2% in morning session, led by IT and Banking stocks',
-          type: 'news',
-          priority: 'medium',
-          read: false,
-          createdAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(), // 15 minutes ago
-        },
-        {
-          id: '3',
-          title: 'Security Alert',
-          message: 'New login detected from Chrome on Windows. If this wasn\'t you, secure your account immediately.',
-          type: 'security',
-          priority: 'high',
-          read: false,
-          createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
-        },
-        {
-          id: '4',
-          title: 'Portfolio Performance',
-          message: 'Your portfolio gained 2.8% this week. View detailed analysis.',
-          type: 'account',
-          priority: 'medium',
-          read: true,
-          createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-        },
-        {
-          id: '5',
-          title: 'System Maintenance',
-          message: 'Scheduled maintenance on Sunday 2 AM - 4 AM IST. Trading will be unavailable.',
-          type: 'system',
-          priority: 'medium',
-          read: true,
-          createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-        },
-        {
-          id: '6',
-          title: 'Market Closure',
-          message: 'Markets will be closed tomorrow due to public holiday.',
-          type: 'market',
-          priority: 'medium',
-          read: true,
-          createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
-        },
-        {
-          id: '7',
-          title: 'Price Alert Triggered',
-          message: 'HDFCBANK dropped below your stop loss at ₹1,520',
-          type: 'price_alert',
-          priority: 'high',
-          read: true,
-          createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
-          data: { symbol: 'HDFCBANK', price: 1518, target: 1520 }
-        },
-      ];
-
-      setNotifications(mockNotifications);
+      // TODO: Replace with actual API call
+      // For now, set empty notifications array
+      setNotifications([]);
       setLoading(false);
     };
 

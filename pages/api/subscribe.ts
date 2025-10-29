@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import connectDB from '@/lib/mongodb';
 import Subscriber from '@/lib/models/Subscriber';
 import { sendEmail, generateVerificationEmail } from '@/lib/emailService';
+import { verifyRecaptcha } from '@/lib/recaptcha';
 import crypto from 'crypto';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -12,7 +13,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     await connectDB();
 
-    const { email } = req.body;
+    const { email, recaptchaToken } = req.body;
+
+    // Verify reCAPTCHA
+    if (recaptchaToken) {
+      const recaptchaResult = await verifyRecaptcha(recaptchaToken, 'subscribe');
+      if (!recaptchaResult.success) {
+        return res.status(400).json({
+          success: false,
+          error: recaptchaResult.error || 'reCAPTCHA verification failed',
+        });
+      }
+    }
 
     // Validate email
     if (!email || typeof email !== 'string') {

@@ -1,24 +1,42 @@
 'use client';
 
 import { useState } from 'react';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
+import ReCaptchaProvider from '@/components/ReCaptchaProvider';
 
-export default function Subscribe() {
+function SubscribeForm() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
 
+    // Execute ReCaptcha
+    if (!executeRecaptcha) {
+      setMessage({
+        type: 'error',
+        text: 'ReCaptcha not loaded. Please refresh the page.',
+      });
+      setLoading(false);
+      return;
+    }
+
     try {
+      const recaptchaToken = await executeRecaptcha('subscribe');
+
       const response = await fetch('/api/subscribe', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({
+          email,
+          recaptchaToken,
+        }),
       });
 
       const data = await response.json();
@@ -287,5 +305,13 @@ export default function Subscribe() {
         }
       `}</style>
     </section>
+  );
+}
+
+export default function Subscribe() {
+  return (
+    <ReCaptchaProvider>
+      <SubscribeForm />
+    </ReCaptchaProvider>
   );
 }

@@ -2,13 +2,25 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import connectDB from '@/lib/mongodb';
 import Contact from '@/models/Contact';
 import { sendEmail } from '@/lib/emailService';
+import { verifyRecaptcha } from '@/lib/recaptcha';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connectDB();
 
   if (req.method === 'POST') {
     try {
-      const { name, email, subject, message } = req.body;
+      const { name, email, subject, message, recaptchaToken } = req.body;
+
+      // Verify reCAPTCHA
+      if (recaptchaToken) {
+        const recaptchaResult = await verifyRecaptcha(recaptchaToken, 'contact');
+        if (!recaptchaResult.success) {
+          return res.status(400).json({
+            success: false,
+            message: recaptchaResult.error || 'reCAPTCHA verification failed',
+          });
+        }
+      }
 
       // Validate input
       if (!name || !email || !subject || !message) {

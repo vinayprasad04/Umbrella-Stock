@@ -123,8 +123,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.removeItem('refreshExpiry');
       localStorage.removeItem('user');
 
-      // Use replace instead of href to prevent back button issues
-      window.location.replace('/login');
+      // Don't redirect - let the user stay on the current page
+      // Components will handle showing logged-out state
     }
   };
 

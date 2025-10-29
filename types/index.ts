@@ -62,6 +62,14 @@ export interface User {
   email: string;
   watchlist: string[];
   searchHistory: string[];
+  subscription?: {
+    plan: 'free' | 'premium';
+    status: 'active' | 'expired' | 'cancelled';
+    startDate?: Date;
+    endDate?: Date;
+    paymentId?: string;
+    orderId?: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }

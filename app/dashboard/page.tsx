@@ -1,9 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import UserDashboardLayout from '@/components/layouts/UserDashboardLayout';
 import Link from 'next/link';
 import axios from 'axios';
+
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
 interface User {
   id: string;
@@ -22,6 +29,9 @@ export default function UserDashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [stats, setStats] = useState<DashboardStats>({ totalStocks: 0, totalSectors: 0 });
   const [loadingStats, setLoadingStats] = useState(true);
+  const [loadingPayment, setLoadingPayment] = useState(false);
+  const [paymentError, setPaymentError] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     const userStr = localStorage.getItem('user');
@@ -51,6 +61,102 @@ export default function UserDashboard() {
 
     fetchStats();
   }, []);
+
+  // Load Razorpay script
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const handlePayment = async () => {
+    setLoadingPayment(true);
+    setPaymentError('');
+
+    try {
+      // Create order
+      const token = localStorage.getItem('authToken');
+      const response = await fetch('/api/payment/create-order', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to create payment order');
+      }
+
+      // Initialize Razorpay
+      const options = {
+        key: data.keyId,
+        amount: data.amount,
+        currency: data.currency,
+        name: 'Umbrella Stock',
+        description: 'Premium Annual Subscription',
+        order_id: data.orderId,
+        handler: async function (response: any) {
+          try {
+            // Verify payment
+            const verifyResponse = await fetch('/api/payment/verify', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
+
+            const verifyData = await verifyResponse.json();
+
+            if (verifyData.success) {
+              router.push('/payment/success');
+            } else {
+              throw new Error(verifyData.error || 'Payment verification failed');
+            }
+          } catch (err: any) {
+            setPaymentError(err.message || 'Payment verification failed');
+            router.push('/payment/failure');
+          }
+        },
+        prefill: {
+          name: user?.name,
+          email: user?.email,
+        },
+        notes: {
+          userId: user?.id,
+        },
+        theme: {
+          color: '#EA580C',
+        },
+        modal: {
+          ondismiss: function() {
+            setLoadingPayment(false);
+          }
+        }
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+      setLoadingPayment(false);
+    } catch (err: any) {
+      console.error('Payment error:', err);
+      setPaymentError(err.message || 'Failed to initiate payment');
+      setLoadingPayment(false);
+    }
+  };
   return (
     <UserDashboardLayout currentPage="dashboard">
       <div className="p-8 space-y-8">
@@ -124,14 +230,25 @@ export default function UserDashboard() {
                   {user?.role === 'USER' && (
                     <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border border-blue-200/60 rounded-2xl p-6 mb-6 shadow-sm">
                       <div className="flex items-center justify-between">
-                        <div>
+                        <div className="flex-1">
                           <h3 className="text-xl font-bold mb-2 text-gray-900">Unlock Premium Features</h3>
                           <p className="text-gray-600 mb-4 font-medium">
-                            Get access to advanced analytics, real-time data, and exclusive insights.
+                            Get access to advanced analytics, real-time data, and exclusive insights for just ₹99/year!
                           </p>
-                          <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-bold text-sm hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 shadow-md">
-                            Upgrade Now
+                          <button
+                            onClick={handlePayment}
+                            disabled={loadingPayment}
+                            className={`bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-bold text-sm hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 shadow-md ${
+                              loadingPayment ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
+                          >
+                            {loadingPayment ? 'Processing...' : 'Upgrade Now - ₹99/year'}
                           </button>
+                          {paymentError && (
+                            <div className="mt-3 bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg text-sm">
+                              {paymentError}
+                            </div>
+                          )}
                         </div>
                         <div className="hidden md:block">
                           <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center shadow-sm">

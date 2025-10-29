@@ -22,6 +22,22 @@ const UserSchema = new Schema<User>({
     type: String,
     trim: true,
   }],
+  subscription: {
+    plan: {
+      type: String,
+      enum: ['free', 'premium'],
+      default: 'free',
+    },
+    status: {
+      type: String,
+      enum: ['active', 'expired', 'cancelled'],
+      default: 'active',
+    },
+    startDate: Date,
+    endDate: Date,
+    paymentId: String,
+    orderId: String,
+  },
 }, {
   timestamps: true,
 });

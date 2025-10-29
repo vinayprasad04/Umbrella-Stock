@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/lib/AuthContext';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
+import ReCaptchaProvider from '@/components/ReCaptchaProvider';
 
 interface SignupForm {
   name: string;
@@ -14,7 +16,7 @@ interface SignupForm {
   phone?: string;
 }
 
-export default function Signup() {
+function SignupForm() {
   const [form, setForm] = useState<SignupForm>({
     name: '',
     email: '',
@@ -29,6 +31,7 @@ export default function Signup() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
   const { isAuthenticated, user, isLoading } = useAuth();
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -61,7 +64,16 @@ export default function Signup() {
       return;
     }
 
+    // Execute ReCaptcha
+    if (!executeRecaptcha) {
+      setError('ReCaptcha not loaded. Please refresh the page.');
+      setLoading(false);
+      return;
+    }
+
     try {
+      const recaptchaToken = await executeRecaptcha('signup');
+
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: {
@@ -72,6 +84,7 @@ export default function Signup() {
           email: form.email,
           password: form.password,
           phone: form.phone,
+          recaptchaToken,
         }),
       });
 
@@ -251,7 +264,7 @@ export default function Signup() {
                         required
                         minLength={6}
                         className="w-full pl-12 pr-12 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent backdrop-blur-sm transition-all duration-200 hover:bg-white/15"
-                        placeholder="Create password"
+                        placeholder="Password"
                         value={form.password}
                         onChange={(e) => setForm({ ...form, password: e.target.value })}
                       />
@@ -290,7 +303,7 @@ export default function Signup() {
                         type={showConfirmPassword ? 'text' : 'password'}
                         required
                         className="w-full pl-12 pr-12 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent backdrop-blur-sm transition-all duration-200 hover:bg-white/15"
-                        placeholder="Confirm password"
+                        placeholder="Password"
                         value={form.confirmPassword}
                         onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
                       />
@@ -378,5 +391,13 @@ export default function Signup() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Signup() {
+  return (
+    <ReCaptchaProvider>
+      <SignupForm />
+    </ReCaptchaProvider>
   );
 }

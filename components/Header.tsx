@@ -35,7 +35,8 @@ interface SavedScreener {
 const sharesTradingMenu = [
   { label: 'Home', href: '/' },
   { label: 'Sectors', href: '/sectors' },
-  { label: 'Scanner', href: '/scanner' }
+  { label: 'Scanner', href: '/scanner' },
+  { label: 'Pricing', href: '/pricing' }
 ];
 
 export default function Header() {
@@ -137,7 +138,7 @@ export default function Header() {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
     setUser(null);
-    router.push('/');
+    // Don't redirect - stay on current page
   };
 
   const handleDeleteScreener = async (screenerId: string) => {
@@ -514,6 +515,7 @@ export default function Header() {
                       {item.label === 'Sectors' && '🏢'}
                       {item.label === 'Mutual Fund' && '📈'}
                       {item.label === 'Scanner' && '🔍'}
+                      {item.label === 'Pricing' && '💎'}
                     </div>
                     <div className="flex-1">
                       <span className="block font-semibold">{item.label}</span>
@@ -522,6 +524,7 @@ export default function Header() {
                         {item.label === 'Sectors' && 'Industry Analysis'}
                         {item.label === 'Mutual Fund' && 'Fund Investment'}
                         {item.label === 'Scanner' && 'Stock Screening'}
+                        {item.label === 'Pricing' && 'Plans & Features'}
                       </span>
                     </div>
                     <svg className="w-5 h-5 opacity-50 group-hover:opacity-100 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">

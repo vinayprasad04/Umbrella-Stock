@@ -5,12 +5,14 @@ import { APIResponse } from '@/types';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { sendEmail } from '@/lib/emailService';
+import { verifyRecaptcha } from '@/lib/recaptcha';
 
 interface SignupRequest {
   name: string;
   email: string;
   password: string;
   phone?: string;
+  recaptchaToken?: string;
 }
 
 interface SignupResponse {
@@ -104,9 +106,20 @@ export default async function handler(
 
   try {
     await connectDB();
-    
-    const { name, email, password, phone }: SignupRequest = req.body;
-    
+
+    const { name, email, password, phone, recaptchaToken }: SignupRequest = req.body;
+
+    // Verify reCAPTCHA
+    if (recaptchaToken) {
+      const recaptchaResult = await verifyRecaptcha(recaptchaToken, 'signup');
+      if (!recaptchaResult.success) {
+        return res.status(400).json({
+          success: false,
+          error: recaptchaResult.error || 'reCAPTCHA verification failed',
+        });
+      }
+    }
+
     // Validation
     if (!name || !email || !password) {
       return res.status(400).json({

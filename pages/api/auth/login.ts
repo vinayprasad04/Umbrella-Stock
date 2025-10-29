@@ -5,10 +5,12 @@ import { APIResponse } from '@/types';
 import bcrypt from 'bcryptjs';
 import { AuthUtils, AuthTokens } from '@/lib/auth';
 import { withAuthSecurity } from '@/lib/security';
+import { verifyRecaptcha } from '@/lib/recaptcha';
 
 interface LoginRequest {
   email: string;
   password: string;
+  recaptchaToken?: string;
 }
 
 interface LoginResponse {
@@ -38,9 +40,20 @@ async function loginHandler(
 
   try {
     await connectDB();
-    
-    const { email, password }: LoginRequest = req.body;
-    
+
+    const { email, password, recaptchaToken }: LoginRequest = req.body;
+
+    // Verify reCAPTCHA
+    if (recaptchaToken) {
+      const recaptchaResult = await verifyRecaptcha(recaptchaToken, 'login');
+      if (!recaptchaResult.success) {
+        return res.status(400).json({
+          success: false,
+          error: recaptchaResult.error || 'reCAPTCHA verification failed',
+        });
+      }
+    }
+
     if (!email || !password) {
       return res.status(400).json({
         success: false,

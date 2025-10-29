@@ -38,6 +38,7 @@ interface UserProfile {
   joinedAt?: string;
   avatar?: string;
   bio?: string;
+  passwordChangedAt?: string;
   notifications: {
     email: boolean;
     push: boolean;
@@ -234,13 +235,34 @@ export default function ProfilePage() {
     setError('');
     setSuccess('');
 
+    // Frontend validation
+    if (!passwordData.currentPassword) {
+      setError('Current password is required');
+      return;
+    }
+
+    if (!passwordData.newPassword) {
+      setError('New password is required');
+      return;
+    }
+
+    if (!passwordData.confirmPassword) {
+      setError('Please confirm your new password');
+      return;
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      setError('New password must be at least 6 characters long');
+      return;
+    }
+
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       setError('New passwords do not match');
       return;
     }
 
-    if (passwordData.newPassword.length < 6) {
-      setError('Password must be at least 6 characters long');
+    if (passwordData.currentPassword === passwordData.newPassword) {
+      setError('New password must be different from current password');
       return;
     }
 
@@ -261,9 +283,19 @@ export default function ProfilePage() {
           newPassword: '',
           confirmPassword: ''
         });
+
+        // Update profile with new passwordChangedAt timestamp
+        if (profile) {
+          setProfile({
+            ...profile,
+            passwordChangedAt: new Date().toISOString()
+          });
+        }
       }
     } catch (error: any) {
-      setError(error.response?.data?.error || 'Failed to change password');
+      // Display specific error messages from the server
+      const errorMessage = error.response?.data?.error || 'Failed to change password. Please try again.';
+      setError(errorMessage);
     }
   };
 
@@ -495,26 +527,47 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {/* Fixed Success/Error Messages */}
+        {success && (
+          <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl px-4 animate-slide-down">
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-800 px-6 py-4 rounded-xl shadow-lg">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <FontAwesomeIcon icon={faCheck} className="w-5 h-5 text-green-600 mr-3" />
+                  {success}
+                </div>
+                <button
+                  onClick={() => setSuccess('')}
+                  className="text-green-600 hover:text-green-800 ml-4"
+                >
+                  <FontAwesomeIcon icon={faTimes} className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl px-4 animate-slide-down">
+            <div className="bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 text-red-800 px-6 py-4 rounded-xl shadow-lg">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <FontAwesomeIcon icon={faTimes} className="w-5 h-5 text-red-600 mr-3" />
+                  {error}
+                </div>
+                <button
+                  onClick={() => setError('')}
+                  className="text-red-600 hover:text-red-800 ml-4"
+                >
+                  <FontAwesomeIcon icon={faTimes} className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Content Section */}
         <div className="max-w-6xl mx-auto px-8 py-8">
-          {/* Success/Error Messages */}
-          {success && (
-            <div className="mb-8 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-800 px-6 py-4 rounded-xl shadow-sm">
-              <div className="flex items-center">
-                <FontAwesomeIcon icon={faCheck} className="w-5 h-5 text-green-600 mr-3" />
-                {success}
-              </div>
-            </div>
-          )}
-          
-          {error && (
-            <div className="mb-8 bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 text-red-800 px-6 py-4 rounded-xl shadow-sm">
-              <div className="flex items-center">
-                <FontAwesomeIcon icon={faTimes} className="w-5 h-5 text-red-600 mr-3" />
-                {error}
-              </div>
-            </div>
-          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Right Column - Settings */}
@@ -690,7 +743,9 @@ export default function ProfilePage() {
                 {isEditingPassword ? (
                   <form onSubmit={handlePasswordSubmit} className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Current Password <span className="text-red-500">*</span>
+                      </label>
                       <div className="relative">
                         <input
                           type={showPasswords.current ? 'text' : 'password'}
@@ -709,7 +764,9 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        New Password <span className="text-red-500">*</span>
+                      </label>
                       <div className="relative">
                         <input
                           type={showPasswords.new ? 'text' : 'password'}
@@ -717,6 +774,7 @@ export default function ProfilePage() {
                           onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
                           className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                           required
+                          minLength={6}
                         />
                         <button
                           type="button"
@@ -726,9 +784,17 @@ export default function ProfilePage() {
                           <FontAwesomeIcon icon={showPasswords.new ? faEyeSlash : faEye} className="w-4 h-4" />
                         </button>
                       </div>
+                      {passwordData.newPassword.length > 0 && passwordData.newPassword.length < 6 && (
+                        <p className="text-xs text-red-600 mt-1">Password must be at least 6 characters</p>
+                      )}
+                      {passwordData.newPassword.length >= 6 && (
+                        <p className="text-xs text-green-600 mt-1">Password length is valid</p>
+                      )}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Confirm New Password <span className="text-red-500">*</span>
+                      </label>
                       <div className="relative">
                         <input
                           type={showPasswords.confirm ? 'text' : 'password'}
@@ -745,6 +811,12 @@ export default function ProfilePage() {
                           <FontAwesomeIcon icon={showPasswords.confirm ? faEyeSlash : faEye} className="w-4 h-4" />
                         </button>
                       </div>
+                      {passwordData.confirmPassword.length > 0 && passwordData.newPassword !== passwordData.confirmPassword && (
+                        <p className="text-xs text-red-600 mt-1">Passwords do not match</p>
+                      )}
+                      {passwordData.confirmPassword.length > 0 && passwordData.newPassword === passwordData.confirmPassword && (
+                        <p className="text-xs text-green-600 mt-1">Passwords match</p>
+                      )}
                     </div>
                     <div className="flex gap-3">
                       <button
@@ -766,7 +838,15 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <div className="text-sm text-gray-600">
-                      Last changed: Never
+                      Last changed: {profile.passwordChangedAt
+                        ? new Date(profile.passwordChangedAt).toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })
+                        : 'Never'}
                     </div>
                   </div>
                 )}

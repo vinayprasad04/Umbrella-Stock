@@ -104,6 +104,12 @@ export default function Footer() {
                   Watchlist
                 </Link>
               </li>
+              <li>
+                <Link href="/pricing" className="text-sm hover:text-white transition-colors duration-200 flex items-center gap-2 group">
+                  <span className="text-orange-500 group-hover:translate-x-1 transition-transform">›</span>
+                  Pricing
+                </Link>
+              </li>
             </ul>
           </div>
 
