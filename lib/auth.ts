@@ -17,18 +17,20 @@ export interface AuthTokens {
 }
 
 export class AuthUtils {
-  private static readonly JWT_SECRET = this.getJWTSecret();
-  private static readonly REFRESH_SECRET = this.getRefreshSecret();
-
   // Access token expires in 15 minutes (more secure)
   private static readonly ACCESS_TOKEN_EXPIRY = '15m';
   // Refresh token expires in 4 hours
   private static readonly REFRESH_TOKEN_EXPIRY = '4h';
 
   /**
-   * Get JWT secret with validation
+   * Get JWT secret with validation - lazy loaded for server-side only
    */
   private static getJWTSecret(): string {
+    // Only run on server-side
+    if (typeof window !== 'undefined') {
+      throw new Error('JWT_SECRET should never be accessed on client-side');
+    }
+
     const secret = process.env.JWT_SECRET;
     if (!secret || secret === 'your-secret-key') {
       console.error('⚠️  SECURITY WARNING: JWT_SECRET is not set or using default value. Please set a strong secret in your .env file.');
@@ -44,9 +46,14 @@ export class AuthUtils {
   }
 
   /**
-   * Get refresh secret with validation
+   * Get refresh secret with validation - lazy loaded for server-side only
    */
   private static getRefreshSecret(): string {
+    // Only run on server-side
+    if (typeof window !== 'undefined') {
+      throw new Error('REFRESH_JWT_SECRET should never be accessed on client-side');
+    }
+
     const secret = process.env.REFRESH_JWT_SECRET;
     if (!secret || secret === 'your-refresh-secret-key') {
       console.error('⚠️  SECURITY WARNING: REFRESH_JWT_SECRET is not set or using default value. Please set a strong secret in your .env file.');
@@ -68,11 +75,11 @@ export class AuthUtils {
     const accessTokenPayload = { ...payload, type: 'access' };
     const refreshTokenPayload = { ...payload, type: 'refresh' };
 
-    const accessToken = jwt.sign(accessTokenPayload, this.JWT_SECRET, {
+    const accessToken = jwt.sign(accessTokenPayload, this.getJWTSecret(), {
       expiresIn: this.ACCESS_TOKEN_EXPIRY,
     });
 
-    const refreshToken = jwt.sign(refreshTokenPayload, this.REFRESH_SECRET, {
+    const refreshToken = jwt.sign(refreshTokenPayload, this.getRefreshSecret(), {
       expiresIn: this.REFRESH_TOKEN_EXPIRY,
     });
 
@@ -89,7 +96,7 @@ export class AuthUtils {
    */
   static verifyAccessToken(token: string): TokenPayload | null {
     try {
-      const decoded = jwt.verify(token, this.JWT_SECRET) as TokenPayload;
+      const decoded = jwt.verify(token, this.getJWTSecret()) as TokenPayload;
       if (decoded.type !== 'access') {
         throw new Error('Invalid token type');
       }
@@ -104,7 +111,7 @@ export class AuthUtils {
    */
   static verifyRefreshToken(token: string): TokenPayload | null {
     try {
-      const decoded = jwt.verify(token, this.REFRESH_SECRET) as TokenPayload;
+      const decoded = jwt.verify(token, this.getRefreshSecret()) as TokenPayload;
       if (decoded.type !== 'refresh') {
         throw new Error('Invalid token type');
       }
