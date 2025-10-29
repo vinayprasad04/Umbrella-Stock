@@ -32,11 +32,12 @@ Add/Update these variables:
 
 ```bash
 # Database
-MONGODB_CONNECTION_URI=mongodb+srv://root:12345678901@cluster0.mihlqek.mongodb.net/incomegrow-stock?retryWrites=true&w=majority
+MONGODB_CONNECTION_URI=
+retryWrites=true&w=majority
 
 # JWT Authentication
-JWT_SECRET=incomegrow-stock-jwt-secret-key-2024-admin-auth
-REFRESH_JWT_SECRET=incomegrow-stock-refresh-jwt-secret-key-2024-admin-auth
+JWT_SECRET=
+REFRESH_JWT_SECRET=
 
 # Domain
 NEXT_PUBLIC_BASE_URL=https://stock.incomegrow.in
@@ -47,12 +48,12 @@ EMAIL_USER=vinay.qss@gmail.com
 EMAIL_PASS=jaznhofvilfzdukl
 
 # reCAPTCHA
-NEXT_PUBLIC_RECAPTCHA_SITE_KEY=6LcdrvgrAAAAAMqME_dqZhxffCiFHbPZmKc754Am
-RECAPTCHA_SECRET_KEY=6LcdrvgrAAAAAIr9mjU6EuNxxjsynLILtqSSJ3l4
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY=
+RECAPTCHA_SECRET_KEY=
 
 # Razorpay (TEST MODE - Update to LIVE when ready)
-NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_RZHVAvi9JJX7V0
-RAZORPAY_KEY_SECRET=G5lkQCfiJRspamKauWeWwEHu
+NEXT_PUBLIC_RAZORPAY_KEY_ID=
+RAZORPAY_KEY_SECRET=
 ```
 
 **Important**: For production, replace Razorpay test keys with live keys!

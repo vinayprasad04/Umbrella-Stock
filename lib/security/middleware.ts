@@ -259,7 +259,7 @@ export function securityHeaders(res: NextApiResponse): void {
  * Origin Validation for Sensitive Operations
  */
 export function validateOrigin(req: NextApiRequest, res: NextApiResponse): boolean {
-  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map(o => o.trim()) || [
     'http://localhost:3000',
     'http://localhost:3001',
     process.env.NEXT_PUBLIC_BASE_URL || '',
@@ -272,10 +272,21 @@ export function validateOrigin(req: NextApiRequest, res: NextApiResponse): boole
     return true;
   }
 
+  // If no origin header (like mobile apps, Postman, etc.), allow
+  if (!origin) {
+    return true;
+  }
+
   // Check if origin matches allowed domains
-  const isAllowed = allowedOrigins.some(allowed => origin.startsWith(allowed));
+  const isAllowed = allowedOrigins.some(allowed => {
+    if (!allowed) return false;
+    // Check exact match or if origin starts with allowed origin
+    return origin === allowed || origin.startsWith(allowed);
+  });
 
   if (!isAllowed) {
+    console.warn(`⚠️  Blocked request from origin: ${origin}`);
+    console.warn(`   Allowed origins: ${allowedOrigins.join(', ')}`);
     res.status(403).json({
       success: false,
       error: 'Request origin not allowed',

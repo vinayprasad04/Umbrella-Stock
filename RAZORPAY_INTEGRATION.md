@@ -7,8 +7,8 @@ Razorpay payment gateway has been successfully integrated with test credentials.
 ## 🔑 Current Configuration
 
 ### Test Mode Credentials (Development)
-- **Key ID**: `rzp_test_RZHVAvi9JJX7V0`
-- **Key Secret**: `G5lkQCfiJRspamKauWeWwEHu`
+- **Key ID**: `
+- **Key Secret**: ``
 - **Environment**: TEST MODE
 
 ### Production Credentials (For Deployment)
@@ -118,13 +118,13 @@ RAZORPAY_KEY_SECRET=YOUR_KEY_SECRET
 
 # Other required variables
 MONGODB_CONNECTION_URI=mongodb+srv://...
-JWT_SECRET=incomegrow-stock-jwt-secret-key-2024-admin-auth
-REFRESH_JWT_SECRET=incomegrow-stock-refresh-jwt-secret-key-2024-admin-auth
-NEXT_PUBLIC_BASE_URL=https://stock.incomegrow.in
-EMAIL_USER=vinay.qss@gmail.com
-EMAIL_PASS=jaznhofvilfzdukl
-NEXT_PUBLIC_RECAPTCHA_SITE_KEY=6LcdrvgrAAAAAMqME_dqZhxffCiFHbPZmKc754Am
-RECAPTCHA_SECRET_KEY=6LcdrvgrAAAAAIr9mjU6EuNxxjsynLILtqSSJ3l4
+JWT_SECRET=
+REFRESH_JWT_SECRET=
+NEXT_PUBLIC_BASE_URL=
+EMAIL_USER=
+EMAIL_PASS=
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY=
+RECAPTCHA_SECRET_KEY=
 ```
 
 ## 📊 Razorpay Dashboard
