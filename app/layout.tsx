@@ -23,12 +23,19 @@ export const metadata = {
     telephone: false,
   },
   // GOOGLE SEARCH CONSOLE VERIFICATION
-  // Get your code from: https://search.google.com/search-console/
-  // 1. Add property: https://stock.incomegrow.in
-  // 2. Choose "HTML tag" method
-  // 3. Copy the content value and paste below
+  // IMPORTANT: You put a FILENAME here, but you need the META TAG CODE!
+  //
+  // CORRECT WAY:
+  // 1. Go to: https://search.google.com/search-console/
+  // 2. Settings → Ownership verification → Verify
+  // 3. Click "HTML tag" tab (NOT "HTML file")
+  // 4. You'll see: <meta name="google-site-verification" content="ABC123XYZ" />
+  // 5. Copy ONLY the content value (ABC123XYZ) and paste below
+  //
+  // WRONG: 'google4b63003319cda900.html' (this is a filename, not a meta tag code!)
+  // RIGHT: 'abc123xyz' (this is the verification code from the meta tag)
   verification: {
-    google: 'google4b63003319cda900.html',
+    google: 'REPLACE_WITH_META_TAG_CODE_NOT_FILENAME',
   },
   openGraph: {
     type: 'website',
