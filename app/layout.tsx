@@ -22,6 +22,14 @@ export const metadata = {
     address: false,
     telephone: false,
   },
+  // GOOGLE SEARCH CONSOLE VERIFICATION
+  // Get your code from: https://search.google.com/search-console/
+  // 1. Add property: https://stock.incomegrow.in
+  // 2. Choose "HTML tag" method
+  // 3. Copy the content value and paste below
+  verification: {
+    google: 'google4b63003319cda900.html',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_IN',
