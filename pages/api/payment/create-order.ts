@@ -8,29 +8,44 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    console.log('[Payment] Create order request received');
+
     // Verify user authentication
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
+      console.log('[Payment] No token provided');
       return res.status(401).json({ success: false, error: 'Authentication required' });
     }
 
+    console.log('[Payment] Verifying token...');
     const decoded = AuthUtils.verifyAccessToken(token);
     if (!decoded) {
-      return res.status(401).json({ success: false, error: 'Invalid token' });
+      console.log('[Payment] Invalid token');
+      return res.status(401).json({ success: false, error: 'Invalid or expired token. Please log in again.' });
     }
+
+    console.log('[Payment] User authenticated:', decoded.userId);
 
     // Check if Razorpay keys are configured
     const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
     const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
+    console.log('[Payment] Checking Razorpay config...', {
+      keyIdExists: !!keyId,
+      keySecretExists: !!keySecret,
+      keyId: keyId?.substring(0, 10) + '...',
+    });
+
     if (!keyId || !keySecret || keyId.includes('your_') || keySecret.includes('your_')) {
+      console.log('[Payment] Razorpay not configured properly');
       return res.status(500).json({
         success: false,
-        error: 'Razorpay is not configured. Please add your API keys to environment variables.',
+        error: 'Razorpay is not configured. Please contact support.',
       });
     }
 
     // Initialize Razorpay
+    console.log('[Payment] Initializing Razorpay...');
     const razorpay = new Razorpay({
       key_id: keyId,
       key_secret: keySecret,
@@ -48,7 +63,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
     };
 
+    console.log('[Payment] Creating Razorpay order...');
     const order = await razorpay.orders.create(options);
+
+    console.log('[Payment] Order created successfully:', order.id);
 
     return res.status(200).json({
       success: true,
@@ -58,10 +76,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       keyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
     });
   } catch (error: any) {
-    console.error('Error creating Razorpay order:', error);
+    console.error('[Payment] Error creating Razorpay order:', error);
+    console.error('[Payment] Error stack:', error.stack);
+
+    // More specific error messages
+    let errorMessage = 'Failed to create payment order';
+    if (error.message?.includes('Invalid API key') || error.message?.includes('authentication')) {
+      errorMessage = 'Payment gateway configuration error. Please contact support.';
+    } else if (error.message?.includes('network') || error.message?.includes('ECONNREFUSED')) {
+      errorMessage = 'Unable to connect to payment gateway. Please try again.';
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+
     return res.status(500).json({
       success: false,
-      error: error.message || 'Failed to create payment order',
+      error: errorMessage,
       details: process.env.NODE_ENV === 'development' ? error.toString() : undefined,
     });
   }

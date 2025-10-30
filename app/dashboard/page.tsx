@@ -81,6 +81,12 @@ export default function UserDashboard() {
     try {
       // Create order
       const token = localStorage.getItem('authToken');
+
+      if (!token) {
+        throw new Error('Please log in again to continue');
+      }
+
+      console.log('Creating payment order...');
       const response = await fetch('/api/payment/create-order', {
         method: 'POST',
         headers: {
@@ -89,10 +95,33 @@ export default function UserDashboard() {
         },
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error('Failed to parse response:', parseError);
+        throw new Error(`Server returned invalid response (Status: ${response.status})`);
+      }
 
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to create payment order');
+      console.log('Payment order response:', data);
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
+      if (!response.ok) {
+        const errorMsg = data?.error || data?.message || `Server error: ${response.status}`;
+        console.error('Server error:', errorMsg);
+        throw new Error(errorMsg);
+      }
+
+      if (!data || !data.success) {
+        const errorMsg = data?.error || data?.message || 'Failed to create payment order';
+        console.error('Payment creation failed:', errorMsg);
+        throw new Error(errorMsg);
+      }
+
+      // Check if Razorpay is loaded
+      if (!window.Razorpay) {
+        throw new Error('Payment gateway not loaded. Please refresh the page.');
       }
 
       // Initialize Razorpay
