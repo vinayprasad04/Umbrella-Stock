@@ -1,42 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml"
-        xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
 
-  <!-- Home Page -->
-  <url>
-    <loc>https://stock.incomegrow.in/</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-    <lastmod>2025-10-30</lastmod>
-  </url>
 
-  <!-- Stocks List Page -->
-  <url>
-    <loc>https://stock.incomegrow.in/stocks</loc>
-    <changefreq>hourly</changefreq>
-    <priority>0.9</priority>
-    <lastmod>2025-10-30</lastmod>
-  </url>
+<url>
+  <loc>https://www.stock.incomegrow.in/</loc>
+  <lastmod>2025-10-30T11:27:33+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://www.stock.incomegrow.in/sectors</loc>
+  <lastmod>2025-10-30T11:27:33+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.stock.incomegrow.in/scanner</loc>
+  <lastmod>2025-10-30T11:27:33+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.stock.incomegrow.in/pricing</loc>
+  <lastmod>2025-10-30T11:27:33+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.stock.incomegrow.in/login</loc>
+  <lastmod>2025-10-30T11:27:33+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.stock.incomegrow.in/signup</loc>
+  <lastmod>2025-10-30T11:27:33+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.stock.incomegrow.in/stocks</loc>
+  <lastmod>2025-10-30T11:27:33+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.stock.incomegrow.in/dashboard/watchlist</loc>
+  <lastmod>2025-10-30T11:27:33+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.stock.incomegrow.in/about</loc>
+  <lastmod>2025-10-30T11:27:33+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.stock.incomegrow.in/contact</loc>
+  <lastmod>2025-10-30T11:27:33+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.stock.incomegrow.in/faq</loc>
+  <lastmod>2025-10-30T11:27:33+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.stock.incomegrow.in/privacy</loc>
+  <lastmod>2025-10-30T11:27:33+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.stock.incomegrow.in/terms</loc>
+  <lastmod>2025-10-30T11:27:33+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.stock.incomegrow.in/disclaimer</loc>
+  <lastmod>2025-10-30T11:27:33+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.stock.incomegrow.in/cookies</loc>
+  <lastmod>2025-10-30T11:27:33+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.stock.incomegrow.in/cancellation-refund</loc>
+  <lastmod>2025-10-30T11:27:33+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://www.stock.incomegrow.in/shipping-delivery</loc>
+  <lastmod>2025-10-30T11:27:33+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
 
-  <!-- Top Gainers -->
-  <url>
-    <loc>https://stock.incomegrow.in/stocks/gainers</loc>
-    <changefreq>hourly</changefreq>
-    <priority>0.8</priority>
-    <lastmod>2025-10-30</lastmod>
-  </url>
-
-  <!-- Top Losers -->
-  <url>
-    <loc>https://stock.incomegrow.in/stocks/losers</loc>
-    <changefreq>hourly</changefreq>
-    <priority>0.8</priority>
-    <lastmod>2025-10-30</lastmod>
-  </url>
-
-  <!-- Add more URLs as needed -->
 
 </urlset>
