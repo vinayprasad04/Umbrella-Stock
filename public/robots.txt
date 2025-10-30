@@ -1,0 +1,18 @@
+# Allow all search engines to crawl the site
+User-agent: *
+Allow: /
+
+# Disallow admin or API routes
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+
+# Allow Google Image Bot
+User-agent: Googlebot-Image
+Allow: /
+
+# Sitemap location
+Sitemap: https://stock.incomegrow.in/sitemap.xml
+
+# Crawl delay (optional, adjust as needed)
+Crawl-delay: 1

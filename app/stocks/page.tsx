@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import Link from 'next/link';
@@ -197,13 +197,69 @@ export default function StocksPage() {
     );
   }
 
+  // Generate JSON-LD structured data
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Verified Indian Stocks - Live NSE Stock Market Prices',
+    description: 'Explore verified Indian stocks with real-time NSE prices, financial analysis, and comprehensive market data.',
+    url: 'https://stock.incomegrow.in/stocks',
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: data?.total || 0,
+      itemListElement: data?.stocks?.slice(0, 10).map((stock, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'FinancialProduct',
+          name: stock.companyName,
+          identifier: stock.symbol,
+          category: stock.sector,
+          offers: {
+            '@type': 'Offer',
+            price: getCurrentPrice(stock),
+            priceCurrency: 'INR',
+          },
+        },
+      })) || [],
+    },
+    breadcrumb: {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: 'https://stock.incomegrow.in',
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Verified Stocks',
+          item: 'https://stock.incomegrow.in/stocks',
+        },
+      ],
+    },
+    provider: {
+      '@type': 'Organization',
+      name: 'IncomeGrow Stock',
+      url: 'https://stock.incomegrow.in',
+    },
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-green-50/30">
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <Header />
 
-      <main className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 py-8 pt-[104px] md:pt-[123px] lg:pt-20">
+      <main className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 py-8 pt-[104px] md:pt-[123px] lg:pt-20" role="main" aria-label="Verified Stocks Page">
         {/* Header Section */}
-        <div className="mb-8">
+        <header className="mb-8">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <div className="flex items-center space-x-3 mb-2">
@@ -261,7 +317,7 @@ export default function StocksPage() {
               </div>
             </div>
           </div>
-        </div>
+        </header>
 
         {/* Stats Card */}
         {data && (
@@ -306,48 +362,57 @@ export default function StocksPage() {
         )}
 
         {/* Filters */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
+        <section className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8" aria-label="Stock Search and Filter">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
-              <Filter className="w-4 h-4 text-white" />
+              <Filter className="w-4 h-4 text-white" aria-hidden="true" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900">Search & Filter</h3>
+            <h2 className="text-xl font-semibold text-gray-900">Search & Filter Stocks</h2>
           </div>
-          <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 gap-4" role="search">
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+              <label htmlFor="stock-search" className="block text-sm font-medium text-gray-700 mb-2">Search</label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" aria-hidden="true" />
                 <input
+                  id="stock-search"
+                  name="search"
                   type="text"
                   placeholder="Symbol or company name..."
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
+                  aria-label="Search stocks by symbol or company name"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Sector</label>
+              <label htmlFor="sector-filter" className="block text-sm font-medium text-gray-700 mb-2">Sector</label>
               <div className="relative">
-                <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" aria-hidden="true" />
                 <input
+                  id="sector-filter"
+                  name="sector"
                   type="text"
                   placeholder="Filter by sector..."
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                   value={sectorFilter}
                   onChange={(e) => setSectorFilter(e.target.value)}
+                  aria-label="Filter stocks by sector"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+              <label htmlFor="sort-by" className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
               <select
+                id="sort-by"
+                name="sortBy"
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all appearance-none bg-white cursor-pointer"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
+                aria-label="Sort stocks by criteria"
               >
                 <option value="marketCap">Market Cap</option>
                 <option value="currentPrice">Current Price</option>
@@ -378,7 +443,7 @@ export default function StocksPage() {
               </button>
             </div>
           </form>
-        </div>
+        </section>
 
         {/* Stocks Display */}
         {viewMode === 'grid' ? (
