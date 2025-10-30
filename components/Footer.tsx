@@ -23,7 +23,14 @@ export default function Footer() {
                   className="w-5 h-5 object-contain filter brightness-0 invert"
                 />
               </div>
-              <span className="text-xl font-bold text-white">IncomeGrow Stock</span>
+              <Image
+                             src="/logos/logo.svg"
+                             alt="Umbrella Financial Logo"
+                             width={153}
+                             height={48}
+                             priority
+                             className=""
+                           />
             </div>
             <p className="text-sm text-gray-400 leading-relaxed">
               Your comprehensive platform for stock market analysis and portfolio management with real-time insights.

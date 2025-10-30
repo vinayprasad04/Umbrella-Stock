@@ -246,11 +246,20 @@ export default function Header() {
               </div>
             </div>
             <div className="flex flex-col">
-              <span className="text-sm sm:text-base md:text-lg font-bold text-white group-hover:text-green-400 transition-all duration-300">
+              <Image
+                src="/logos/logo.svg"
+                alt="Umbrella Financial Logo"
+                width={153}
+                height={48}
+                priority
+                className=""
+              />
+              {/* <span className="text-sm sm:text-base md:text-lg font-bold text-white group-hover:text-green-400 transition-all duration-300">
                 IncomeGrow
               </span>
               <span className="text-xs text-gray-300 font-medium -mt-1 hidden sm:block">Stock Analytics</span>
-            </div>
+            */}
+             </div>
           </Link>
         </div>
 

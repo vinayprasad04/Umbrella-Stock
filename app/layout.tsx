@@ -71,6 +71,15 @@ export const metadata = {
     },
   },
   category: 'finance',
+  // Favicon configuration
+  icons: {
+    icon: [
+      { url: '/logos/favicon.png', type: 'image/png' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
+    shortcut: '/logos/favicon.png',
+    apple: '/logos/favicon.png',
+  },
 };
 
 export default function RootLayout({
