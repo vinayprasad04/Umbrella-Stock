@@ -246,7 +246,7 @@ export default function Pricing() {
                           </span>
                           <span className="text-gray-600 text-lg">/{plan.period}</span>
                         </div>
-                        <p className="text-sm text-gray-500 mt-2">One-time annual payment • Offer ends Dec 31, 2025</p>
+                        <p className="text-sm text-gray-500 mt-2">One-time annual payment • Offer ends Dec 31</p>
                       </>
                     ) : (
                       <>

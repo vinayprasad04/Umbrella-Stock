@@ -50,7 +50,7 @@ export default function FAQ() {
     {
       category: 'account',
       question: 'How do I change my email address?',
-      answer: 'Go to Settings > Account and update your email address. You\'ll need to verify the new email address before the change takes effect.'
+      answer: 'No, you can not change email address once registered. If you need to use a different email, please create a new account with the desired email address.'
     },
 
     // Stocks
@@ -76,26 +76,26 @@ export default function FAQ() {
     },
 
     // Mutual Funds
-    {
-      category: 'mutual-funds',
-      question: 'How many mutual funds are listed on your platform?',
-      answer: 'We have a comprehensive database of over 10,000+ mutual funds across all categories including equity, debt, hybrid, index funds, and more.'
-    },
-    {
-      category: 'mutual-funds',
-      question: 'How do I compare mutual funds?',
-      answer: 'Use our mutual fund comparison tool to compare up to 4 funds side-by-side. You can compare returns, expense ratios, AUM, fund manager details, and portfolio holdings.'
-    },
-    {
-      category: 'mutual-funds',
-      question: 'When are mutual fund NAVs updated?',
-      answer: 'Mutual fund NAVs are updated daily after market hours, typically by 10 PM IST. We sync with official AMC (Asset Management Company) data to ensure accuracy.'
-    },
-    {
-      category: 'mutual-funds',
-      question: 'Can I track my mutual fund investments?',
-      answer: 'Yes, you can add your mutual fund investments to your portfolio and track their performance, SIP returns, and overall allocation.'
-    },
+    // {
+    //   category: 'mutual-funds',
+    //   question: 'How many mutual funds are listed on your platform?',
+    //   answer: 'We have a comprehensive database of over 10,000+ mutual funds across all categories including equity, debt, hybrid, index funds, and more.'
+    // },
+    // {
+    //   category: 'mutual-funds',
+    //   question: 'How do I compare mutual funds?',
+    //   answer: 'Use our mutual fund comparison tool to compare up to 4 funds side-by-side. You can compare returns, expense ratios, AUM, fund manager details, and portfolio holdings.'
+    // },
+    // {
+    //   category: 'mutual-funds',
+    //   question: 'When are mutual fund NAVs updated?',
+    //   answer: 'Mutual fund NAVs are updated daily after market hours, typically by 10 PM IST. We sync with official AMC (Asset Management Company) data to ensure accuracy.'
+    // },
+    // {
+    //   category: 'mutual-funds',
+    //   question: 'Can I track my mutual fund investments?',
+    //   answer: 'Yes, you can add your mutual fund investments to your portfolio and track their performance, SIP returns, and overall allocation.'
+    // },
 
     // Technical
     {
@@ -123,7 +123,7 @@ export default function FAQ() {
     {
       category: 'premium',
       question: 'How much does premium cost?',
-      answer: 'Our premium plans start at ₹499/month or ₹4,999/year (save 17%). We also offer a 7-day free trial so you can try all premium features before committing.'
+      answer: 'Our premium plans start at 999/year. We also offer a 99/year (only 31 dec) so you can try all premium features before committing.'
     },
     {
       category: 'premium',
@@ -153,7 +153,7 @@ export default function FAQ() {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/30 pt-20">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/30 pt-10">
         {/* Hero Section */}
         <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 text-white overflow-hidden">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'2\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>

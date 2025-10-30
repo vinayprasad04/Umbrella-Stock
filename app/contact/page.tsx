@@ -65,7 +65,7 @@ function ContactUsForm() {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/30 pt-20">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/30 pt-10">
         {/* Hero Section */}
         <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 text-white overflow-hidden">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'2\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
@@ -106,13 +106,13 @@ function ContactUsForm() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-1">Email</h3>
-                      <a href="mailto:support@umbrellastock.com" className="text-blue-600 hover:text-blue-700 font-medium">
-                        support@umbrellastock.com
+                      <a href="mailto:vinay.qss@gmail.com" className="text-blue-600 hover:text-blue-700 font-medium">
+                        vinay.qss@gmail.com
                       </a>
                     </div>
                   </div>
 
-                  <div className="flex items-start space-x-4 group">
+                  {/* <div className="flex items-start space-x-4 group">
                     <div className="flex-shrink-0">
                       <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                         <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,8 +126,8 @@ function ContactUsForm() {
                         +91 123 456 7890
                       </a>
                       <p className="text-sm text-gray-500 mt-1">Mon-Fri, 9am-6pm IST</p>
-                    </div>
-                  </div>
+                    </div> 
+                  </div> */}
 
                   <div className="flex items-start space-x-4 group">
                     <div className="flex-shrink-0">
@@ -141,7 +141,7 @@ function ContactUsForm() {
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-1">Office</h3>
                       <p className="text-gray-600">
-                        Mumbai, Maharashtra<br />
+                        North West Delhi, Delhi<br />
                         India
                       </p>
                     </div>
@@ -157,12 +157,12 @@ function ContactUsForm() {
                     <span className="text-gray-700 font-medium">Monday - Friday</span>
                     <span className="text-gray-600">9:00 AM - 6:00 PM</span>
                   </div>
-                  <div className="flex justify-between items-center p-3 bg-white rounded-lg">
+                  {/* <div className="flex justify-between items-center p-3 bg-white rounded-lg">
                     <span className="text-gray-700 font-medium">Saturday</span>
                     <span className="text-gray-600">10:00 AM - 4:00 PM</span>
-                  </div>
+                  </div> */}
                   <div className="flex justify-between items-center p-3 bg-white rounded-lg">
-                    <span className="text-gray-700 font-medium">Sunday</span>
+                    <span className="text-gray-700 font-medium">Saturday - Sunday</span>
                     <span className="text-gray-600">Closed</span>
                   </div>
                 </div>

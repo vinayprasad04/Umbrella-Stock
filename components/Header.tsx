@@ -245,20 +245,11 @@ export default function Header() {
               />
               </div>
             </div>
-
-          </Link>
-
-          {/* Trading Logo */}
-          <div className="h-6 md:h-8 w-px bg-gray-600"></div>
-          <Link href="/" className="flex items-center gap-2 md:gap-3 no-underline group">
-            <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-green-500 to-blue-500 rounded-lg shadow-lg flex items-center justify-center group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-              <span className="text-white text-sm md:text-lg">📈</span>
-            </div>
             <div className="flex flex-col">
               <span className="text-sm sm:text-base md:text-lg font-bold text-white group-hover:text-green-400 transition-all duration-300">
-                Stock Analytics
+                IncomeGrow
               </span>
-              <span className="text-xs text-gray-300 font-medium -mt-1 hidden sm:block">Trading Platform</span>
+              <span className="text-xs text-gray-300 font-medium -mt-1 hidden sm:block">Stock Analytics</span>
             </div>
           </Link>
         </div>

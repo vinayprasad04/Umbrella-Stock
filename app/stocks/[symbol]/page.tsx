@@ -1110,12 +1110,12 @@ export default function StockDetailPage() {
                     '+ Add to Watchlist'
                   )}
                 </button>
-                <button className="w-full btn-secondary">
+                {/* <button className="w-full btn-secondary">
                   Set Price Alert
-                </button>
-                <button className="w-full btn-secondary">
+                </button> */}
+                {/* <button className="w-full btn-secondary">
                   View News
-                </button>
+                </button> */}
               </div>
             </div>
 
