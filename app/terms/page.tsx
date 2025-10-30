@@ -250,7 +250,7 @@ export default function TermsOfService() {
               <h3 className="text-xl font-semibold text-gray-800 mb-3 mt-6">11.2 Arbitration</h3>
               <p className="text-gray-700 leading-relaxed mb-4">
                 Any disputes arising from these Terms or your use of the Service shall be resolved through binding arbitration
-                in Mumbai, India, except where prohibited by law.
+                in Delhi, India, except where prohibited by law.
               </p>
             </section>
 
@@ -280,9 +280,9 @@ export default function TermsOfService() {
                 If you have any questions about these Terms, please contact us:
               </p>
               <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                <p className="text-gray-700 mb-2"><strong>Email:</strong> <a href="mailto:legal@umbrellastock.com" className="text-blue-600 hover:text-blue-700">legal@umbrellastock.com</a></p>
-                <p className="text-gray-700 mb-2"><strong>Phone:</strong> +91 123 456 7890</p>
-                <p className="text-gray-700"><strong>Address:</strong> Mumbai, Maharashtra, India</p>
+                <p className="text-gray-700 mb-2"><strong>Email:</strong> <a href="mailto:vinay.qss@gmail.com" className="text-blue-600 hover:text-blue-700">vinay.qss@gmail.com</a></p>
+                {/* <p className="text-gray-700 mb-2"><strong>Phone:</strong> +91 123 456 7890</p> */}
+                <p className="text-gray-700"><strong>Address:</strong> Krishan Vihar, Delhi, India</p>
               </div>
             </section>
 

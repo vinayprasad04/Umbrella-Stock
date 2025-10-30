@@ -228,9 +228,9 @@ export default function Disclaimer() {
                 If you have questions about this disclaimer:
               </p>
               <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                <p className="text-gray-700 mb-2"><strong>Email:</strong> <a href="mailto:legal@umbrellastock.com" className="text-blue-600 hover:text-blue-700">legal@umbrellastock.com</a></p>
-                <p className="text-gray-700 mb-2"><strong>Phone:</strong> +91 123 456 7890</p>
-                <p className="text-gray-700"><strong>Address:</strong> Mumbai, Maharashtra, India</p>
+                <p className="text-gray-700 mb-2"><strong>Email:</strong> <a href="mailto:vinay.qss@gmail.com" className="text-blue-600 hover:text-blue-700">vinay.qss@gmail.com</a></p>
+                {/* <p className="text-gray-700 mb-2"><strong>Phone:</strong> +91 123 456 7890</p> */}
+                <p className="text-gray-700"><strong>Address:</strong>Krishan Vihar, Delhi, India</p>
               </div>
             </section>
 

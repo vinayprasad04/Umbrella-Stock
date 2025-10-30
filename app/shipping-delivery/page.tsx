@@ -218,8 +218,8 @@ export default function ShippingDelivery() {
               <h4 className="text-lg font-semibold text-gray-800 mb-2">Support Hours:</h4>
               <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
                 <li>Monday - Friday: 9:00 AM - 6:00 PM IST</li>
-                <li>Saturday: 10:00 AM - 4:00 PM IST</li>
-                <li>Sunday: Closed (Email support available)</li>
+                {/* <li>Saturday: 10:00 AM - 4:00 PM IST</li> */}
+                <li>Saturday - Sunday: Closed </li>
               </ul>
             </section>
 
@@ -277,7 +277,6 @@ export default function ShippingDelivery() {
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 }

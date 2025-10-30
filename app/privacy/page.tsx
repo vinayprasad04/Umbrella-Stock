@@ -153,7 +153,7 @@ export default function PrivacyPolicy() {
                 <li><strong>Withdraw Consent:</strong> Withdraw consent for data processing</li>
               </ul>
               <p className="text-gray-700 leading-relaxed mt-4">
-                To exercise these rights, please contact us at <a href="mailto:privacy@umbrellastock.com" className="text-blue-600 hover:text-blue-700">privacy@umbrellastock.com</a>
+                To exercise these rights, please contact us at <a href="mailto:vinay.qss@gmail.com" className="text-blue-600 hover:text-blue-700">vinay.qss@gmail.com</a>
               </p>
             </section>
 
@@ -202,9 +202,9 @@ export default function PrivacyPolicy() {
                 If you have any questions about this privacy policy or our data practices, please contact us:
               </p>
               <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                <p className="text-gray-700 mb-2"><strong>Email:</strong> <a href="mailto:privacy@umbrellastock.com" className="text-blue-600 hover:text-blue-700">privacy@umbrellastock.com</a></p>
-                <p className="text-gray-700 mb-2"><strong>Phone:</strong> +91 123 456 7890</p>
-                <p className="text-gray-700"><strong>Address:</strong> Mumbai, Maharashtra, India</p>
+                <p className="text-gray-700 mb-2"><strong>Email:</strong> <a href="mailto:vinay.qss@gmail.com" className="text-blue-600 hover:text-blue-700">vinay.qss@gmail.com</a></p>
+                {/* <p className="text-gray-700 mb-2"><strong>Phone:</strong> +91 123 456 7890</p> */}
+                <p className="text-gray-700"><strong>Address:</strong> Krishan Vihar, Delhi, India</p>
               </div>
             </section>
           </div>

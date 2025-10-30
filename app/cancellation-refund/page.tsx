@@ -250,7 +250,7 @@ export default function CancellationRefund() {
         </div>
       </main>
 
-      <Footer />
+     
     </div>
   );
 }
