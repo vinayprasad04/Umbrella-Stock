@@ -128,7 +128,7 @@ export default async function handler(
       success: true,
       message: isPaidSubscription
         ? 'Paid subscription cancelled successfully'
-        : 'Free subscription cancelled successfully',
+        : 'Subscription cancelled successfully',
       data: {
         userId: user._id,
         role: user.role,

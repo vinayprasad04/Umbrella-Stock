@@ -261,6 +261,7 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
               <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-pulse"></div>
             </div>
           </Link>
+          
 
           <div className="pt-6 space-y-2">
             <div className="flex items-center px-4">
@@ -286,7 +287,26 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
               </div>
               Profile
             </Link>
-            
+
+            <Link
+              href="/dashboard/activity-history"
+              className={`group relative flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 hover:shadow-sm border ${
+                currentPage === 'activity-history'
+                  ? 'text-purple-700 bg-white border-purple-200'
+                  : 'text-gray-700 hover:text-purple-600 hover:bg-white hover:border-purple-200 border-transparent'
+              }`}
+            >
+              <div className={`flex items-center justify-center w-8 h-8 rounded-lg mr-4 transition-all duration-200 shadow-sm ${
+                currentPage === 'activity-history'
+                  ? 'bg-gradient-to-br from-purple-500 to-indigo-500'
+                  : 'bg-gray-200 group-hover:bg-gradient-to-br group-hover:from-purple-500 group-hover:to-indigo-500'
+              }`}>
+                <svg className={`w-4 h-4 ${currentPage === 'activity-history' ? 'text-white' : 'text-gray-600 group-hover:text-white'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+              </div>
+              Activity History
+            </Link>
             <Link
               href="/settings"
               className="group relative flex items-center px-4 py-3 text-sm font-medium text-gray-700 hover:text-slate-600 hover:bg-white rounded-xl transition-all duration-200 hover:shadow-sm border border-transparent hover:border-slate-200"
