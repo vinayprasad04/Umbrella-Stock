@@ -20,6 +20,14 @@ interface User {
   department?: string;
   totalMfDataEntered?: number;
   totalMfDataVerified?: number;
+  isPremium?: boolean;
+  subscription?: {
+    plan: string;
+    status: string;
+    startDate: string;
+    endDate: string;
+    amount?: number;
+  };
 }
 
 interface UsersData {
@@ -75,6 +83,12 @@ export default function UsersManagement() {
   });
   const [editLoading, setEditLoading] = useState(false);
   const [editError, setEditError] = useState('');
+
+  // History modal state
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [historyUser, setHistoryUser] = useState<User | null>(null);
+  const [historyData, setHistoryData] = useState<any[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   const router = useRouter();
 
@@ -201,6 +215,90 @@ export default function UsersManagement() {
     }
   };
 
+  const handleDeactivateSubscription = async (userId: string, userName: string, isPremium?: boolean) => {
+    const subscriptionType = isPremium ? 'paid' : 'free';
+    const message = isPremium
+      ? `Are you sure you want to cancel the PAID subscription for ${userName}? This will remove their premium access.`
+      : `Are you sure you want to cancel the FREE subscription for ${userName}?`;
+
+    if (!confirm(message)) {
+      return;
+    }
+
+    try {
+      const result = await ApiClient.post('/admin/users/subscription', {
+        userId,
+        action: 'deactivate'
+      });
+
+      if (result.success) {
+        alert(`${subscriptionType.toUpperCase()} subscription cancelled successfully!`);
+        fetchUsers(); // Refresh the list
+      } else {
+        alert(result.error || 'Failed to cancel subscription');
+      }
+    } catch (error: any) {
+      console.error('Error cancelling subscription:', error);
+      alert(error.error || 'Failed to cancel subscription');
+    }
+  };
+
+  const handleReactivateSubscription = async (userId: string, userName: string) => {
+    const days = prompt(`Enter subscription duration in days for ${userName}:`, '365');
+
+    if (!days) return;
+
+    const durationDays = parseInt(days);
+    if (isNaN(durationDays) || durationDays <= 0) {
+      alert('Please enter a valid number of days');
+      return;
+    }
+
+    if (!confirm(`Activate premium subscription for ${userName} for ${durationDays} days?`)) {
+      return;
+    }
+
+    try {
+      const result = await ApiClient.post('/admin/users/reactivate-subscription', {
+        userId,
+        durationDays
+      });
+
+      if (result.success) {
+        alert(`Subscription activated for ${durationDays} days!`);
+        console.log('Subscription activated, refreshing user list...', result.data);
+        // Force refresh by resetting page
+        await fetchUsers();
+      } else {
+        alert(result.error || 'Failed to activate subscription');
+      }
+    } catch (error: any) {
+      console.error('Error activating subscription:', error);
+      alert(error.error || 'Failed to activate subscription');
+    }
+  };
+
+  const handleViewHistory = async (user: User) => {
+    setHistoryUser(user);
+    setShowHistoryModal(true);
+    setLoadingHistory(true);
+
+    try {
+      const result = await ApiClient.get(`/admin/users/activity-history?userId=${user.id}`);
+
+      if (result.success) {
+        setHistoryData(result.data.activities);
+      } else {
+        alert(result.error || 'Failed to load history');
+      }
+    } catch (error: any) {
+      console.error('Error loading history:', error);
+      alert(error.error || 'Failed to load history');
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
   const handleEditUser = (user: User) => {
     setEditingUser(user);
     setEditForm({
@@ -276,7 +374,7 @@ export default function UsersManagement() {
         </div>
         {/* Stats Cards */}
         {data && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
             <div className="bg-white rounded-lg shadow p-6">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
@@ -287,6 +385,24 @@ export default function UsersManagement() {
                 <div className="ml-5">
                   <p className="text-sm font-medium text-gray-500">Total Users</p>
                   <p className="text-2xl font-semibold text-gray-900">{data.total}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
+                    <span className="text-white text-sm font-bold">💎</span>
+                  </div>
+                </div>
+                <div className="ml-5">
+                  <p className="text-sm font-medium text-gray-500">Premium</p>
+                  <p className="text-2xl font-semibold text-gray-900">
+                    {data.users.filter(u =>
+                      u.isPremium || (u.subscription && u.subscription.status === 'active' && u.subscription.plan === 'premium')
+                    ).length}
+                  </p>
                 </div>
               </div>
             </div>
@@ -322,12 +438,12 @@ export default function UsersManagement() {
             <div className="bg-white rounded-lg shadow p-6">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
+                  <div className="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
                     <span className="text-white text-sm font-bold">S</span>
                   </div>
                 </div>
                 <div className="ml-5">
-                  <p className="text-sm font-medium text-gray-500">Subscribers</p>
+                  <p className="text-sm font-medium text-gray-500">Newsletter</p>
                   <p className="text-2xl font-semibold text-gray-900">{data.roleStats?.SUBSCRIBER || 0}</p>
                 </div>
               </div>
@@ -416,6 +532,9 @@ export default function UsersManagement() {
                     Status
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Subscription
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Email Verified
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -430,7 +549,17 @@ export default function UsersManagement() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {data?.users.map((user) => (
+                {data?.users.map((user) => {
+                  // Debug logging
+                  if (user.email === 'vinayprasad04@gmail.com') {
+                    console.log('User debug:', {
+                      email: user.email,
+                      isPremium: user.isPremium,
+                      subscription: user.subscription,
+                      role: user.role
+                    });
+                  }
+                  return (
                   <tr key={user.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
@@ -442,21 +571,28 @@ export default function UsersManagement() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {currentUser?.role === 'ADMIN' && user.role !== 'ADMIN' ? (
-                        <select
-                          className={`px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadgeColor(user.role)} border-0`}
-                          value={user.role}
-                          onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                        >
-                          <option value="DATA_ENTRY">Data Entry</option>
-                          <option value="SUBSCRIBER">Subscriber</option>
-                          <option value="USER">User</option>
-                        </select>
-                      ) : (
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadgeColor(user.role)}`}>
-                          {user.role}
-                        </span>
-                      )}
+                      <div className="flex items-center space-x-2">
+                        {currentUser?.role === 'ADMIN' && user.role !== 'ADMIN' ? (
+                          <select
+                            className={`px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadgeColor(user.role)} border-0`}
+                            value={user.role}
+                            onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                          >
+                            <option value="DATA_ENTRY">Data Entry</option>
+                            <option value="SUBSCRIBER">Subscriber</option>
+                            <option value="USER">User</option>
+                          </select>
+                        ) : (
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadgeColor(user.role)}`}>
+                            {user.role}
+                          </span>
+                        )}
+                        {user.isPremium && (
+                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                            💎 PREMIUM
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -466,6 +602,46 @@ export default function UsersManagement() {
                       }`}>
                         {user.isActive ? 'Active' : 'Inactive'}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {user.subscription ? (
+                        <div>
+                          <div className="flex items-center space-x-2">
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full capitalize ${
+                              user.subscription.status === 'active'
+                                ? 'bg-green-100 text-green-800'
+                                : user.subscription.status === 'expired'
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-gray-100 text-gray-800'
+                            }`}>
+                              {user.subscription.plan}
+                            </span>
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                              user.subscription.status === 'active'
+                                ? 'bg-blue-100 text-blue-800'
+                                : 'bg-gray-100 text-gray-800'
+                            }`}>
+                              {user.subscription.status}
+                            </span>
+                          </div>
+                          {user.subscription.endDate && (
+                            <div className="text-xs text-gray-500 mt-1">
+                              Expires: {new Date(user.subscription.endDate).toLocaleDateString('en-IN', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric'
+                              })}
+                            </div>
+                          )}
+                          {user.subscription.amount && (
+                            <div className="text-xs font-medium text-gray-700 mt-1">
+                              ₹{(user.subscription.amount / 100).toFixed(2)}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-gray-400">No subscription</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-2">
@@ -501,27 +677,55 @@ export default function UsersManagement() {
                       {formatDate(user.createdAt)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => handleEditUser(user)}
-                        className="text-blue-600 hover:text-blue-900 mr-3"
-                      >
-                        Edit
-                      </button>
-                      {user.role !== 'ADMIN' && (
+                      <div className="flex flex-col space-y-2">
+                        <div>
+                          <button
+                            onClick={() => handleEditUser(user)}
+                            className="text-blue-600 hover:text-blue-900 mr-3"
+                          >
+                            Edit
+                          </button>
+                          {user.role !== 'ADMIN' && (
+                            <button
+                              onClick={() => handleToggleUserStatus(user.id, user.isActive)}
+                              className={`mr-2 ${
+                                user.isActive
+                                  ? 'text-red-600 hover:text-red-900'
+                                  : 'text-green-600 hover:text-green-900'
+                              }`}
+                            >
+                              {user.isActive ? 'Deactivate' : 'Activate'}
+                            </button>
+                          )}
+                        </div>
+                        {user.isPremium || (user.subscription && user.subscription.status === 'active' && user.subscription.plan === 'premium') ? (
+                          <button
+                            onClick={() => handleDeactivateSubscription(user.id, user.name, user.isPremium)}
+                            className="text-orange-600 hover:text-orange-900 text-xs font-medium text-left"
+                          >
+                            🚫 Cancel Paid Subscription
+                          </button>
+                        ) : (
+                          user.role !== 'ADMIN' && (
+                            <button
+                              onClick={() => handleReactivateSubscription(user.id, user.name)}
+                              className="text-green-600 hover:text-green-900 text-xs font-medium text-left"
+                            >
+                              ✅ Activate Premium
+                            </button>
+                          )
+                        )}
                         <button
-                          onClick={() => handleToggleUserStatus(user.id, user.isActive)}
-                          className={`mr-2 ${
-                            user.isActive 
-                              ? 'text-red-600 hover:text-red-900' 
-                              : 'text-green-600 hover:text-green-900'
-                          }`}
+                          onClick={() => handleViewHistory(user)}
+                          className="text-purple-600 hover:text-purple-900 text-xs font-medium text-left"
                         >
-                          {user.isActive ? 'Deactivate' : 'Activate'}
+                          📜 View History
                         </button>
-                      )}
+                      </div>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -870,6 +1074,149 @@ export default function UsersManagement() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* User History Modal */}
+      {showHistoryModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm overflow-y-auto h-full w-full z-50 flex items-center justify-center animate-fadeIn">
+          <div className="relative mx-auto p-0 border-0 w-full max-w-4xl shadow-2xl rounded-2xl bg-white transform animate-slideUp max-h-[90vh] overflow-hidden flex flex-col">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4 rounded-t-2xl">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                    <span className="text-xl">📜</span>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-white">Activity History</h3>
+                    <p className="text-sm text-purple-100">{historyUser?.name} ({historyUser?.email})</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowHistoryModal(false)}
+                  className="text-white hover:text-gray-200 transition-colors duration-200"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto flex-1">
+              {loadingHistory ? (
+                <div className="flex justify-center items-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent"></div>
+                </div>
+              ) : historyData.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Date & Time
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Category
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Action
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Performed By
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Details
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {historyData.map((activity) => (
+                        <tr key={activity.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                            {new Date(activity.createdAt).toLocaleString('en-IN', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </td>
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                              activity.category === 'subscription' ? 'bg-purple-100 text-purple-800' :
+                              activity.category === 'payment' ? 'bg-green-100 text-green-800' :
+                              activity.category === 'admin' ? 'bg-red-100 text-red-800' :
+                              activity.category === 'auth' ? 'bg-blue-100 text-blue-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {activity.category}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-900">
+                            {activity.action.replace(/_/g, ' ').split(' ').map(word =>
+                              word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                            ).join(' ')}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-900">
+                            {activity.admin ? (
+                              <div>
+                                <div className="font-medium">{activity.admin.name}</div>
+                                <div className="text-xs text-gray-500">{activity.admin.email}</div>
+                              </div>
+                            ) : (
+                              <span className="text-gray-400 italic">User Self</span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-sm">
+                            <div className="max-w-md">
+                              {activity.details?.metadata && (
+                                <div className="mb-2">
+                                  {Object.entries(activity.details.metadata).map(([key, value]) => (
+                                    <div key={key} className="text-xs">
+                                      <span className="font-medium text-gray-700">{key.replace(/([A-Z])/g, ' $1').trim()}:</span>{' '}
+                                      <span className="text-gray-600">{typeof value === 'object' ? JSON.stringify(value) : String(value)}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                              {activity.details?.before && (
+                                <div className="text-xs mb-1">
+                                  <span className="font-medium text-red-700">Before:</span>{' '}
+                                  <span className="text-gray-600">
+                                    {activity.details.before.isPremium !== undefined && `Premium: ${activity.details.before.isPremium ? 'Yes' : 'No'}`}
+                                    {activity.details.before.subscriptionStatus && `, Status: ${activity.details.before.subscriptionStatus}`}
+                                  </span>
+                                </div>
+                              )}
+                              {activity.details?.after && (
+                                <div className="text-xs">
+                                  <span className="font-medium text-green-700">After:</span>{' '}
+                                  <span className="text-gray-600">
+                                    {activity.details.after.isPremium !== undefined && `Premium: ${activity.details.after.isPremium ? 'Yes' : 'No'}`}
+                                    {activity.details.after.subscriptionStatus && `, Status: ${activity.details.after.subscriptionStatus}`}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-3xl">📋</span>
+                  </div>
+                  <p className="text-gray-500">No activity history found</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -16,8 +16,8 @@ export default function ConditionalFooter() {
 
   return (
     <>
-      <Subscribe />
-      <Footer />
+      {/* <Subscribe />
+      <Footer /> */}
     </>
   );
 }

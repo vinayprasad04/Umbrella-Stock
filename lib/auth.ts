@@ -96,12 +96,25 @@ export class AuthUtils {
    */
   static verifyAccessToken(token: string): TokenPayload | null {
     try {
-      const decoded = jwt.verify(token, this.getJWTSecret()) as TokenPayload;
+      const secret = this.getJWTSecret();
+      console.log('[AuthUtils] Verifying access token with secret length:', secret.length);
+
+      const decoded = jwt.verify(token, secret) as TokenPayload;
+      console.log('[AuthUtils] Token decoded successfully');
+      console.log('[AuthUtils] Token type:', decoded.type);
+
       if (decoded.type !== 'access') {
+        console.error('[AuthUtils] Invalid token type:', decoded.type);
         throw new Error('Invalid token type');
       }
       return decoded;
-    } catch (error) {
+    } catch (error: any) {
+      console.error('[AuthUtils] Token verification failed:', error.message);
+      if (error.name === 'TokenExpiredError') {
+        console.error('[AuthUtils] Token expired at:', error.expiredAt);
+      } else if (error.name === 'JsonWebTokenError') {
+        console.error('[AuthUtils] JWT error:', error.message);
+      }
       return null;
     }
   }

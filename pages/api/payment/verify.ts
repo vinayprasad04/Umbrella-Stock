@@ -2,7 +2,9 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import crypto from 'crypto';
 import connectDB from '@/lib/mongodb';
 import User from '@/lib/models/User';
+import Payment from '@/lib/models/Payment';
 import { AuthUtils } from '@/lib/auth';
+import { ActivityLogger } from '@/lib/activityLogger';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -45,17 +47,89 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(404).json({ success: false, error: 'User not found' });
     }
 
-    // Update user subscription
+    const amount = 9900; // ₹99.00 in paise
+    const startDate = new Date();
+    const endDate = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1 year from now
+
+    // Save payment record
+    const payment = new Payment({
+      userId: user._id,
+      orderId: razorpay_order_id,
+      paymentId: razorpay_payment_id,
+      signature: razorpay_signature,
+      amount: amount,
+      currency: 'INR',
+      status: 'captured',
+      plan: 'premium',
+      description: 'Premium Annual Subscription',
+      notes: {
+        userEmail: user.email,
+        userName: user.name
+      }
+    });
+
+    await payment.save();
+
+    // Store before state for logging
+    const beforeState = {
+      isPremium: user.isPremium,
+      subscriptionStatus: user.subscription?.status
+    };
+
+    // Update user subscription and premium status
     user.subscription = {
       plan: 'premium',
       status: 'active',
-      startDate: new Date(),
-      endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
+      startDate: startDate,
+      endDate: endDate,
       paymentId: razorpay_payment_id,
       orderId: razorpay_order_id,
+      amount: amount,
+      autoRenew: false
     };
 
+    // Set isPremium flag (keep role as USER)
+    user.isPremium = true;
+
     await user.save();
+
+    // Log payment activity
+    await ActivityLogger.logPayment(
+      user._id,
+      'payment_successful',
+      {
+        paymentId: razorpay_payment_id,
+        orderId: razorpay_order_id,
+        amount: amount,
+        currency: 'INR',
+        plan: 'premium',
+        duration: '365 days'
+      }
+    );
+
+    // Log subscription activation
+    await ActivityLogger.logSubscriptionChange(
+      user._id,
+      user._id,
+      'subscription_activated_payment',
+      beforeState,
+      {
+        isPremium: user.isPremium,
+        subscriptionStatus: user.subscription.status
+      },
+      {
+        paymentId: razorpay_payment_id,
+        amount: amount
+      }
+    );
+
+    console.log('[Payment] User upgraded to premium:', {
+      userId: user._id,
+      role: user.role,
+      isPremium: user.isPremium,
+      subscription: user.subscription.status,
+      paymentId: payment._id
+    });
 
     return res.status(200).json({
       success: true,

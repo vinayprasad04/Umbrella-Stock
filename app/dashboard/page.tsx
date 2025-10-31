@@ -12,12 +12,25 @@ declare global {
   }
 }
 
+interface Subscription {
+  plan: 'free' | 'premium';
+  status: 'active' | 'expired' | 'cancelled';
+  startDate: string;
+  endDate: string;
+  paymentId?: string;
+  orderId?: string;
+  amount?: number;
+  autoRenew?: boolean;
+}
+
 interface User {
   id: string;
   email: string;
   name: string;
   role: string;
   permissions: string[];
+  isPremium?: boolean;
+  subscription?: Subscription;
 }
 
 interface DashboardStats {
@@ -25,24 +38,62 @@ interface DashboardStats {
   totalSectors: number;
 }
 
+interface Payment {
+  _id: string;
+  orderId: string;
+  paymentId: string;
+  amount: number;
+  currency: string;
+  status: string;
+  plan: string;
+  description?: string;
+  createdAt: string;
+}
+
 export default function UserDashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [stats, setStats] = useState<DashboardStats>({ totalStocks: 0, totalSectors: 0 });
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [loadingStats, setLoadingStats] = useState(true);
   const [loadingPayment, setLoadingPayment] = useState(false);
+  const [loadingPayments, setLoadingPayments] = useState(false);
   const [paymentError, setPaymentError] = useState('');
   const router = useRouter();
 
+  // Fetch user profile from API
   useEffect(() => {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
+    const fetchUserProfile = async () => {
       try {
-        const userData = JSON.parse(userStr);
-        setUser(userData);
+        const token = localStorage.getItem('authToken');
+        if (!token) return;
+
+        const response = await axios.get('/api/user/profile', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data.success) {
+          setUser(response.data.data);
+          // Also update localStorage
+          localStorage.setItem('user', JSON.stringify(response.data.data));
+        }
       } catch (error) {
-        console.error('Error parsing user data:', error);
+        console.error('Error fetching user profile:', error);
+        // Fallback to localStorage
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          try {
+            const userData = JSON.parse(userStr);
+            setUser(userData);
+          } catch (error) {
+            console.error('Error parsing user data:', error);
+          }
+        }
       }
-    }
+    };
+
+    fetchUserProfile();
   }, []);
 
   useEffect(() => {
@@ -61,6 +112,35 @@ export default function UserDashboard() {
 
     fetchStats();
   }, []);
+
+  // Fetch payment history
+  useEffect(() => {
+    const fetchPaymentHistory = async () => {
+      if (!user || !user.isPremium) return;
+
+      setLoadingPayments(true);
+      try {
+        const token = localStorage.getItem('authToken');
+        if (!token) return;
+
+        const response = await axios.get('/api/payment/history', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data.success) {
+          setPayments(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching payment history:', error);
+      } finally {
+        setLoadingPayments(false);
+      }
+    };
+
+    fetchPaymentHistory();
+  }, [user]);
 
   // Load Razorpay script
   useEffect(() => {
@@ -231,13 +311,31 @@ export default function UserDashboard() {
                     analyze market trends, and make informed decisions.
                   </p>
                   
-                  {user?.role === 'SUBSCRIBER' && (
+                  {user?.isPremium && user?.subscription && (
                     <div className="bg-gradient-to-r from-yellow-50 via-orange-50 to-amber-50 border border-yellow-200/60 rounded-2xl p-6 mb-6 shadow-sm">
-                      <div className="flex items-center space-x-3 mb-4">
-                        <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center shadow-md">
-                          <span className="text-lg">🌟</span>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center shadow-md">
+                            <span className="text-lg">🌟</span>
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-bold text-gray-900">Premium Plan Active</h3>
+                            <p className="text-xs text-gray-600">
+                              {user.subscription.status === 'active' && (
+                                <>Valid until {new Date(user.subscription.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</>
+                              )}
+                            </p>
+                          </div>
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900">Premium Features Active</h3>
+                        <div className="text-right">
+                          <div className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${
+                            user.subscription.status === 'active' ? 'bg-green-100 text-green-800' :
+                            user.subscription.status === 'expired' ? 'bg-red-100 text-red-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {user.subscription.status.toUpperCase()}
+                          </div>
+                        </div>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="flex items-center space-x-3">
@@ -256,7 +354,7 @@ export default function UserDashboard() {
                     </div>
                   )}
 
-                  {user?.role === 'USER' && (
+                  {!user?.isPremium && !(user?.subscription && user?.subscription.status === 'active' && user?.subscription.plan === 'premium') && (
                     <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border border-blue-200/60 rounded-2xl p-6 mb-6 shadow-sm">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
@@ -456,6 +554,30 @@ export default function UserDashboard() {
                   </div>
                   <span className="text-sm font-medium text-gray-700 mt-2">Sectors</span>
                 </Link>
+
+                <Link
+                  href="/activity-history"
+                  className="flex flex-col items-center p-4 rounded-lg border-2 border-dashed border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition-colors group"
+                >
+                  <div className="w-10 h-10 bg-indigo-500 rounded-lg flex items-center justify-center group-hover:bg-indigo-600">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    </svg>
+                  </div>
+                  <span className="text-sm font-medium text-gray-700 mt-2">Activity Log</span>
+                </Link>
+
+                <Link
+                  href="/profile"
+                  className="flex flex-col items-center p-4 rounded-lg border-2 border-dashed border-gray-200 hover:border-pink-300 hover:bg-pink-50 transition-colors group"
+                >
+                  <div className="w-10 h-10 bg-pink-500 rounded-lg flex items-center justify-center group-hover:bg-pink-600">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <span className="text-sm font-medium text-gray-700 mt-2">My Profile</span>
+                </Link>
               </div>
             </div>
           </div>
@@ -473,14 +595,19 @@ export default function UserDashboard() {
                   <label className="block text-sm font-medium text-gray-500">Account Type</label>
                   <div className="mt-1 flex items-center space-x-2">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      user?.role === 'SUBSCRIBER' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                      user?.role === 'SUBSCRIBER' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
                     }`}>
                       {user?.role}
                     </span>
+                    {user?.isPremium && (
+                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                        PREMIUM
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
-              
+
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-500 mb-3">Available Permissions</label>
                 <div className="flex flex-wrap gap-2">
@@ -500,6 +627,128 @@ export default function UserDashboard() {
               </div>
             </div>
           </div>
+
+          {/* Subscription & Payment Information */}
+          {user?.isPremium && user?.subscription && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Subscription Details */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">Subscription Details</h3>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center pb-4 border-b border-gray-100">
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Plan</p>
+                      <p className="text-lg font-semibold text-gray-900 capitalize">{user.subscription.plan}</p>
+                    </div>
+                    <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      user.subscription.status === 'active' ? 'bg-green-100 text-green-800' :
+                      user.subscription.status === 'expired' ? 'bg-red-100 text-red-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {user.subscription.status}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Start Date</p>
+                      <p className="text-sm font-medium text-gray-900 mt-1">
+                        {new Date(user.subscription.startDate).toLocaleDateString('en-IN', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric'
+                        })}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Expiry Date</p>
+                      <p className="text-sm font-medium text-gray-900 mt-1">
+                        {new Date(user.subscription.endDate).toLocaleDateString('en-IN', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric'
+                        })}
+                      </p>
+                    </div>
+                  </div>
+
+                  {user.subscription.amount && (
+                    <div className="pt-4 border-t border-gray-100">
+                      <p className="text-sm font-medium text-gray-500">Amount Paid</p>
+                      <p className="text-2xl font-bold text-gray-900 mt-1">
+                        ₹{(user.subscription.amount / 100).toFixed(2)}
+                      </p>
+                    </div>
+                  )}
+
+                  {user.subscription.status === 'active' && (
+                    <div className="bg-blue-50 border border-blue-100 rounded-lg p-3">
+                      <p className="text-xs text-blue-800">
+                        {(() => {
+                          const daysLeft = Math.ceil((new Date(user.subscription.endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+                          return daysLeft > 0 ? `${daysLeft} days remaining` : 'Expired';
+                        })()}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Payment History */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">Payment History</h3>
+                {loadingPayments ? (
+                  <div className="space-y-3">
+                    <div className="h-20 bg-gray-100 animate-pulse rounded-lg"></div>
+                    <div className="h-20 bg-gray-100 animate-pulse rounded-lg"></div>
+                  </div>
+                ) : payments.length > 0 ? (
+                  <div className="space-y-3">
+                    {payments.map((payment) => (
+                      <div key={payment._id} className="border border-gray-100 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <p className="text-sm font-semibold text-gray-900">{payment.description || 'Premium Subscription'}</p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {new Date(payment.createdAt).toLocaleDateString('en-IN', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-bold text-gray-900">₹{(payment.amount / 100).toFixed(2)}</p>
+                            <span className={`inline-flex px-2 py-0.5 mt-1 rounded text-xs font-medium ${
+                              payment.status === 'captured' ? 'bg-green-100 text-green-800' :
+                              payment.status === 'failed' ? 'bg-red-100 text-red-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {payment.status}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-gray-500 mt-2">
+                          <span>Payment ID: {payment.paymentId.substring(0, 20)}...</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                      </svg>
+                    </div>
+                    <p className="text-sm text-gray-500">No payment history found</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
       </div>
     </UserDashboardLayout>
   );

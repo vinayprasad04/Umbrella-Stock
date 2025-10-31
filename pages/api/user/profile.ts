@@ -46,6 +46,8 @@ export default async function handler(
           name: user.name,
           role: user.role,
           permissions: user.permissions || [],
+          isPremium: user.isPremium || false,
+          subscription: user.subscription || null,
           phone: user.phone,
           location: user.location,
           bio: user.bio,

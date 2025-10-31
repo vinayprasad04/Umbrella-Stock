@@ -28,6 +28,14 @@ interface UserListItem {
   department?: string;
   totalMfDataEntered?: number;
   totalMfDataVerified?: number;
+  isPremium?: boolean;
+  subscription?: {
+    plan: string;
+    status: string;
+    startDate: string;
+    endDate: string;
+    amount?: number;
+  };
 }
 
 export default async function handler(
@@ -88,7 +96,7 @@ export default async function handler(
       const skip = (page - 1) * limit;
       
       const users = await User.find(filter)
-        .select('email name role permissions isActive isEmailVerified lastLogin createdAt phone department totalMfDataEntered totalMfDataVerified')
+        .select('email name role permissions isActive isEmailVerified lastLogin createdAt phone department totalMfDataEntered totalMfDataVerified isPremium subscription')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
@@ -119,7 +127,15 @@ export default async function handler(
         phone: user.phone,
         department: user.department,
         totalMfDataEntered: user.totalMfDataEntered,
-        totalMfDataVerified: user.totalMfDataVerified
+        totalMfDataVerified: user.totalMfDataVerified,
+        isPremium: user.isPremium || false,
+        subscription: user.subscription ? {
+          plan: user.subscription.plan,
+          status: user.subscription.status,
+          startDate: user.subscription.startDate?.toISOString(),
+          endDate: user.subscription.endDate?.toISOString(),
+          amount: user.subscription.amount
+        } : undefined
       }));
 
       res.status(200).json({

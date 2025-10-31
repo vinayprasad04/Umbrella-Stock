@@ -12,22 +12,32 @@ export default function PaymentSuccess() {
   const router = useRouter();
 
   useEffect(() => {
-    // Reload user data to get updated subscription
+    // Reload user data to get updated subscription and role
     const reloadUserData = async () => {
       const token = localStorage.getItem('authToken');
       if (token) {
         try {
+          console.log('[Payment Success] Reloading user data...');
           const response = await fetch('/api/user/profile', {
             headers: {
               'Authorization': `Bearer ${token}`,
             },
           });
           const data = await response.json();
-          if (data.success) {
-            localStorage.setItem('user', JSON.stringify(data.user));
+          console.log('[Payment Success] User data response:', data);
+          if (data.success && data.data) {
+            // Store the complete user data including role and subscription
+            localStorage.setItem('user', JSON.stringify(data.data));
+            console.log('[Payment Success] User data updated:', {
+              role: data.data.role,
+              subscription: data.data.subscription?.status
+            });
+
+            // Trigger a storage event to notify other components
+            window.dispatchEvent(new Event('storage'));
           }
         } catch (error) {
-          console.error('Failed to reload user data:', error);
+          console.error('[Payment Success] Failed to reload user data:', error);
         }
       }
     };

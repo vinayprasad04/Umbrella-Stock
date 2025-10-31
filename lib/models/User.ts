@@ -48,6 +48,21 @@ export interface IUser extends Document {
   emailVerificationToken?: string;
   emailVerificationExpires?: Date;
 
+  // Premium Status (for paid users who remain as USER role)
+  isPremium?: boolean;
+
+  // Subscription
+  subscription?: {
+    plan: 'free' | 'premium';
+    status: 'active' | 'expired' | 'cancelled';
+    startDate: Date;
+    endDate: Date;
+    paymentId?: string;
+    orderId?: string;
+    amount?: number;
+    autoRenew?: boolean;
+  };
+
   // Soft Delete
   deletedAt?: Date;
   deleteReason?: string;
@@ -134,6 +149,21 @@ const UserSchema: Schema = new Schema({
   // Email Verification
   emailVerificationToken: String,
   emailVerificationExpires: Date,
+
+  // Premium Status
+  isPremium: { type: Boolean, default: false },
+
+  // Subscription
+  subscription: {
+    plan: { type: String, enum: ['free', 'premium'], default: 'free' },
+    status: { type: String, enum: ['active', 'expired', 'cancelled'], default: 'active' },
+    startDate: Date,
+    endDate: Date,
+    paymentId: String,
+    orderId: String,
+    amount: Number,
+    autoRenew: { type: Boolean, default: false }
+  },
 
   // Soft Delete
   deletedAt: Date,

@@ -100,8 +100,24 @@ export default function Header() {
       };
       window.addEventListener('screener-saved', handleScreenerSaved);
 
+      // Listen for storage changes (e.g., after payment success)
+      const handleStorageChange = () => {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          try {
+            const userData = JSON.parse(userStr);
+            setUser(userData);
+            console.log('[Header] User data updated from storage:', userData.role);
+          } catch (error) {
+            console.error('[Header] Error parsing user data:', error);
+          }
+        }
+      };
+      window.addEventListener('storage', handleStorageChange);
+
       return () => {
         window.removeEventListener('screener-saved', handleScreenerSaved);
+        window.removeEventListener('storage', handleStorageChange);
       };
     }
   }, []);

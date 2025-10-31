@@ -18,13 +18,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     console.log('[Payment] Verifying token...');
-    const decoded = AuthUtils.verifyAccessToken(token);
+    console.log('[Payment] Token preview:', token.substring(0, 50) + '...');
+
+    let decoded;
+    try {
+      decoded = AuthUtils.verifyAccessToken(token);
+      console.log('[Payment] Token verification result:', decoded ? 'SUCCESS' : 'FAILED');
+    } catch (error: any) {
+      console.error('[Payment] Token verification error:', error.message);
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid or expired token. Please log in again.',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+
     if (!decoded) {
-      console.log('[Payment] Invalid token');
+      console.log('[Payment] Invalid token - no decoded payload');
       return res.status(401).json({ success: false, error: 'Invalid or expired token. Please log in again.' });
     }
 
     console.log('[Payment] User authenticated:', decoded.userId);
+    console.log('[Payment] User role:', decoded.role);
+    console.log('[Payment] Token type:', decoded.type);
 
     // Check if Razorpay keys are configured
     const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
@@ -52,16 +68,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     // Create order
+    // Note: Receipt must be max 40 characters for Razorpay
+    const timestamp = Date.now().toString().slice(-8); // Last 8 digits
+    const userIdShort = decoded.userId.substring(0, 8); // First 8 chars of userId
+    const receipt = `rcpt_${userIdShort}_${timestamp}`; // Format: rcpt_12345678_87654321 (max 28 chars)
+
     const options = {
       amount: 9900, // ₹99 in paise (99 * 100)
       currency: 'INR',
-      receipt: `receipt_${decoded.userId}_${Date.now()}`,
+      receipt: receipt,
       notes: {
         userId: decoded.userId,
         email: decoded.email,
         planType: 'premium',
       },
     };
+
+    console.log('[Payment] Receipt ID:', receipt, `(${receipt.length} chars)`);
 
     console.log('[Payment] Creating Razorpay order...');
     const order = await razorpay.orders.create(options);
