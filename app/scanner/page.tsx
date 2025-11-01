@@ -219,7 +219,7 @@ export default function ScannerPage() {
 
   // Define min/max limits for each filter type (marketCap is in Cr)
   const limits = {
-    marketCap: [0, 30000000], // in Crores (max ~30 lakh Cr to accommodate largest companies like Reliance ~20 lakh Cr)
+    marketCap: [0, 50000000], // in Crores (max 50 lakh Cr - Reliance ~20 lakh Cr, provides ample headroom)
     price: [0, 100000],
     peRatio: [0, 200],
     roce: [0, 100],
