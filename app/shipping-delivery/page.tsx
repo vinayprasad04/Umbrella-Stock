@@ -9,30 +9,30 @@ export default function ShippingDelivery() {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
       <Header />
 
-      <main className="flex-grow py-12">
+      <main className="flex-grow py-8 sm:py-12 lg:py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Shipping and Delivery Policy</h1>
+          <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">Shipping and Delivery Policy</h1>
             <p className="text-gray-600">
               <strong>Last Updated:</strong> October 29, 2025
             </p>
           </div>
 
           {/* Content */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
+          <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 space-y-6 sm:space-y-8">
 
             <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Overview</h2>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">Overview</h2>
               <p className="text-gray-700 leading-relaxed">
                 IncomeGrow Stock is a digital service platform providing stock market analysis, research, and investment tools. As we provide digital services and products, this Shipping and Delivery Policy outlines how our services and digital products are delivered to users.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Nature of Services</h2>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">Nature of Services</h2>
 
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Digital Services - No Physical Shipping</h3>
+              <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">Digital Services - No Physical Shipping</h3>
 
               <p className="text-gray-700 mb-3">IncomeGrow Stock provides exclusively digital services, including:</p>
               <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4 mb-4">

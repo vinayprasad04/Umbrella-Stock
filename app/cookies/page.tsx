@@ -14,22 +14,22 @@ export default function CookiePolicy() {
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
 
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20 lg:py-24">
             <div className="text-center">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl mb-6 border border-white/20">
-                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-white/10 backdrop-blur-sm rounded-2xl mb-4 sm:mb-6 border border-white/20">
+                <svg className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                 </svg>
               </div>
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">Cookie Policy</h1>
-              <p className="text-xl md:text-2xl text-purple-100 max-w-3xl mx-auto leading-relaxed">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">Cookie Policy</h1>
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-purple-100 max-w-3xl mx-auto leading-relaxed">
                 Learn how we use cookies to enhance your experience
               </p>
-              <div className="mt-8 inline-flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-xl px-6 py-3 border border-white/20">
-                <svg className="w-5 h-5 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="mt-6 sm:mt-8 inline-flex items-center gap-2 bg-white/10 backdrop-blur-md rounded-xl px-4 py-2 sm:px-6 sm:py-3 border border-white/20">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span className="text-sm text-purple-100">
+                <span className="text-xs sm:text-sm text-purple-100">
                   Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                 </span>
               </div>
@@ -38,12 +38,12 @@ export default function CookiePolicy() {
         </div>
 
         {/* Main Content */}
-        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-gray-100">
+        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+          <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 md:p-10 lg:p-12 border border-gray-100">
           <div className="prose prose-lg max-w-none">
             {/* Introduction */}
-            <section className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">What Are Cookies?</h2>
+            <section className="mb-6 sm:mb-8">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">What Are Cookies?</h2>
               <p className="text-gray-700 leading-relaxed mb-4">
                 Cookies are small text files that are stored on your device (computer, tablet, or mobile) when you visit
                 a website. They are widely used to make websites work more efficiently, provide a better user experience,

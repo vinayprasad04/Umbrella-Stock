@@ -160,15 +160,15 @@ export default function FAQ() {
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
 
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20 lg:py-24">
             <div className="text-center">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl mb-6 border border-white/20">
-                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-white/10 backdrop-blur-sm rounded-2xl mb-4 sm:mb-6 border border-white/20">
+                <svg className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">Frequently Asked Questions</h1>
-              <p className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">Frequently Asked Questions</h1>
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
                 Find answers to common questions about IncomeGrow Stock
               </p>
             </div>
@@ -176,24 +176,24 @@ export default function FAQ() {
         </div>
 
       {/* Main Content */}
-      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         {/* Category Filters */}
-        <div className="mb-8">
-          <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Browse by Category</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+        <div className="mb-6 sm:mb-8">
+          <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 border border-gray-100">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Browse by Category</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-3">
               {categories.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
-                  className={`p-4 rounded-xl border-2 transition-all duration-200 transform hover:scale-105 ${
+                  className={`p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 transform hover:scale-105 ${
                     selectedCategory === category.id
                       ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-500 text-blue-700 shadow-lg'
                       : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300 hover:bg-blue-50'
                   }`}
                 >
-                  <div className="text-2xl mb-2">{category.icon}</div>
-                  <div className="text-sm font-medium">{category.name}</div>
+                  <div className="text-xl sm:text-2xl mb-1 sm:mb-2">{category.icon}</div>
+                  <div className="text-xs sm:text-sm font-medium">{category.name}</div>
                 </button>
               ))}
             </div>
@@ -201,9 +201,9 @@ export default function FAQ() {
         </div>
 
         {/* FAQ Accordion */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
+        <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-gray-100">
+          <div className="mb-4 sm:mb-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
               {selectedCategory === 'all'
                 ? `All Questions (${filteredFaqs.length})`
                 : `${categories.find(c => c.id === selectedCategory)?.name} (${filteredFaqs.length})`}
@@ -249,17 +249,17 @@ export default function FAQ() {
         </div>
 
         {/* Contact CTA */}
-        <div className="mt-12 relative bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 rounded-3xl shadow-2xl p-12 text-center overflow-hidden">
+        <div className="mt-8 sm:mt-10 lg:mt-12 relative bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 rounded-3xl shadow-2xl p-8 sm:p-10 lg:p-12 text-center overflow-hidden">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'2\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
           <div className="relative">
-            <h2 className="text-3xl font-bold text-white mb-3">Still have questions?</h2>
-            <p className="text-blue-100 mb-8 max-w-2xl mx-auto text-lg">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2 sm:mb-3">Still have questions?</h2>
+            <p className="text-blue-100 mb-6 sm:mb-8 max-w-2xl mx-auto text-base sm:text-lg">
               Can't find the answer you're looking for? Our support team is here to help.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <a
                 href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-semibold rounded-xl text-blue-600 bg-white hover:bg-gray-50 transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105"
+                className="inline-flex items-center justify-center px-6 py-3 sm:px-8 sm:py-4 border border-transparent text-sm sm:text-base font-semibold rounded-xl text-blue-600 bg-white hover:bg-gray-50 transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105"
               >
                 Contact Support
                 <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -268,7 +268,7 @@ export default function FAQ() {
               </a>
               <a
                 href="mailto:support@umbrellastock.com"
-                className="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-base font-semibold rounded-xl text-white hover:bg-white hover:text-blue-600 transition-all duration-200 hover:scale-105"
+                className="inline-flex items-center justify-center px-6 py-3 sm:px-8 sm:py-4 border-2 border-white text-sm sm:text-base font-semibold rounded-xl text-white hover:bg-white hover:text-blue-600 transition-all duration-200 hover:scale-105"
               >
                 Email Us
               </a>

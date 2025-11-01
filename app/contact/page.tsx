@@ -72,15 +72,15 @@ function ContactUsForm() {
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
 
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20 lg:py-24">
             <div className="text-center">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl mb-6 border border-white/20">
-                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-white/10 backdrop-blur-sm rounded-2xl mb-4 sm:mb-6 border border-white/20">
+                <svg className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">Get In Touch</h1>
-              <p className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">Get In Touch</h1>
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
                 Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
               </p>
             </div>
@@ -88,25 +88,25 @@ function ContactUsForm() {
         </div>
 
         {/* Main Content */}
-        <div className="w-full max-w-[1600px]  mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="w-full max-w-[1600px]  mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {/* Contact Information */}
-            <div className="lg:col-span-1 space-y-6">
+            <div className="lg:col-span-1 space-y-4 sm:space-y-6">
               {/* Get in Touch */}
-              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Contact Information</h2>
-                <div className="space-y-6">
-                  <div className="flex items-start space-x-4 group">
+              <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-gray-100">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Contact Information</h2>
+                <div className="space-y-4 sm:space-y-6">
+                  <div className="flex items-start space-x-3 sm:space-x-4 group">
                     <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">Email</h3>
-                      <a href="mailto:vinay.qss@gmail.com" className="text-blue-600 hover:text-blue-700 font-medium">
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">Email</h3>
+                      <a href="mailto:vinay.qss@gmail.com" className="text-blue-600 hover:text-blue-700 font-medium text-sm sm:text-base">
                         vinay.qss@gmail.com
                       </a>
                     </div>
@@ -129,18 +129,18 @@ function ContactUsForm() {
                     </div> 
                   </div> */}
 
-                  <div className="flex items-start space-x-4 group">
+                  <div className="flex items-start space-x-3 sm:space-x-4 group">
                     <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">Office</h3>
-                      <p className="text-gray-600">
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">Office</h3>
+                      <p className="text-gray-600 text-sm sm:text-base">
                         North West Delhi, Delhi<br />
                         India
                       </p>
@@ -150,8 +150,8 @@ function ContactUsForm() {
               </div>
 
               {/* Support Hours */}
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-xl p-8 border border-blue-100">
-                <h3 className="text-xl font-bold text-gray-900 mb-6">Support Hours</h3>
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-xl p-6 sm:p-8 border border-blue-100">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">Support Hours</h3>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center p-3 bg-white rounded-lg">
                     <span className="text-gray-700 font-medium">Monday - Friday</span>
@@ -172,8 +172,8 @@ function ContactUsForm() {
               </div>
 
               {/* Quick Links */}
-              <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Quick Links</h3>
+              <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-gray-100">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Quick Links</h3>
                 <div className="space-y-3">
                   <a href="/faq" className="flex items-center text-blue-600 hover:text-blue-700 font-medium group">
                     <svg className="w-5 h-5 mr-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -205,9 +205,9 @@ function ContactUsForm() {
 
             {/* Contact Form */}
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-gray-100">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">Send us a Message</h2>
-                <p className="text-gray-600 mb-8">
+              <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 md:p-10 lg:p-12 border border-gray-100">
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Send us a Message</h2>
+                <p className="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base">
                   Fill out the form below and we'll get back to you within 24 hours.
                 </p>
 
@@ -307,7 +307,7 @@ function ContactUsForm() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105"
+                    className="w-full px-6 py-3 sm:px-8 sm:py-4 text-base sm:text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105"
                   >
                     {loading ? (
                       <span className="flex items-center justify-center">

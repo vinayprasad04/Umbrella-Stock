@@ -76,6 +76,33 @@ const customStyles = `
   input[type="range"]::-moz-range-thumb:hover {
     background: #4f46e5;
   }
+
+  /* Mobile filter animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .animate-slideInLeft {
+    animation: slideInLeft 0.3s ease-out;
+  }
 `;
 
 interface StockData {
@@ -1025,9 +1052,13 @@ export default function ScannerPage() {
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
             {/* Mobile Filter Overlay */}
             {showMobileFilters && (
-              <div className="fixed inset-0 bg-black/50 z-50 lg:hidden" onClick={() => setShowMobileFilters(false)}>
+              <div
+                className="fixed inset-0 top-[106.44px] bg-black/50 z-50 lg:hidden animate-fadeIn"
+                onClick={() => setShowMobileFilters(false)}
+                style={{ height: 'calc(100vh - 106.44px)' }}
+              >
                 <div
-                  className="absolute inset-y-0 left-0 w-full sm:w-[400px] bg-white shadow-2xl overflow-hidden flex flex-col"
+                  className="absolute top-0 bottom-0 left-0 w-full sm:w-[400px] bg-white shadow-2xl overflow-hidden flex flex-col animate-slideInLeft"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Mobile Filters Header */}
@@ -1054,7 +1085,1423 @@ export default function ScannerPage() {
 
                   {/* Mobile Filter Content - Scrollable */}
                   <div className="flex-1 overflow-y-auto scrollbar-thin">
-                    <div className="space-y-0"></div>
+                    <div className="space-y-0">
+                    {/* Mobile filters content - will be same as desktop filters */}
+                    {/* Placeholder: Filter sections will be added here */}
+                  {/* Search */}
+                  <div className="border-t border-slate-200 px-5">
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('search')}
+                        className="flex-1 flex items-center justify-between text-left"
+                      >
+                        <label className="text-sm font-medium text-slate-700 cursor-pointer">Search</label>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {filters.search && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, search: '' }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('search')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.search ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    {expandedFilters.search && (
+                      <div className="pb-3">
+                        <input
+                          type="text"
+                          placeholder="Search by company name or symbol..."
+                          value={filters.search}
+                          onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Sector */}
+                  <div className="border-t border-slate-200 px-5">
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('sector')}
+                        className="flex-1 flex items-center justify-between text-left"
+                      >
+                        <label className="text-sm font-medium text-slate-700 cursor-pointer">
+                          Sector {filters.sector.length > 0 && <span className="text-indigo-600">({filters.sector.length})</span>}
+                        </label>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {filters.sector.length > 0 && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, sector: [] }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('sector')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.sector ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    {expandedFilters.sector && (
+                      <div className="pb-3 space-y-2">
+                        {/* Search bar */}
+                        <input
+                          type="text"
+                          placeholder="Search sectors..."
+                          value={sectorSearch}
+                          onChange={(e) => setSectorSearch(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+
+                        {/* Sector checkboxes */}
+                        <div className="max-h-48 overflow-y-auto scrollbar-thin space-y-1">
+                          {filteredSectors.map((sector) => (
+                            <label
+                              key={sector}
+                              className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded cursor-pointer transition-colors"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={filters.sector.includes(sector)}
+                                onChange={() => toggleSector(sector)}
+                                className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-2 focus:ring-indigo-500"
+                              />
+                              <span className="text-sm text-slate-700">{sector}</span>
+                            </label>
+                          ))}
+                        </div>
+
+                        {/* Clear selection */}
+                        {filters.sector.length > 0 && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, sector: [] }))}
+                            className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
+                          >
+                            Clear selection
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Stock World (Nifty Indices) */}
+                  <div className="border-t border-slate-200 px-5">
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('niftyIndices')}
+                        className="flex-1 flex items-center justify-between text-left"
+                      >
+                        <label className="text-sm font-medium text-slate-700 cursor-pointer">
+                          Stock World {filters.niftyIndices.length > 0 && <span className="text-indigo-600">({filters.niftyIndices.length})</span>}
+                        </label>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {filters.niftyIndices.length > 0 && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, niftyIndices: [] }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('niftyIndices')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.niftyIndices ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    {expandedFilters.niftyIndices && (
+                      <div className="pb-3 space-y-2">
+                        {/* Search bar */}
+                        <input
+                          type="text"
+                          placeholder="Search indices..."
+                          value={niftyIndicesSearch}
+                          onChange={(e) => setNiftyIndicesSearch(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+
+                        {/* Nifty indices checkboxes */}
+                        <div className="max-h-48 overflow-y-auto scrollbar-thin space-y-1">
+                          {filteredNiftyIndices.map((index) => (
+                            <label
+                              key={index.value}
+                              className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 rounded cursor-pointer transition-colors"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={filters.niftyIndices.includes(index.value)}
+                                onChange={() => toggleNiftyIndex(index.value)}
+                                className="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-2 focus:ring-indigo-500"
+                              />
+                              <span className="text-sm text-slate-700">{index.label}</span>
+                            </label>
+                          ))}
+                        </div>
+
+                        {/* Clear selection */}
+                        {filters.niftyIndices.length > 0 && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, niftyIndices: [] }))}
+                            className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
+                          >
+                            Clear selection
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Market Cap */}
+                  <div className="border-t border-slate-200 px-5">
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('marketCap')}
+                        className="flex-1 flex items-center justify-between text-left"
+                      >
+                        <div className="flex items-center gap-2">
+                          <label className="text-sm font-medium text-slate-700 cursor-pointer">Market Cap (₹ Cr)</label>
+                          {!expandedFilters.marketCap && getFilterDisplay(filters.minMarketCap, filters.maxMarketCap, '2052200') && (
+                            <span className="text-xs text-indigo-600">
+                              (₹{getFilterDisplay(filters.minMarketCap, filters.maxMarketCap, '2052200')} Cr)
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {(filters.minMarketCap || filters.maxMarketCap) && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minMarketCap: '', maxMarketCap: '' }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('marketCap')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.marketCap ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    {expandedFilters.marketCap && (
+                      <div className="pb-3 space-y-3">
+                        {/* Range Slider */}
+                        <div className="px-1">
+                          <div className="flex justify-between text-xs text-slate-600 mb-2">
+                            <span>₹{parseInt(filters.minMarketCap || '0').toLocaleString('en-IN')} Cr</span>
+                            <span>₹{parseInt(filters.maxMarketCap || '2052200').toLocaleString('en-IN')} Cr</span>
+                          </div>
+                          <div className="relative h-6 flex items-center">
+                            {/* Background track */}
+                            <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+
+                            {/* Highlighted range in middle */}
+                            <div
+                              className="absolute h-1.5 bg-indigo-500 rounded-full"
+                              style={{
+                                left: `${((parseInt(filters.minMarketCap || '0') / 2052200) * 100)}%`,
+                                right: `${100 - ((parseInt(filters.maxMarketCap || '2052200') / 2052200) * 100)}%`
+                              }}
+                            ></div>
+
+                            {/* Min range slider */}
+                            <input
+                              type="range"
+                              min="0"
+                              max="2052200"
+                              step="1000"
+                              value={filters.minMarketCap || 0}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                minMarketCap: e.target.value,
+                                maxMarketCap: prev.maxMarketCap && parseInt(e.target.value) > parseInt(prev.maxMarketCap)
+                                  ? e.target.value
+                                  : prev.maxMarketCap
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+
+                            {/* Max range slider */}
+                            <input
+                              type="range"
+                              min="0"
+                              max="2052200"
+                              step="1000"
+                              value={filters.maxMarketCap || 2052200}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                maxMarketCap: e.target.value,
+                                minMarketCap: prev.minMarketCap && parseInt(e.target.value) < parseInt(prev.minMarketCap)
+                                  ? e.target.value
+                                  : prev.minMarketCap
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Input Boxes */}
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Min"
+                            value={filters.minMarketCap ? parseInt(filters.minMarketCap).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, minMarketCap: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Max"
+                            value={filters.maxMarketCap ? parseInt(filters.maxMarketCap).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, maxMarketCap: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+
+                        {/* Preset Buttons */}
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minMarketCap: '0', maxMarketCap: '32500' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minMarketCap === '0' && filters.maxMarketCap === '32500'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Small Cap
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minMarketCap: '32501', maxMarketCap: '99500' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minMarketCap === '32501' && filters.maxMarketCap === '99500'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Mid Cap
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minMarketCap: '99501', maxMarketCap: '2052200' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minMarketCap === '99501' && filters.maxMarketCap === '2052200'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Large Cap
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Price Range */}
+                  
+
+                  {/* P/E Ratio */}
+                  <div className="border-t border-slate-200 px-5">
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('peRatio')}
+                        className="flex-1 flex items-center justify-between text-left"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center">
+                            <label className="text-sm font-medium text-slate-700 cursor-pointer">P/E Ratio</label>
+                            <RatioInfoTooltip ratio="pe" />
+                          </div>
+                          {!expandedFilters.peRatio && getFilterDisplay(filters.minPE, filters.maxPE, '100') && (
+                            <span className="text-xs text-indigo-600">({getFilterDisplay(filters.minPE, filters.maxPE, '100')})</span>
+                          )}
+                        </div>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {(filters.minPE || filters.maxPE) && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPE: '', maxPE: '' }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('peRatio')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.peRatio ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    {expandedFilters.peRatio && (
+                      <div className="pb-3 space-y-3">
+                        {/* Range Slider */}
+                        <div className="px-1">
+                          {(() => {
+                            const peRange = getDynamicRange(filters.minPE, filters.maxPE, 100);
+                            return (
+                              <>
+                                <div className="flex justify-between text-xs text-slate-600 mb-2">
+                                  <span>{filters.minPE ? parseFloat(filters.minPE).toLocaleString('en-IN') : '0'}</span>
+                                  <span>{filters.maxPE ? parseFloat(filters.maxPE).toLocaleString('en-IN') : peRange.max.toString()}</span>
+                                </div>
+                                <div className="relative h-6 flex items-center">
+                                  <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+                                  <div
+                                    className="absolute h-1.5 bg-indigo-500 rounded-full"
+                                    style={{
+                                      left: `${((parseFloat(filters.minPE || '0') / peRange.max) * 100)}%`,
+                                      right: `${100 - ((parseFloat(filters.maxPE || peRange.max.toString()) / peRange.max) * 100)}%`
+                                    }}
+                                  ></div>
+                                  <input
+                                    type="range"
+                                    min={peRange.min}
+                                    max={peRange.max}
+                                    step={peRange.step}
+                                    value={filters.minPE || 0}
+                                    onChange={(e) => setFilters(prev => ({
+                                      ...prev,
+                                      minPE: e.target.value,
+                                      maxPE: prev.maxPE && parseFloat(e.target.value) > parseFloat(prev.maxPE)
+                                        ? e.target.value
+                                        : prev.maxPE
+                                    }))}
+                                    className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                                    style={{ height: '1.5rem' }}
+                                  />
+                                  <input
+                                    type="range"
+                                    min={peRange.min}
+                                    max={peRange.max}
+                                    step={peRange.step}
+                                    value={filters.maxPE || peRange.max}
+                                    onChange={(e) => setFilters(prev => ({
+                                      ...prev,
+                                      maxPE: e.target.value,
+                                      minPE: prev.minPE && parseFloat(e.target.value) < parseFloat(prev.minPE)
+                                        ? e.target.value
+                                        : prev.minPE
+                                    }))}
+                                    className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                                    style={{ height: '1.5rem' }}
+                                  />
+                                </div>
+                              </>
+                            );
+                          })()}
+                        </div>
+
+                        {/* Input Boxes */}
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Min"
+                            value={filters.minPE ? parseFloat(filters.minPE).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                const clamped = clampValue(value, 'peRatio');
+                                setFilters(prev => ({ ...prev, minPE: clamped }));
+                              }
+                            }}
+                            onBlur={(e) => {
+                              if (filters.minPE) {
+                                const clamped = clampValue(filters.minPE, 'peRatio');
+                                if (clamped !== filters.minPE) {
+                                  setFilters(prev => ({ ...prev, minPE: clamped }));
+                                }
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Max"
+                            value={filters.maxPE ? parseFloat(filters.maxPE).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                const clamped = clampValue(value, 'peRatio');
+                                setFilters(prev => ({ ...prev, maxPE: clamped }));
+                              }
+                            }}
+                            onBlur={(e) => {
+                              if (filters.maxPE) {
+                                const clamped = clampValue(filters.maxPE, 'peRatio');
+                                if (clamped !== filters.maxPE) {
+                                  setFilters(prev => ({ ...prev, maxPE: clamped }));
+                                }
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+
+                        {/* Preset Buttons */}
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPE: '0', maxPE: '15' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minPE === '0' && filters.maxPE === '15'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Low
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPE: '16', maxPE: '25' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minPE === '16' && filters.maxPE === '25'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Mid
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPE: '26', maxPE: '100' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minPE === '26' && filters.maxPE === '100'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            High
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ROCE */}
+                  <div className="border-t border-slate-200 px-5">
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('roce')}
+                        className="flex-1 flex items-center justify-between text-left"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center">
+                            <label className="text-sm font-medium text-slate-700 cursor-pointer">ROCE (%)</label>
+                            <RatioInfoTooltip ratio="roce" />
+                          </div>
+                          {!expandedFilters.roce && getFilterDisplay(filters.minROCE, filters.maxROCE, '50', '%') && (
+                            <span className="text-xs text-indigo-600">({getFilterDisplay(filters.minROCE, filters.maxROCE, '50', '%')})</span>
+                          )}
+                        </div>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {(filters.minROCE || filters.maxROCE) && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minROCE: '', maxROCE: '' }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('roce')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.roce ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    {expandedFilters.roce && (
+                      <div className="pb-3 space-y-3">
+                        <div className="px-1">
+                          {(() => {
+                            const roceRange = getDynamicRange(filters.minROCE, filters.maxROCE, 50);
+                            return (
+                              <>
+                                <div className="flex justify-between text-xs text-slate-600 mb-2">
+                                  <span>{filters.minROCE ? parseFloat(filters.minROCE).toLocaleString('en-IN') : '0'}%</span>
+                                  <span>{filters.maxROCE ? parseFloat(filters.maxROCE).toLocaleString('en-IN') : roceRange.max.toString()}%</span>
+                                </div>
+                                <div className="relative h-6 flex items-center">
+                                  <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+                                  <div
+                                    className="absolute h-1.5 bg-indigo-500 rounded-full"
+                                    style={{
+                                      left: `${((parseFloat(filters.minROCE || '0') / roceRange.max) * 100)}%`,
+                                      right: `${100 - ((parseFloat(filters.maxROCE || roceRange.max.toString()) / roceRange.max) * 100)}%`
+                                    }}
+                                  ></div>
+                                  <input
+                                    type="range"
+                                    min={roceRange.min}
+                                    max={roceRange.max}
+                                    step={roceRange.step}
+                                    value={filters.minROCE || 0}
+                                    onChange={(e) => setFilters(prev => ({
+                                      ...prev,
+                                      minROCE: e.target.value,
+                                      maxROCE: prev.maxROCE && parseFloat(e.target.value) > parseFloat(prev.maxROCE)
+                                        ? e.target.value
+                                        : prev.maxROCE
+                                    }))}
+                                    className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                                    style={{ height: '1.5rem' }}
+                                  />
+                                  <input
+                                    type="range"
+                                    min={roceRange.min}
+                                    max={roceRange.max}
+                                    step={roceRange.step}
+                                    value={filters.maxROCE || roceRange.max}
+                                    onChange={(e) => setFilters(prev => ({
+                                      ...prev,
+                                      maxROCE: e.target.value,
+                                      minROCE: prev.minROCE && parseFloat(e.target.value) < parseFloat(prev.minROCE)
+                                        ? e.target.value
+                                        : prev.minROCE
+                                    }))}
+                                    className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                                    style={{ height: '1.5rem' }}
+                                  />
+                                </div>
+                              </>
+                            );
+                          })()}
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Min"
+                            value={filters.minROCE ? parseFloat(filters.minROCE).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                const clamped = clampValue(value, 'roce');
+                                setFilters(prev => ({ ...prev, minROCE: clamped }));
+                              }
+                            }}
+                            onBlur={(e) => {
+                              if (filters.minROCE) {
+                                const clamped = clampValue(filters.minROCE, 'roce');
+                                if (clamped !== filters.minROCE) {
+                                  setFilters(prev => ({ ...prev, minROCE: clamped }));
+                                }
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Max"
+                            value={filters.maxROCE ? parseFloat(filters.maxROCE).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                const clamped = clampValue(value, 'roce');
+                                setFilters(prev => ({ ...prev, maxROCE: clamped }));
+                              }
+                            }}
+                            onBlur={(e) => {
+                              if (filters.maxROCE) {
+                                const clamped = clampValue(filters.maxROCE, 'roce');
+                                if (clamped !== filters.maxROCE) {
+                                  setFilters(prev => ({ ...prev, maxROCE: clamped }));
+                                }
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minROCE: '0', maxROCE: '10' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minROCE === '0' && filters.maxROCE === '10'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Low
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minROCE: '11', maxROCE: '20' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minROCE === '11' && filters.maxROCE === '20'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Mid
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minROCE: '21', maxROCE: '50' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minROCE === '21' && filters.maxROCE === '50'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            High
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ROE */}
+                  <div className="border-t border-slate-200 px-5">
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('roe')}
+                        className="flex-1 flex items-center justify-between text-left"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center">
+                            <label className="text-sm font-medium text-slate-700 cursor-pointer">ROE (%)</label>
+                            <RatioInfoTooltip ratio="roe" />
+                          </div>
+                          {!expandedFilters.roe && getFilterDisplay(filters.minROE, filters.maxROE, '50', '%') && (
+                            <span className="text-xs text-indigo-600">({getFilterDisplay(filters.minROE, filters.maxROE, '50', '%')})</span>
+                          )}
+                        </div>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {(filters.minROE || filters.maxROE) && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minROE: '', maxROE: '' }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('roe')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.roe ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    {expandedFilters.roe && (
+                      <div className="pb-3 space-y-3">
+                        <div className="px-1">
+                          {(() => {
+                            const roeRange = getDynamicRange(filters.minROE, filters.maxROE, 50);
+                            return (
+                              <>
+                                <div className="flex justify-between text-xs text-slate-600 mb-2">
+                                  <span>{filters.minROE ? parseFloat(filters.minROE).toLocaleString('en-IN') : '0'}%</span>
+                                  <span>{filters.maxROE ? parseFloat(filters.maxROE).toLocaleString('en-IN') : roeRange.max.toString()}%</span>
+                                </div>
+                                <div className="relative h-6 flex items-center">
+                                  <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+                                  <div
+                                    className="absolute h-1.5 bg-indigo-500 rounded-full"
+                                    style={{
+                                      left: `${((parseFloat(filters.minROE || '0') / roeRange.max) * 100)}%`,
+                                      right: `${100 - ((parseFloat(filters.maxROE || roeRange.max.toString()) / roeRange.max) * 100)}%`
+                                    }}
+                                  ></div>
+                                  <input
+                                    type="range"
+                                    min={roeRange.min}
+                                    max={roeRange.max}
+                                    step={roeRange.step}
+                                    value={filters.minROE || 0}
+                                    onChange={(e) => setFilters(prev => ({
+                                      ...prev,
+                                      minROE: e.target.value,
+                                      maxROE: prev.maxROE && parseFloat(e.target.value) > parseFloat(prev.maxROE)
+                                        ? e.target.value
+                                        : prev.maxROE
+                                    }))}
+                                    className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                                    style={{ height: '1.5rem' }}
+                                  />
+                                  <input
+                                    type="range"
+                                    min={roeRange.min}
+                                    max={roeRange.max}
+                                    step={roeRange.step}
+                                    value={filters.maxROE || roeRange.max}
+                                    onChange={(e) => setFilters(prev => ({
+                                      ...prev,
+                                      maxROE: e.target.value,
+                                      minROE: prev.minROE && parseFloat(e.target.value) < parseFloat(prev.minROE)
+                                        ? e.target.value
+                                        : prev.minROE
+                                    }))}
+                                    className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                                    style={{ height: '1.5rem' }}
+                                  />
+                                </div>
+                              </>
+                            );
+                          })()}
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Min"
+                            value={filters.minROE ? parseFloat(filters.minROE).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                const clamped = clampValue(value, 'roe');
+                                setFilters(prev => ({ ...prev, minROE: clamped }));
+                              }
+                            }}
+                            onBlur={(e) => {
+                              if (filters.minROE) {
+                                const clamped = clampValue(filters.minROE, 'roe');
+                                if (clamped !== filters.minROE) {
+                                  setFilters(prev => ({ ...prev, minROE: clamped }));
+                                }
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Max"
+                            value={filters.maxROE ? parseFloat(filters.maxROE).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                const clamped = clampValue(value, 'roe');
+                                setFilters(prev => ({ ...prev, maxROE: clamped }));
+                              }
+                            }}
+                            onBlur={(e) => {
+                              if (filters.maxROE) {
+                                const clamped = clampValue(filters.maxROE, 'roe');
+                                if (clamped !== filters.maxROE) {
+                                  setFilters(prev => ({ ...prev, maxROE: clamped }));
+                                }
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minROE: '0', maxROE: '10' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minROE === '0' && filters.maxROE === '10'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Low
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minROE: '11', maxROE: '20' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minROE === '11' && filters.maxROE === '20'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Mid
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minROE: '21', maxROE: '50' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minROE === '21' && filters.maxROE === '50'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            High
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Debt-to-Equity */}
+                  <div className="border-t border-slate-200 px-5">
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('debtToEquity')}
+                        className="flex-1 flex items-center justify-between text-left"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center">
+                            <label className="text-sm font-medium text-slate-700 cursor-pointer">Debt-to-Equity</label>
+                            <RatioInfoTooltip ratio="debt" />
+                          </div>
+                          {!expandedFilters.debtToEquity && getFilterDisplay(filters.minDebtToEquity, filters.maxDebtToEquity, '5') && (
+                            <span className="text-xs text-indigo-600">({getFilterDisplay(filters.minDebtToEquity, filters.maxDebtToEquity, '5')})</span>
+                          )}
+                        </div>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {(filters.minDebtToEquity || filters.maxDebtToEquity) && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minDebtToEquity: '', maxDebtToEquity: '' }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('debtToEquity')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.debtToEquity ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    {expandedFilters.debtToEquity && (
+                      <div className="pb-3 space-y-3">
+                        <div className="px-1">
+                          {(() => {
+                            const debtRange = getDynamicRange(filters.minDebtToEquity, filters.maxDebtToEquity, 5);
+                            return (
+                              <>
+                                <div className="flex justify-between text-xs text-slate-600 mb-2">
+                                  <span>{filters.minDebtToEquity ? parseFloat(filters.minDebtToEquity).toLocaleString('en-IN') : '0'}</span>
+                                  <span>{filters.maxDebtToEquity ? parseFloat(filters.maxDebtToEquity).toLocaleString('en-IN') : debtRange.max.toString()}</span>
+                                </div>
+                                <div className="relative h-6 flex items-center">
+                                  <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+                                  <div
+                                    className="absolute h-1.5 bg-indigo-500 rounded-full"
+                                    style={{
+                                      left: `${((parseFloat(filters.minDebtToEquity || '0') / debtRange.max) * 100)}%`,
+                                      right: `${100 - ((parseFloat(filters.maxDebtToEquity || debtRange.max.toString()) / debtRange.max) * 100)}%`
+                                    }}
+                                  ></div>
+                                  <input
+                                    type="range"
+                                    min={debtRange.min}
+                                    max={debtRange.max}
+                                    step={debtRange.step}
+                                    value={filters.minDebtToEquity || 0}
+                                    onChange={(e) => setFilters(prev => ({
+                                      ...prev,
+                                      minDebtToEquity: e.target.value,
+                                      maxDebtToEquity: prev.maxDebtToEquity && parseFloat(e.target.value) > parseFloat(prev.maxDebtToEquity)
+                                        ? e.target.value
+                                        : prev.maxDebtToEquity
+                                    }))}
+                                    className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                                    style={{ height: '1.5rem' }}
+                                  />
+                                  <input
+                                    type="range"
+                                    min={debtRange.min}
+                                    max={debtRange.max}
+                                    step={debtRange.step}
+                                    value={filters.maxDebtToEquity || debtRange.max}
+                                    onChange={(e) => setFilters(prev => ({
+                                      ...prev,
+                                      maxDebtToEquity: e.target.value,
+                                      minDebtToEquity: prev.minDebtToEquity && parseFloat(e.target.value) < parseFloat(prev.minDebtToEquity)
+                                        ? e.target.value
+                                        : prev.minDebtToEquity
+                                    }))}
+                                    className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                                    style={{ height: '1.5rem' }}
+                                  />
+                                </div>
+                              </>
+                            );
+                          })()}
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Min"
+                            value={filters.minDebtToEquity ? parseFloat(filters.minDebtToEquity).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                const clamped = clampValue(value, 'debtToEquity');
+                                setFilters(prev => ({ ...prev, minDebtToEquity: clamped }));
+                              }
+                            }}
+                            onBlur={(e) => {
+                              if (filters.minDebtToEquity) {
+                                const clamped = clampValue(filters.minDebtToEquity, 'debtToEquity');
+                                if (clamped !== filters.minDebtToEquity) {
+                                  setFilters(prev => ({ ...prev, minDebtToEquity: clamped }));
+                                }
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Max"
+                            value={filters.maxDebtToEquity ? parseFloat(filters.maxDebtToEquity).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                const clamped = clampValue(value, 'debtToEquity');
+                                setFilters(prev => ({ ...prev, maxDebtToEquity: clamped }));
+                              }
+                            }}
+                            onBlur={(e) => {
+                              if (filters.maxDebtToEquity) {
+                                const clamped = clampValue(filters.maxDebtToEquity, 'debtToEquity');
+                                if (clamped !== filters.maxDebtToEquity) {
+                                  setFilters(prev => ({ ...prev, maxDebtToEquity: clamped }));
+                                }
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minDebtToEquity: '0', maxDebtToEquity: '0.5' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minDebtToEquity === '0' && filters.maxDebtToEquity === '0.5'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Low
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minDebtToEquity: '0.6', maxDebtToEquity: '1.5' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minDebtToEquity === '0.6' && filters.maxDebtToEquity === '1.5'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Mid
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minDebtToEquity: '1.6', maxDebtToEquity: '5' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minDebtToEquity === '1.6' && filters.maxDebtToEquity === '5'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            High
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* P/B Ratio */}
+                  <div className="border-t border-slate-200 px-5">
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('pbRatio')}
+                        className="flex-1 flex items-center justify-between text-left"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center">
+                            <label className="text-sm font-medium text-slate-700 cursor-pointer">P/B Ratio</label>
+                            <RatioInfoTooltip ratio="pb" />
+                          </div>
+                          {!expandedFilters.pbRatio && getFilterDisplay(filters.minPB, filters.maxPB, '20') && (
+                            <span className="text-xs text-indigo-600">({getFilterDisplay(filters.minPB, filters.maxPB, '20')})</span>
+                          )}
+                        </div>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {(filters.minPB || filters.maxPB) && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPB: '', maxPB: '' }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('pbRatio')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.pbRatio ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    {expandedFilters.pbRatio && (
+                      <div className="pb-3 space-y-3">
+                        <div className="px-1">
+                          {(() => {
+                            const pbRange = getDynamicRange(filters.minPB, filters.maxPB, 20);
+                            return (
+                              <>
+                                <div className="flex justify-between text-xs text-slate-600 mb-2">
+                                  <span>{filters.minPB ? parseFloat(filters.minPB).toLocaleString('en-IN') : '0'}</span>
+                                  <span>{filters.maxPB ? parseFloat(filters.maxPB).toLocaleString('en-IN') : pbRange.max.toString()}</span>
+                                </div>
+                                <div className="relative h-6 flex items-center">
+                                  <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+                                  <div
+                                    className="absolute h-1.5 bg-indigo-500 rounded-full"
+                                    style={{
+                                      left: `${((parseFloat(filters.minPB || '0') / pbRange.max) * 100)}%`,
+                                      right: `${100 - ((parseFloat(filters.maxPB || pbRange.max.toString()) / pbRange.max) * 100)}%`
+                                    }}
+                                  ></div>
+                                  <input
+                                    type="range"
+                                    min={pbRange.min}
+                                    max={pbRange.max}
+                                    step={pbRange.step}
+                                    value={filters.minPB || 0}
+                                    onChange={(e) => setFilters(prev => ({
+                                      ...prev,
+                                      minPB: e.target.value,
+                                      maxPB: prev.maxPB && parseFloat(e.target.value) > parseFloat(prev.maxPB)
+                                        ? e.target.value
+                                        : prev.maxPB
+                                    }))}
+                                    className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                                    style={{ height: '1.5rem' }}
+                                  />
+                                  <input
+                                    type="range"
+                                    min={pbRange.min}
+                                    max={pbRange.max}
+                                    step={pbRange.step}
+                                    value={filters.maxPB || pbRange.max}
+                                    onChange={(e) => setFilters(prev => ({
+                                      ...prev,
+                                      maxPB: e.target.value,
+                                      minPB: prev.minPB && parseFloat(e.target.value) < parseFloat(prev.minPB)
+                                        ? e.target.value
+                                        : prev.minPB
+                                    }))}
+                                    className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                                    style={{ height: '1.5rem' }}
+                                  />
+                                </div>
+                              </>
+                            );
+                          })()}
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Min"
+                            value={filters.minPB ? parseFloat(filters.minPB).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                const clamped = clampValue(value, 'pbRatio');
+                                setFilters(prev => ({ ...prev, minPB: clamped }));
+                              }
+                            }}
+                            onBlur={(e) => {
+                              // Ensure value is clamped on blur
+                              if (filters.minPB) {
+                                const clamped = clampValue(filters.minPB, 'pbRatio');
+                                if (clamped !== filters.minPB) {
+                                  setFilters(prev => ({ ...prev, minPB: clamped }));
+                                }
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Max"
+                            value={filters.maxPB ? parseFloat(filters.maxPB).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                const clamped = clampValue(value, 'pbRatio');
+                                setFilters(prev => ({ ...prev, maxPB: clamped }));
+                              }
+                            }}
+                            onBlur={(e) => {
+                              // Ensure value is clamped on blur
+                              if (filters.maxPB) {
+                                const clamped = clampValue(filters.maxPB, 'pbRatio');
+                                if (clamped !== filters.maxPB) {
+                                  setFilters(prev => ({ ...prev, maxPB: clamped }));
+                                }
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPB: '0', maxPB: '3' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minPB === '0' && filters.maxPB === '3'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Low
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPB: '3.1', maxPB: '6' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minPB === '3.1' && filters.maxPB === '6'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Mid
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minPB: '6.1', maxPB: '20' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minPB === '6.1' && filters.maxPB === '20'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            High
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Dividend Yield */}
+                  <div className="border-t border-b border-slate-200 px-5">
+                    <div className="flex items-center justify-between py-3">
+                      <button
+                        onClick={() => toggleFilter('dividendYield')}
+                        className="flex-1 flex items-center justify-between text-left"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center">
+                            <label className="text-sm font-medium text-slate-700 cursor-pointer">Dividend Yield (%)</label>
+                            <RatioInfoTooltip ratio="dividend" />
+                          </div>
+                          {!expandedFilters.dividendYield && getFilterDisplay(filters.minDividendYield, filters.maxDividendYield, '10', '%') && (
+                            <span className="text-xs text-indigo-600">({getFilterDisplay(filters.minDividendYield, filters.maxDividendYield, '10', '%')})</span>
+                          )}
+                        </div>
+                      </button>
+                      <div className="flex items-center gap-2">
+                        {(filters.minDividendYield || filters.maxDividendYield) && (
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minDividendYield: '', maxDividendYield: '' }))}
+                            className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+                            title="Reset filter"
+                          >
+                            ✕
+                          </button>
+                        )}
+                        <button onClick={() => toggleFilter('dividendYield')}>
+                          <svg
+                            className={`w-4 h-4 text-slate-500 transition-transform ${expandedFilters.dividendYield ? 'rotate-90' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                    {expandedFilters.dividendYield && (
+                      <div className="pb-3 space-y-3">
+                        <div className="px-1">
+                          <div className="flex justify-between text-xs text-slate-600 mb-2">
+                            <span>{filters.minDividendYield ? parseFloat(filters.minDividendYield).toLocaleString('en-IN') : '0'}%</span>
+                            <span>{filters.maxDividendYield ? parseFloat(filters.maxDividendYield).toLocaleString('en-IN') : '10'}%</span>
+                          </div>
+                          <div className="relative h-6 flex items-center">
+                            <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+                            <div
+                              className="absolute h-1.5 bg-indigo-500 rounded-full"
+                              style={{
+                                left: `${((parseFloat(filters.minDividendYield || '0') / 10) * 100)}%`,
+                                right: `${100 - ((parseFloat(filters.maxDividendYield || '10') / 10) * 100)}%`
+                              }}
+                            ></div>
+                            <input
+                              type="range"
+                              min="0"
+                              max="10"
+                              step="0.1"
+                              value={filters.minDividendYield || 0}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                minDividendYield: e.target.value,
+                                maxDividendYield: prev.maxDividendYield && parseFloat(e.target.value) > parseFloat(prev.maxDividendYield)
+                                  ? e.target.value
+                                  : prev.maxDividendYield
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+                            <input
+                              type="range"
+                              min="0"
+                              max="10"
+                              step="0.1"
+                              value={filters.maxDividendYield || 10}
+                              onChange={(e) => setFilters(prev => ({
+                                ...prev,
+                                maxDividendYield: e.target.value,
+                                minDividendYield: prev.minDividendYield && parseFloat(e.target.value) < parseFloat(prev.minDividendYield)
+                                  ? e.target.value
+                                  : prev.minDividendYield
+                              }))}
+                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                              style={{ height: '1.5rem' }}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="Min"
+                            value={filters.minDividendYield ? parseFloat(filters.minDividendYield).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, minDividendYield: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Max"
+                            value={filters.maxDividendYield ? parseFloat(filters.maxDividendYield).toLocaleString('en-IN') : ''}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/,/g, '');
+                              if (value === '' || !isNaN(Number(value))) {
+                                setFilters(prev => ({ ...prev, maxDividendYield: value }));
+                              }
+                            }}
+                            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minDividendYield: '0', maxDividendYield: '1' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minDividendYield === '0' && filters.maxDividendYield === '1'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Low
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minDividendYield: '1.1', maxDividendYield: '3' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minDividendYield === '1.1' && filters.maxDividendYield === '3'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            Mid
+                          </button>
+                          <button
+                            onClick={() => setFilters(prev => ({ ...prev, minDividendYield: '3.1', maxDividendYield: '10' }))}
+                            className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                              filters.minDividendYield === '3.1' && filters.maxDividendYield === '10'
+                                ? 'bg-indigo-500 text-white border-indigo-500'
+                                : 'text-slate-700 bg-slate-50 border border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700'
+                            }`}
+                          >
+                            High
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                    </div>
+                  </div>
+
+                  {/* Mobile Apply Button - Fixed at bottom */}
+                  <div className="border-t border-slate-200 px-5 py-4 bg-white">
+                    <button
+                      onClick={() => {
+                        applyFilters();
+                        setShowMobileFilters(false);
+                      }}
+                      className="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm"
+                    >
+                      Apply Filters
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Sidebar - Desktop Only */}
             <div className="hidden lg:block w-full lg:w-[350px] flex-shrink-0">
@@ -2486,15 +3933,32 @@ export default function ScannerPage() {
 
             {/* Results Section */}
             <div className="flex-1 min-w-0">
-                {/* Mobile Filter Toggle Button */}
+                {/* Mobile/Tablet Filter Toggle Button */}
                 <button
                   onClick={() => setShowMobileFilters(true)}
-                  className="lg:hidden mb-4 w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm flex items-center justify-center gap-2"
+                  className="lg:hidden mb-4 w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 active:bg-indigo-800 transition-all shadow-md hover:shadow-lg font-medium text-sm flex items-center justify-center gap-2"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                   </svg>
-                  Show Filters
+                  <span>Show Filters</span>
+                  {(filters.search || filters.sector.length > 0 || filters.niftyIndices.length > 0 || filters.minMarketCap || filters.maxMarketCap || filters.minPrice || filters.maxPrice || filters.minPE || filters.maxPE || filters.minROCE || filters.maxROCE || filters.minROE || filters.maxROE || filters.minDebtToEquity || filters.maxDebtToEquity || filters.minPB || filters.maxPB || filters.minDividendYield || filters.maxDividendYield) && (
+                    <span className="bg-white text-indigo-600 px-2 py-0.5 rounded-full text-xs font-bold">
+                      {[
+                        filters.search ? 1 : 0,
+                        filters.sector.length,
+                        filters.niftyIndices.length,
+                        filters.minMarketCap || filters.maxMarketCap ? 1 : 0,
+                        filters.minPrice || filters.maxPrice ? 1 : 0,
+                        filters.minPE || filters.maxPE ? 1 : 0,
+                        filters.minROCE || filters.maxROCE ? 1 : 0,
+                        filters.minROE || filters.maxROE ? 1 : 0,
+                        filters.minDebtToEquity || filters.maxDebtToEquity ? 1 : 0,
+                        filters.minPB || filters.maxPB ? 1 : 0,
+                        filters.minDividendYield || filters.maxDividendYield ? 1 : 0
+                      ].reduce((a, b) => a + b, 0)}
+                    </span>
+                  )}
                 </button>
 
                 {/* Top Header Section */}
@@ -2774,37 +4238,50 @@ export default function ScannerPage() {
               {/* Pagination Controls */}
               {!loading && !error && (
                 <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-3 mt-4">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-slate-600">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div className="text-sm text-slate-600 text-center sm:text-left">
                       Page {pagination.currentPage} of {pagination.totalPages}
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 sm:gap-2 flex-wrap justify-center">
+                      {/* First button - hidden on mobile */}
                       <button
                         onClick={() => handlePageChange(1)}
                         disabled={!pagination.hasPrevious}
-                        className="px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="hidden sm:inline-flex px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         First
                       </button>
+
+                      {/* Previous button - icon on mobile, text on desktop */}
                       <button
                         onClick={() => handlePageChange(pagination.currentPage - 1)}
                         disabled={!pagination.hasPrevious}
-                        className="px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-2 sm:px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Previous
+                        <span className="hidden sm:inline">Previous</span>
+                        <span className="sm:hidden">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                          </svg>
+                        </span>
                       </button>
 
-                      {/* Page numbers */}
+                      {/* Page numbers - show fewer on mobile */}
                       {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
                         const startPage = Math.max(1, pagination.currentPage - 2);
                         const pageNumber = startPage + i;
                         if (pageNumber > pagination.totalPages) return null;
 
+                        // On mobile, only show current page and adjacent pages
+                        const isMobileHidden = Math.abs(pageNumber - pagination.currentPage) > 1;
+
                         return (
                           <button
                             key={pageNumber}
                             onClick={() => handlePageChange(pageNumber)}
-                            className={`px-3 py-2 text-sm font-medium rounded-lg ${
+                            className={`px-2 sm:px-3 py-2 text-sm font-medium rounded-lg ${
+                              isMobileHidden ? 'hidden sm:inline-flex' : ''
+                            } ${
                               pageNumber === pagination.currentPage
                                 ? 'bg-indigo-600 text-white'
                                 : 'text-slate-600 bg-white border border-slate-300 hover:bg-slate-50'
@@ -2815,17 +4292,25 @@ export default function ScannerPage() {
                         );
                       })}
 
+                      {/* Next button - icon on mobile, text on desktop */}
                       <button
                         onClick={() => handlePageChange(pagination.currentPage + 1)}
                         disabled={!pagination.hasNext}
-                        className="px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-2 sm:px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Next
+                        <span className="hidden sm:inline">Next</span>
+                        <span className="sm:hidden">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </span>
                       </button>
+
+                      {/* Last button - hidden on mobile */}
                       <button
                         onClick={() => handlePageChange(pagination.totalPages)}
                         disabled={!pagination.hasNext}
-                        className="px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="hidden sm:inline-flex px-3 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Last
                       </button>

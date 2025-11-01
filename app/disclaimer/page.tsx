@@ -14,15 +14,15 @@ export default function Disclaimer() {
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-orange-400/20 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-red-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
 
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-24">
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20 lg:py-24">
             <div className="text-center">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl mb-6 border border-white/20">
-                <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-white/10 backdrop-blur-sm rounded-2xl mb-4 sm:mb-6 border border-white/20">
+                <svg className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">Disclaimer</h1>
-              <p className="text-xl md:text-2xl text-orange-100 max-w-3xl mx-auto leading-relaxed">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">Disclaimer</h1>
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-orange-100 max-w-3xl mx-auto leading-relaxed">
                 Important legal disclaimers regarding the use of IncomeGrow Stock
               </p>
             </div>
@@ -30,18 +30,18 @@ export default function Disclaimer() {
         </div>
 
         {/* Main Content */}
-        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
           {/* Warning Banner */}
-          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-400 rounded-2xl p-8 mb-8 shadow-xl">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
-                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-400 rounded-2xl p-6 sm:p-8 mb-6 sm:mb-8 shadow-xl">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
               </div>
               <div className="flex-1">
-                <h3 className="text-xl font-bold text-yellow-900 mb-3">Please Read Carefully</h3>
-                <p className="text-yellow-800 leading-relaxed text-lg">
+                <h3 className="text-lg sm:text-xl font-bold text-yellow-900 mb-2 sm:mb-3">Please Read Carefully</h3>
+                <p className="text-yellow-800 leading-relaxed text-sm sm:text-base md:text-lg">
                   This disclaimer contains important information about the limitations and risks associated with using
                   IncomeGrow Stock. By accessing or using our platform, you acknowledge that you have read, understood,
                   and agree to this disclaimer.
@@ -50,11 +50,11 @@ export default function Disclaimer() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-gray-100">
+          <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 md:p-10 lg:p-12 border border-gray-100">
           <div className="prose prose-lg max-w-none">
             {/* General Disclaimer */}
-            <section className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">1. General Disclaimer</h2>
+            <section className="mb-6 sm:mb-8">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">1. General Disclaimer</h2>
               <p className="text-gray-700 leading-relaxed mb-4">
                 The information provided on IncomeGrow Stock is for general informational purposes only. While we strive
                 to keep the information accurate and up-to-date, we make no representations or warranties of any kind,

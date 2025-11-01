@@ -181,21 +181,21 @@ export default function Pricing() {
         <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 text-white overflow-hidden">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'2\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
 
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
             <div className="text-center">
               {/* Limited Time Offer Badge */}
-              <div className="inline-flex items-center gap-2 bg-yellow-400 text-gray-900 px-4 py-2 rounded-full font-bold text-sm mb-4 shadow-lg animate-pulse">
-                <FontAwesomeIcon icon={faStar} className="w-4 h-4" />
-                LIMITED TIME OFFER!
+              <div className="inline-flex items-center gap-2 bg-yellow-400 text-gray-900 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold text-xs sm:text-sm mb-3 sm:mb-4 shadow-lg animate-pulse">
+                <FontAwesomeIcon icon={faStar} className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span>LIMITED TIME OFFER!</span>
               </div>
 
-              <h1 className="text-3xl md:text-5xl font-bold mb-3">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-3 px-2">
                 🎉 New Year Special - 90% OFF! 🎉
               </h1>
-              <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto mb-2">
-                Get Premium Annual Plan for just <span className="font-bold text-yellow-300 text-2xl">₹99</span> instead of <span className="line-through text-white/70">₹999</span>
+              <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-3xl mx-auto mb-2 px-4">
+                Get Premium Annual Plan for just <span className="font-bold text-yellow-300 text-xl sm:text-2xl">₹99</span> instead of <span className="line-through text-white/70">₹999</span>
               </p>
-              <p className="text-sm md:text-base text-white/80">
+              <p className="text-xs sm:text-sm md:text-base text-white/80 px-4">
                 ⏰ Offer valid until <span className="font-bold text-yellow-300">Dec 31</span> • Limited spots available!
               </p>
             </div>
@@ -203,8 +203,8 @@ export default function Pricing() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 -mt-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 -mt-16 sm:-mt-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto">
             {plans.map((plan, index) => (
               <div
                 key={index}
@@ -214,47 +214,47 @@ export default function Pricing() {
               >
                 {/* Popular Badge */}
                 {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-gradient-to-r from-orange-500 to-pink-500 text-white px-6 py-2 text-sm font-bold rounded-bl-2xl shadow-lg">
-                    <FontAwesomeIcon icon={faStar} className="mr-2" />
-                    MOST POPULAR
+                  <div className="absolute top-0 right-0 bg-gradient-to-r from-orange-500 to-pink-500 text-white px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-bl-2xl shadow-lg">
+                    <FontAwesomeIcon icon={faStar} className="mr-1 sm:mr-2" />
+                    <span>MOST POPULAR</span>
                   </div>
                 )}
 
-                <div className="p-8 md:p-10">
+                <div className="p-6 sm:p-8 md:p-10">
                   {/* Plan Header */}
-                  <div className="text-center mb-8">
-                    <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${plan.gradient} rounded-2xl mb-4 shadow-lg`}>
-                      <FontAwesomeIcon icon={plan.icon} className="w-8 h-8 text-white" />
+                  <div className="text-center mb-6 sm:mb-8">
+                    <div className={`inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br ${plan.gradient} rounded-2xl mb-3 sm:mb-4 shadow-lg`}>
+                      <FontAwesomeIcon icon={plan.icon} className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-                    <p className="text-gray-600">{plan.tagline}</p>
+                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+                    <p className="text-sm sm:text-base text-gray-600">{plan.tagline}</p>
                   </div>
 
                   {/* Price */}
-                  <div className="text-center mb-8">
+                  <div className="text-center mb-6 sm:mb-8">
                     {plan.originalPrice ? (
                       <>
                         <div className="mb-2">
-                          <span className="text-2xl text-gray-400 line-through">₹{plan.originalPrice}</span>
-                          <span className="ml-2 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                          <span className="text-xl sm:text-2xl text-gray-400 line-through">₹{plan.originalPrice}</span>
+                          <span className="ml-2 bg-red-500 text-white px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-bold">
                             90% OFF
                           </span>
                         </div>
-                        <div className="flex items-baseline justify-center gap-2">
-                          <span className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+                        <div className="flex items-baseline justify-center gap-1 sm:gap-2">
+                          <span className="text-4xl sm:text-5xl md:text-6xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
                             ₹{plan.price}
                           </span>
-                          <span className="text-gray-600 text-lg">/{plan.period}</span>
+                          <span className="text-gray-600 text-base sm:text-lg">/{plan.period}</span>
                         </div>
-                        <p className="text-sm text-gray-500 mt-2">One-time annual payment • Offer ends Dec 31</p>
+                        <p className="text-xs sm:text-sm text-gray-500 mt-2">One-time annual payment • Offer ends Dec 31</p>
                       </>
                     ) : (
                       <>
-                        <div className="flex items-baseline justify-center gap-2">
-                          <span className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                        <div className="flex items-baseline justify-center gap-1 sm:gap-2">
+                          <span className="text-4xl sm:text-5xl md:text-6xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
                             ₹{plan.price}
                           </span>
-                          <span className="text-gray-600 text-lg">/{plan.period}</span>
+                          <span className="text-gray-600 text-base sm:text-lg">/{plan.period}</span>
                         </div>
                       </>
                     )}
@@ -265,7 +265,7 @@ export default function Pricing() {
                     <button
                       onClick={handlePayment}
                       disabled={loading}
-                      className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 ${
+                      className={`w-full py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-semibold text-base sm:text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 ${
                         loading
                           ? 'bg-gray-400 cursor-not-allowed'
                           : 'bg-gradient-to-r from-orange-600 to-pink-600 hover:from-orange-700 hover:to-pink-700 text-white'
@@ -276,7 +276,7 @@ export default function Pricing() {
                   ) : (
                     <Link href={plan.ctaLink}>
                       <button
-                        className="w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+                        className="w-full py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-semibold text-base sm:text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
                       >
                         {plan.cta}
                       </button>
@@ -326,52 +326,52 @@ export default function Pricing() {
         </div>
 
         {/* FAQ Section */}
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
-            <p className="text-xl text-gray-600">Got questions? We've got answers.</p>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">Frequently Asked Questions</h2>
+            <p className="text-base sm:text-lg md:text-xl text-gray-600">Got questions? We've got answers.</p>
           </div>
 
-          <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">What's the difference between Free and Premium?</h3>
-              <p className="text-gray-600">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-100">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">What's the difference between Free and Premium?</h3>
+              <p className="text-sm sm:text-base text-gray-600">
                 The Free plan gives you access to basic features including saving up to 2 scanner queries.
                 Premium unlocks advanced features like saving up to 10 scanner queries, advanced analytics, priority support, and more.
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">How does the 90% OFF offer work?</h3>
-              <p className="text-gray-600">
+            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-100">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">How does the 90% OFF offer work?</h3>
+              <p className="text-sm sm:text-base text-gray-600">
                 Get Premium for just ₹99/year (regular price ₹999/year) when you subscribe before Dec 31. This is a one-time annual payment that saves you ₹900!
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">What happens after the first year?</h3>
-              <p className="text-gray-600">
+            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-100">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">What happens after the first year?</h3>
+              <p className="text-sm sm:text-base text-gray-600">
                 After your first year, you can renew at the regular annual rate or switch to monthly billing. We'll notify you before your subscription ends.
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">What payment methods do you accept?</h3>
-              <p className="text-gray-600">
+            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-100">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">What payment methods do you accept?</h3>
+              <p className="text-sm sm:text-base text-gray-600">
                 We currently accept <span className="font-semibold text-blue-600">UPI payments only</span> for a quick and secure checkout. Simply scan the QR code or use any UPI app (Google Pay, PhonePe, Paytm, etc.) to complete your payment instantly.
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Is there a free trial for Premium?</h3>
-              <p className="text-gray-600">
+            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-100">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Is there a free trial for Premium?</h3>
+              <p className="text-sm sm:text-base text-gray-600">
                 We don't offer a free trial, but our Free plan gives you full access to core features so you can experience the platform before upgrading.
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">How do scanner query limits work?</h3>
-              <p className="text-gray-600">
+            <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-100">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">How do scanner query limits work?</h3>
+              <p className="text-sm sm:text-base text-gray-600">
                 Free users can save up to 2 custom scanner queries, while Premium users can save up to 10. You can always create and run unlimited queries, but only save your favorites within these limits.
               </p>
             </div>

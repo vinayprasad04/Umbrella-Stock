@@ -64,7 +64,7 @@ function SubscribeForm() {
   };
 
   return (
-    <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-16 overflow-hidden border-t border-slate-700">
+    <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-12 sm:py-16 lg:py-20 overflow-hidden border-t border-slate-700">
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-0 left-0 w-96 h-96 bg-orange-500 rounded-full mix-blend-overlay filter blur-3xl animate-blob"></div>
@@ -96,11 +96,11 @@ function SubscribeForm() {
               <span className="text-sm font-medium text-orange-100">Stay Connected</span>
             </div>
 
-            <h2 className="text-4xl md:text-5xl font-bold leading-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">
               Never Miss an Update
             </h2>
 
-            <p className="text-lg text-gray-300 leading-relaxed">
+            <p className="text-base sm:text-lg text-gray-300 leading-relaxed">
               Subscribe to receive market insights, investment updates, and exclusive content directly to your inbox. Be the first to know about new features and opportunities.
             </p>
 
@@ -141,25 +141,25 @@ function SubscribeForm() {
             </div>
 
             {/* Stats */}
-            <div className="flex flex-wrap gap-8 pt-6">
+            <div className="flex flex-wrap gap-6 sm:gap-8 pt-6">
               <div>
-                <div className="text-3xl font-bold text-orange-400">10K+</div>
-                <div className="text-gray-400 text-sm">Active Users</div>
+                <div className="text-2xl sm:text-3xl font-bold text-orange-400">10K+</div>
+                <div className="text-gray-400 text-xs sm:text-sm">Active Users</div>
               </div>
               <div>
-                <div className="text-3xl font-bold text-orange-400">24/7</div>
-                <div className="text-gray-400 text-sm">Platform Access</div>
+                <div className="text-2xl sm:text-3xl font-bold text-orange-400">24/7</div>
+                <div className="text-gray-400 text-xs sm:text-sm">Platform Access</div>
               </div>
               <div>
-                <div className="text-3xl font-bold text-orange-400">100%</div>
-                <div className="text-gray-400 text-sm">Free Forever</div>
+                <div className="text-2xl sm:text-3xl font-bold text-orange-400">100%</div>
+                <div className="text-gray-400 text-xs sm:text-sm">Free Forever</div>
               </div>
             </div>
           </div>
 
           {/* Right Side - Subscription Form */}
           <div className="relative">
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl shadow-2xl p-8 md:p-10 relative z-10">
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl shadow-2xl p-6 sm:p-8 md:p-10 relative z-10">
               <div className="text-center mb-8">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl mb-4 shadow-lg">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface RatioInfo {
@@ -90,16 +90,27 @@ interface RatioInfoTooltipProps {
 
 export default function RatioInfoTooltip({ ratio }: RatioInfoTooltipProps) {
   const info = ratioInfoData[ratio];
+  const [isOpen, setIsOpen] = useState(false);
 
   if (!info) return null;
 
+  // Handle click for touch devices and close on outside click
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsOpen(!isOpen);
+  };
+
   return (
     <TooltipProvider delayDuration={300}>
-      <Tooltip>
+      <Tooltip open={isOpen} onOpenChange={setIsOpen}>
         <TooltipTrigger asChild>
           <button
             type="button"
-            className="inline-flex items-center justify-center w-4 h-4 ml-1.5 text-indigo-600 hover:text-indigo-800 focus:outline-none"
+            onClick={handleClick}
+            onMouseEnter={() => setIsOpen(true)}
+            onMouseLeave={() => setIsOpen(false)}
+            className="inline-flex items-center justify-center w-4 h-4 ml-1.5 text-indigo-600 hover:text-indigo-800 focus:outline-none touch-manipulation"
             aria-label={`Information about ${info.title}`}
           >
             <svg
@@ -119,8 +130,9 @@ export default function RatioInfoTooltip({ ratio }: RatioInfoTooltipProps) {
         <TooltipContent
           side="right"
           align="start"
-          className="max-w-sm p-4 bg-white border-indigo-200 shadow-lg"
+          className="max-w-sm p-4 bg-white border-indigo-200 shadow-lg z-50"
           sideOffset={5}
+          onPointerDownOutside={() => setIsOpen(false)}
         >
           <div className="space-y-3">
             <div>

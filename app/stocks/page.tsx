@@ -259,23 +259,23 @@ export default function StocksPage() {
 
       <main className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 py-8 pt-[104px] md:pt-[123px] lg:pt-20" role="main" aria-label="Verified Stocks Page">
         {/* Header Section */}
-        <header className="mb-8">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <div className="flex items-center space-x-3 mb-2">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <BarChart3 className="w-6 h-6 text-white" />
+        <header className="mb-6 sm:mb-8">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+            <div className="w-full lg:w-auto">
+              <div className="flex items-center space-x-2 sm:space-x-3 mb-2">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 bg-clip-text text-transparent">
                   Verified Stocks
                 </h1>
               </div>
-              <p className="text-lg text-gray-600 ml-13">
+              <p className="text-sm sm:text-base md:text-lg text-gray-600 ml-10 sm:ml-13">
                 Explore stocks with verified comprehensive financial data and detailed analysis.
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 w-full lg:w-auto">
               {/* Refresh Prices Button */}
               <button
                 onClick={() => {
@@ -285,34 +285,39 @@ export default function StocksPage() {
                   }
                 }}
                 disabled={!data?.stocks || Object.values(livePrices).some(p => p?.loading)}
-                className="px-4 py-2 rounded-xl bg-white border-2 border-gray-200 text-gray-700 hover:border-green-500 hover:text-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 shadow-sm"
+                className="px-3 py-2 sm:px-4 rounded-xl bg-white border-2 border-gray-200 text-gray-700 hover:border-green-500 hover:text-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 shadow-sm flex-1 sm:flex-initial justify-center"
                 title="Refresh live prices"
               >
-                <RefreshCw className={`w-4 h-4 ${Object.values(livePrices).some(p => p?.loading) ? 'animate-spin' : ''}`} />
-                <span className="text-sm font-medium hidden sm:inline">Refresh Prices</span>
+                <RefreshCw className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${Object.values(livePrices).some(p => p?.loading) ? 'animate-spin' : ''}`} />
+                <span className="text-xs sm:text-sm font-medium">
+                  <span className="hidden sm:inline">Refresh Prices</span>
+                  <span className="sm:hidden">Refresh</span>
+                </span>
               </button>
 
               {/* View Mode Toggle */}
-              <div className="flex items-center gap-2 bg-white rounded-xl p-1 shadow-sm border border-gray-200">
+              <div className="flex items-center gap-1 sm:gap-2 bg-white rounded-xl p-1 shadow-sm border border-gray-200">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  className={`px-2 py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-medium transition-all ${
                     viewMode === 'grid'
                       ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-md'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                   }`}
                 >
-                  Grid View
+                  <span className="hidden sm:inline">Grid View</span>
+                  <span className="sm:hidden">Grid</span>
                 </button>
                 <button
                   onClick={() => setViewMode('table')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  className={`px-2 py-2 sm:px-4 rounded-lg text-xs sm:text-sm font-medium transition-all ${
                     viewMode === 'table'
                       ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-md'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                   }`}
                 >
-                  Table View
+                  <span className="hidden sm:inline">Table View</span>
+                  <span className="sm:hidden">Table</span>
                 </button>
               </div>
             </div>
@@ -321,55 +326,55 @@ export default function StocksPage() {
 
         {/* Stats Card */}
         {data && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform duration-200">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                  <Building2 className="w-6 h-6" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+            <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg p-4 sm:p-6 text-white transform hover:scale-105 transition-transform duration-200">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                  <Building2 className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <div className="text-xs font-medium bg-white/20 px-3 py-1 rounded-full">Total</div>
+                <div className="text-xs font-medium bg-white/20 px-2 py-1 sm:px-3 rounded-full">Total</div>
               </div>
-              <div className="text-4xl font-bold mb-1">{data.total}</div>
-              <div className="text-green-100 text-sm font-medium">Verified Stocks</div>
+              <div className="text-3xl sm:text-4xl font-bold mb-1">{data.total}</div>
+              <div className="text-green-100 text-xs sm:text-sm font-medium">Verified Stocks</div>
             </div>
 
-            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform duration-200">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6" />
+            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg p-4 sm:p-6 text-white transform hover:scale-105 transition-transform duration-200">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <div className="text-xs font-medium bg-white/20 px-3 py-1 rounded-full">Growth</div>
+                <div className="text-xs font-medium bg-white/20 px-2 py-1 sm:px-3 rounded-full">Growth</div>
               </div>
-              <div className="text-4xl font-bold mb-1">
+              <div className="text-3xl sm:text-4xl font-bold mb-1">
                 {data.stocks.filter(s => s.salesGrowth && s.salesGrowth > 0).length}
               </div>
-              <div className="text-blue-100 text-sm font-medium">Positive Sales Growth</div>
+              <div className="text-blue-100 text-xs sm:text-sm font-medium">Positive Sales Growth</div>
             </div>
 
-            <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform duration-200">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                  <DollarSign className="w-6 h-6" />
+            <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg p-4 sm:p-6 text-white transform hover:scale-105 transition-transform duration-200 sm:col-span-2 md:col-span-1">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                  <DollarSign className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <div className="text-xs font-medium bg-white/20 px-3 py-1 rounded-full">Profit</div>
+                <div className="text-xs font-medium bg-white/20 px-2 py-1 sm:px-3 rounded-full">Profit</div>
               </div>
-              <div className="text-4xl font-bold mb-1">
+              <div className="text-3xl sm:text-4xl font-bold mb-1">
                 {data.stocks.filter(s => s.profitGrowth && s.profitGrowth > 0).length}
               </div>
-              <div className="text-purple-100 text-sm font-medium">Positive Profit Growth</div>
+              <div className="text-purple-100 text-xs sm:text-sm font-medium">Positive Profit Growth</div>
             </div>
           </div>
         )}
 
         {/* Filters */}
-        <section className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8" aria-label="Stock Search and Filter">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
-              <Filter className="w-4 h-4 text-white" aria-hidden="true" />
+        <section className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 sm:p-6 mb-6 sm:mb-8" aria-label="Stock Search and Filter">
+          <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+              <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" aria-hidden="true" />
             </div>
-            <h2 className="text-xl font-semibold text-gray-900">Search & Filter Stocks</h2>
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Search & Filter Stocks</h2>
           </div>
-          <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 gap-4" role="search">
+          <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 gap-3 sm:gap-4" role="search">
             <div className="relative">
               <label htmlFor="stock-search" className="block text-sm font-medium text-gray-700 mb-2">Search</label>
               <div className="relative">
@@ -766,10 +771,10 @@ export default function StocksPage() {
 
         {/* Pagination */}
         {data && data.total > data.limit && (
-          <div className="mt-8 bg-white rounded-2xl shadow-lg border border-gray-100 px-6 py-4">
-            <div className="flex items-center justify-between flex-wrap gap-4">
-              <div>
-                <p className="text-sm text-gray-700">
+          <div className="mt-6 sm:mt-8 bg-white rounded-2xl shadow-lg border border-gray-100 px-4 sm:px-6 py-3 sm:py-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+              <div className="text-center sm:text-left">
+                <p className="text-xs sm:text-sm text-gray-700">
                   Showing <span className="font-semibold text-gray-900">{((page - 1) * data.limit) + 1}</span> to{' '}
                   <span className="font-semibold text-gray-900">
                     {Math.min(page * data.limit, data.total)}
@@ -782,17 +787,18 @@ export default function StocksPage() {
                   <button
                     onClick={() => setPage(Math.max(1, page - 1))}
                     disabled={page === 1}
-                    className="px-5 py-2.5 rounded-xl border-2 border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-green-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-gray-300 transition-all"
+                    className="px-3 py-2 sm:px-5 sm:py-2.5 rounded-xl border-2 border-gray-300 bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-green-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-gray-300 transition-all"
                   >
-                    Previous
+                    <span className="hidden sm:inline">Previous</span>
+                    <span className="sm:hidden">Prev</span>
                   </button>
-                  <div className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-semibold">
+                  <div className="px-3 py-2 sm:px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl text-xs sm:text-sm font-semibold">
                     Page {page}
                   </div>
                   <button
                     onClick={() => setPage(page + 1)}
                     disabled={page * data.limit >= data.total}
-                    className="px-5 py-2.5 rounded-xl border-2 border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-green-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-gray-300 transition-all"
+                    className="px-3 py-2 sm:px-5 sm:py-2.5 rounded-xl border-2 border-gray-300 bg-white text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-green-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-gray-300 transition-all"
                   >
                     Next
                   </button>

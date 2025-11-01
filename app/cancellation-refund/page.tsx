@@ -9,30 +9,30 @@ export default function CancellationRefund() {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 to-slate-100">
       <Header />
 
-      <main className="flex-grow py-12">
+      <main className="flex-grow py-8 sm:py-12 lg:py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Cancellation and Refund Policy</h1>
+          <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">Cancellation and Refund Policy</h1>
             <p className="text-gray-600">
               <strong>Last Updated:</strong> October 29, 2025
             </p>
           </div>
 
           {/* Content */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
+          <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 space-y-6 sm:space-y-8">
 
             <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Overview</h2>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">Overview</h2>
               <p className="text-gray-700 leading-relaxed">
                 This Cancellation and Refund Policy outlines the terms and conditions for cancellations and refunds for services provided through IncomeGrow Stock.
               </p>
             </section>
 
             <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Subscription Services</h2>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">Subscription Services</h2>
 
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Cancellation Policy</h3>
+              <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900 mb-2 sm:mb-3">Cancellation Policy</h3>
 
               <div className="mb-4">
                 <h4 className="text-lg font-semibold text-gray-800 mb-2">1. Subscription Cancellation</h4>
