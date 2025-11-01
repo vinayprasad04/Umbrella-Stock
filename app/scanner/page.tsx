@@ -2465,12 +2465,12 @@ export default function ScannerPage() {
                   <table className="w-full min-h-full layout-fixed table-auto">
                     <thead className="bg-slate-50 sticky top-0">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider" style={{ minWidth: '290px' }}>
                           <button onClick={() => handleSort('companyName')} className="flex items-center gap-1 hover:text-indigo-600">
                             Company {getSortIcon('companyName')}
                           </button>
                         </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider" style={{ minWidth: '110px' }}>
                           <button onClick={() => handleSort('additionalInfo.sector')} className="flex items-center gap-1 hover:text-indigo-600">
                             Sector {getSortIcon('additionalInfo.sector')}
                           </button>
