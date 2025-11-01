@@ -1017,13 +1017,13 @@ export default function ScannerPage() {
       <Header />
 
       <main className="pt-[120px] md:pt-[140px] lg:pt-[90px] pb-4">
-      
 
-        <div className="px-6">
-          <div className="flex gap-6">
+
+        <div className="px-2 sm:px-4 md:px-6">
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
             {/* Sidebar */}
             <div className="w-full lg:w-[350px] flex-shrink-0">
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 sticky top-24 flex flex-col" style={{height: 'calc(100vh - 134px)'}}>
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 lg:sticky lg:top-24 flex flex-col max-h-[600px] lg:max-h-none" style={{height: 'auto', lg: {height: 'calc(100vh - 134px)'}}}>
                 {/* Filters Header - Fixed */}
                 <div className="flex items-center justify-between py-5 px-5 border-b border-slate-200">
                   <h3 className="text-lg font-semibold text-slate-900">Filters</h3>
@@ -2452,19 +2452,27 @@ export default function ScannerPage() {
             {/* Results Section */}
             <div className="flex-1 min-w-0">
                 {/* Top Header Section */}
-              <div className=" mb-4">
-                <div className="flex items-center justify-between mb-6">
+              <div className="mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                   <div>
-                    <h1 className="text-2xl font-bold text-slate-900 capitalize">{pageTitle}</h1>
-                    <p className="text-slate-600">Find the perfect stocks with advanced filtering</p>
+                    <h1 className="text-xl sm:text-2xl font-bold text-slate-900 capitalize">{pageTitle}</h1>
+                    <p className="text-sm sm:text-base text-slate-600">Find the perfect stocks with advanced filtering</p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     {currentScreenerId && (
                       <button
                         onClick={handleNewScreener}
                         className='border border-indigo-600 text-indigo-600 py-2.5 px-4 rounded-lg hover:bg-indigo-50 transition-colors font-medium text-sm'
                       >
-                        New List
+                        New List save
+                      </button>
+                    )}
+                    {currentScreenerId && (
+                      <button
+                        onClick={handleNewScreener}
+                        className='border border-indigo-600 text-indigo-600 py-2.5 px-4 rounded-lg hover:bg-indigo-50 transition-colors font-medium text-sm'
+                      >
+                        New List save
                       </button>
                     )}
                     <button
