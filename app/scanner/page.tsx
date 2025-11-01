@@ -217,6 +217,21 @@ export default function ScannerPage() {
     return `${parseFloat(minVal).toLocaleString('en-IN')}${suffix} - ${parseFloat(maxVal).toLocaleString('en-IN')}${suffix}`;
   };
 
+  // Helper to calculate dynamic range for sliders based on manual input
+  const getDynamicRange = (min: string, max: string, defaultMax: number) => {
+    const minVal = parseFloat(min || '0');
+    const maxVal = parseFloat(max || defaultMax.toString());
+
+    // If manual input exceeds default max, extend the range
+    const rangeMax = Math.max(defaultMax, maxVal, minVal);
+
+    return {
+      min: 0,
+      max: rangeMax,
+      step: rangeMax > 100 ? 1 : (rangeMax > 20 ? 0.5 : 0.1)
+    };
+  };
+
   // All available sectors
   const allSectors = [
     'Automobile',
@@ -1402,52 +1417,59 @@ export default function ScannerPage() {
                       <div className="pb-3 space-y-3">
                         {/* Range Slider */}
                         <div className="px-1">
-                          <div className="flex justify-between text-xs text-slate-600 mb-2">
-                            <span>{filters.minPE ? parseFloat(filters.minPE).toLocaleString('en-IN') : '0'}</span>
-                            <span>{filters.maxPE ? parseFloat(filters.maxPE).toLocaleString('en-IN') : '100'}</span>
-                          </div>
-                          <div className="relative h-6 flex items-center">
-                            <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
-                            <div
-                              className="absolute h-1.5 bg-indigo-500 rounded-full"
-                              style={{
-                                left: `${((parseFloat(filters.minPE || '0') / 100) * 100)}%`,
-                                right: `${100 - ((parseFloat(filters.maxPE || '100') / 100) * 100)}%`
-                              }}
-                            ></div>
-                            <input
-                              type="range"
-                              min="0"
-                              max="100"
-                              step="1"
-                              value={filters.minPE || 0}
-                              onChange={(e) => setFilters(prev => ({
-                                ...prev,
-                                minPE: e.target.value,
-                                maxPE: prev.maxPE && parseFloat(e.target.value) > parseFloat(prev.maxPE)
-                                  ? e.target.value
-                                  : prev.maxPE
-                              }))}
-                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
-                              style={{ height: '1.5rem' }}
-                            />
-                            <input
-                              type="range"
-                              min="0"
-                              max="100"
-                              step="1"
-                              value={filters.maxPE || 100}
-                              onChange={(e) => setFilters(prev => ({
-                                ...prev,
-                                maxPE: e.target.value,
-                                minPE: prev.minPE && parseFloat(e.target.value) < parseFloat(prev.minPE)
-                                  ? e.target.value
-                                  : prev.minPE
-                              }))}
-                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
-                              style={{ height: '1.5rem' }}
-                            />
-                          </div>
+                          {(() => {
+                            const peRange = getDynamicRange(filters.minPE, filters.maxPE, 100);
+                            return (
+                              <>
+                                <div className="flex justify-between text-xs text-slate-600 mb-2">
+                                  <span>{filters.minPE ? parseFloat(filters.minPE).toLocaleString('en-IN') : '0'}</span>
+                                  <span>{filters.maxPE ? parseFloat(filters.maxPE).toLocaleString('en-IN') : peRange.max.toString()}</span>
+                                </div>
+                                <div className="relative h-6 flex items-center">
+                                  <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+                                  <div
+                                    className="absolute h-1.5 bg-indigo-500 rounded-full"
+                                    style={{
+                                      left: `${((parseFloat(filters.minPE || '0') / peRange.max) * 100)}%`,
+                                      right: `${100 - ((parseFloat(filters.maxPE || peRange.max.toString()) / peRange.max) * 100)}%`
+                                    }}
+                                  ></div>
+                                  <input
+                                    type="range"
+                                    min={peRange.min}
+                                    max={peRange.max}
+                                    step={peRange.step}
+                                    value={filters.minPE || 0}
+                                    onChange={(e) => setFilters(prev => ({
+                                      ...prev,
+                                      minPE: e.target.value,
+                                      maxPE: prev.maxPE && parseFloat(e.target.value) > parseFloat(prev.maxPE)
+                                        ? e.target.value
+                                        : prev.maxPE
+                                    }))}
+                                    className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                                    style={{ height: '1.5rem' }}
+                                  />
+                                  <input
+                                    type="range"
+                                    min={peRange.min}
+                                    max={peRange.max}
+                                    step={peRange.step}
+                                    value={filters.maxPE || peRange.max}
+                                    onChange={(e) => setFilters(prev => ({
+                                      ...prev,
+                                      maxPE: e.target.value,
+                                      minPE: prev.minPE && parseFloat(e.target.value) < parseFloat(prev.minPE)
+                                        ? e.target.value
+                                        : prev.minPE
+                                    }))}
+                                    className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                                    style={{ height: '1.5rem' }}
+                                  />
+                                </div>
+                              </>
+                            );
+                          })()}
                         </div>
 
                         {/* Input Boxes */}
@@ -2010,52 +2032,59 @@ export default function ScannerPage() {
                     {expandedFilters.pbRatio && (
                       <div className="pb-3 space-y-3">
                         <div className="px-1">
-                          <div className="flex justify-between text-xs text-slate-600 mb-2">
-                            <span>{filters.minPB ? parseFloat(filters.minPB).toLocaleString('en-IN') : '0'}</span>
-                            <span>{filters.maxPB ? parseFloat(filters.maxPB).toLocaleString('en-IN') : '20'}</span>
-                          </div>
-                          <div className="relative h-6 flex items-center">
-                            <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
-                            <div
-                              className="absolute h-1.5 bg-indigo-500 rounded-full"
-                              style={{
-                                left: `${((parseFloat(filters.minPB || '0') / 20) * 100)}%`,
-                                right: `${100 - ((parseFloat(filters.maxPB || '20') / 20) * 100)}%`
-                              }}
-                            ></div>
-                            <input
-                              type="range"
-                              min="0"
-                              max="20"
-                              step="0.5"
-                              value={filters.minPB || 0}
-                              onChange={(e) => setFilters(prev => ({
-                                ...prev,
-                                minPB: e.target.value,
-                                maxPB: prev.maxPB && parseFloat(e.target.value) > parseFloat(prev.maxPB)
-                                  ? e.target.value
-                                  : prev.maxPB
-                              }))}
-                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
-                              style={{ height: '1.5rem' }}
-                            />
-                            <input
-                              type="range"
-                              min="0"
-                              max="20"
-                              step="0.5"
-                              value={filters.maxPB || 20}
-                              onChange={(e) => setFilters(prev => ({
-                                ...prev,
-                                maxPB: e.target.value,
-                                minPB: prev.minPB && parseFloat(e.target.value) < parseFloat(prev.minPB)
-                                  ? e.target.value
-                                  : prev.minPB
-                              }))}
-                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
-                              style={{ height: '1.5rem' }}
-                            />
-                          </div>
+                          {(() => {
+                            const pbRange = getDynamicRange(filters.minPB, filters.maxPB, 20);
+                            return (
+                              <>
+                                <div className="flex justify-between text-xs text-slate-600 mb-2">
+                                  <span>{filters.minPB ? parseFloat(filters.minPB).toLocaleString('en-IN') : '0'}</span>
+                                  <span>{filters.maxPB ? parseFloat(filters.maxPB).toLocaleString('en-IN') : pbRange.max.toString()}</span>
+                                </div>
+                                <div className="relative h-6 flex items-center">
+                                  <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+                                  <div
+                                    className="absolute h-1.5 bg-indigo-500 rounded-full"
+                                    style={{
+                                      left: `${((parseFloat(filters.minPB || '0') / pbRange.max) * 100)}%`,
+                                      right: `${100 - ((parseFloat(filters.maxPB || pbRange.max.toString()) / pbRange.max) * 100)}%`
+                                    }}
+                                  ></div>
+                                  <input
+                                    type="range"
+                                    min={pbRange.min}
+                                    max={pbRange.max}
+                                    step={pbRange.step}
+                                    value={filters.minPB || 0}
+                                    onChange={(e) => setFilters(prev => ({
+                                      ...prev,
+                                      minPB: e.target.value,
+                                      maxPB: prev.maxPB && parseFloat(e.target.value) > parseFloat(prev.maxPB)
+                                        ? e.target.value
+                                        : prev.maxPB
+                                    }))}
+                                    className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                                    style={{ height: '1.5rem' }}
+                                  />
+                                  <input
+                                    type="range"
+                                    min={pbRange.min}
+                                    max={pbRange.max}
+                                    step={pbRange.step}
+                                    value={filters.maxPB || pbRange.max}
+                                    onChange={(e) => setFilters(prev => ({
+                                      ...prev,
+                                      maxPB: e.target.value,
+                                      minPB: prev.minPB && parseFloat(e.target.value) < parseFloat(prev.minPB)
+                                        ? e.target.value
+                                        : prev.minPB
+                                    }))}
+                                    className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                                    style={{ height: '1.5rem' }}
+                                  />
+                                </div>
+                              </>
+                            );
+                          })()}
                         </div>
                         <div className="flex gap-2">
                           <input
