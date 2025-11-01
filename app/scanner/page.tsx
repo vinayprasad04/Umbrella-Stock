@@ -217,6 +217,29 @@ export default function ScannerPage() {
     return `${parseFloat(minVal).toLocaleString('en-IN')}${suffix} - ${parseFloat(maxVal).toLocaleString('en-IN')}${suffix}`;
   };
 
+  // Define min/max limits for each filter type (marketCap is in Cr)
+  const limits = {
+    marketCap: [0, 10000000], // in Crores
+    price: [0, 100000],
+    peRatio: [0, 200],
+    roce: [0, 100],
+    roe: [-100, 100],
+    debtToEquity: [0, 10],
+    pbRatio: [0, 100],
+    dividendYield: [0, 20]
+  };
+
+  // Helper to clamp value within limits
+  const clampValue = (value: string, filterType: keyof typeof limits): string => {
+    if (value === '' || value === '-') return value;
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) return '';
+
+    const [min, max] = limits[filterType];
+    const clamped = Math.min(Math.max(numValue, min), max);
+    return clamped.toString();
+  };
+
   // Helper to calculate dynamic range for sliders based on manual input
   const getDynamicRange = (min: string, max: string, defaultMax: number) => {
     const minVal = parseFloat(min || '0');
@@ -1481,7 +1504,16 @@ export default function ScannerPage() {
                             onChange={(e) => {
                               const value = e.target.value.replace(/,/g, '');
                               if (value === '' || !isNaN(Number(value))) {
-                                setFilters(prev => ({ ...prev, minPE: value }));
+                                const clamped = clampValue(value, 'peRatio');
+                                setFilters(prev => ({ ...prev, minPE: clamped }));
+                              }
+                            }}
+                            onBlur={(e) => {
+                              if (filters.minPE) {
+                                const clamped = clampValue(filters.minPE, 'peRatio');
+                                if (clamped !== filters.minPE) {
+                                  setFilters(prev => ({ ...prev, minPE: clamped }));
+                                }
                               }
                             }}
                             className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -1493,7 +1525,16 @@ export default function ScannerPage() {
                             onChange={(e) => {
                               const value = e.target.value.replace(/,/g, '');
                               if (value === '' || !isNaN(Number(value))) {
-                                setFilters(prev => ({ ...prev, maxPE: value }));
+                                const clamped = clampValue(value, 'peRatio');
+                                setFilters(prev => ({ ...prev, maxPE: clamped }));
+                              }
+                            }}
+                            onBlur={(e) => {
+                              if (filters.maxPE) {
+                                const clamped = clampValue(filters.maxPE, 'peRatio');
+                                if (clamped !== filters.maxPE) {
+                                  setFilters(prev => ({ ...prev, maxPE: clamped }));
+                                }
                               }
                             }}
                             className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -2094,7 +2135,17 @@ export default function ScannerPage() {
                             onChange={(e) => {
                               const value = e.target.value.replace(/,/g, '');
                               if (value === '' || !isNaN(Number(value))) {
-                                setFilters(prev => ({ ...prev, minPB: value }));
+                                const clamped = clampValue(value, 'pbRatio');
+                                setFilters(prev => ({ ...prev, minPB: clamped }));
+                              }
+                            }}
+                            onBlur={(e) => {
+                              // Ensure value is clamped on blur
+                              if (filters.minPB) {
+                                const clamped = clampValue(filters.minPB, 'pbRatio');
+                                if (clamped !== filters.minPB) {
+                                  setFilters(prev => ({ ...prev, minPB: clamped }));
+                                }
                               }
                             }}
                             className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -2106,7 +2157,17 @@ export default function ScannerPage() {
                             onChange={(e) => {
                               const value = e.target.value.replace(/,/g, '');
                               if (value === '' || !isNaN(Number(value))) {
-                                setFilters(prev => ({ ...prev, maxPB: value }));
+                                const clamped = clampValue(value, 'pbRatio');
+                                setFilters(prev => ({ ...prev, maxPB: clamped }));
+                              }
+                            }}
+                            onBlur={(e) => {
+                              // Ensure value is clamped on blur
+                              if (filters.maxPB) {
+                                const clamped = clampValue(filters.maxPB, 'pbRatio');
+                                if (clamped !== filters.maxPB) {
+                                  setFilters(prev => ({ ...prev, maxPB: clamped }));
+                                }
                               }
                             }}
                             className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
