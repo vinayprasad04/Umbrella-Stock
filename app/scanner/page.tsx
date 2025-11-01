@@ -187,6 +187,7 @@ export default function ScannerPage() {
   const [selectedLimit, setSelectedLimit] = useState<number>(10);
   const [sectorSearch, setSectorSearch] = useState<string>('');
   const [niftyIndicesSearch, setNiftyIndicesSearch] = useState<string>('');
+  const [showMobileFilters, setShowMobileFilters] = useState<boolean>(false);
   const [expandedFilters, setExpandedFilters] = useState<{ [key: string]: boolean }>({
     search: true,
     sector: false,
@@ -919,6 +920,7 @@ export default function ScannerPage() {
   // Handle filters
   const applyFilters = () => {
     fetchStocks(1, selectedLimit); // Reset to page 1 when applying filters
+    setShowMobileFilters(false); // Close mobile filters after applying
   };
 
   const handleSort = (key: string) => {
@@ -1021,9 +1023,42 @@ export default function ScannerPage() {
 
         <div className="px-2 sm:px-4 md:px-6">
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
-            {/* Sidebar */}
-            <div className="w-full lg:w-[350px] flex-shrink-0">
-              <div className="bg-white rounded-xl shadow-sm border border-slate-200 lg:sticky lg:top-24 flex flex-col max-h-[600px] lg:max-h-none" style={{height: 'auto', lg: {height: 'calc(100vh - 134px)'}}}>
+            {/* Mobile Filter Overlay */}
+            {showMobileFilters && (
+              <div className="fixed inset-0 bg-black/50 z-50 lg:hidden" onClick={() => setShowMobileFilters(false)}>
+                <div
+                  className="absolute inset-y-0 left-0 w-full sm:w-[400px] bg-white shadow-2xl overflow-hidden flex flex-col"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Mobile Filters Header */}
+                  <div className="flex items-center justify-between py-4 px-5 border-b border-slate-200 bg-white">
+                    <h3 className="text-lg font-semibold text-slate-900">Filters</h3>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={resetAllFilters}
+                        className="text-sm text-slate-500 hover:text-indigo-600 transition-colors"
+                      >
+                        Reset all
+                      </button>
+                      <button
+                        onClick={() => setShowMobileFilters(false)}
+                        className="text-slate-500 hover:text-slate-900 transition-colors p-1"
+                        aria-label="Close filters"
+                      >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Mobile Filter Content - Scrollable */}
+                  <div className="flex-1 overflow-y-auto scrollbar-thin">
+                    <div className="space-y-0"></div>
+
+            {/* Sidebar - Desktop Only */}
+            <div className="hidden lg:block w-full lg:w-[350px] flex-shrink-0">
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 lg:sticky lg:top-24 flex flex-col" style={{height: 'calc(100vh - 134px)'}}>
                 {/* Filters Header - Fixed */}
                 <div className="flex items-center justify-between py-5 px-5 border-b border-slate-200">
                   <h3 className="text-lg font-semibold text-slate-900">Filters</h3>
@@ -2451,6 +2486,17 @@ export default function ScannerPage() {
 
             {/* Results Section */}
             <div className="flex-1 min-w-0">
+                {/* Mobile Filter Toggle Button */}
+                <button
+                  onClick={() => setShowMobileFilters(true)}
+                  className="lg:hidden mb-4 w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm flex items-center justify-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                  </svg>
+                  Show Filters
+                </button>
+
                 {/* Top Header Section */}
               <div className="mb-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -2459,14 +2505,6 @@ export default function ScannerPage() {
                     <p className="text-sm sm:text-base text-slate-600">Find the perfect stocks with advanced filtering</p>
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    {currentScreenerId && (
-                      <button
-                        onClick={handleNewScreener}
-                        className='border border-indigo-600 text-indigo-600 py-2.5 px-4 rounded-lg hover:bg-indigo-50 transition-colors font-medium text-sm'
-                      >
-                        New List save
-                      </button>
-                    )}
                     {currentScreenerId && (
                       <button
                         onClick={handleNewScreener}
