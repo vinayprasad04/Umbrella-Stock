@@ -1620,52 +1620,59 @@ export default function ScannerPage() {
                     {expandedFilters.roce && (
                       <div className="pb-3 space-y-3">
                         <div className="px-1">
-                          <div className="flex justify-between text-xs text-slate-600 mb-2">
-                            <span>{filters.minROCE ? parseFloat(filters.minROCE).toLocaleString('en-IN') : '0'}%</span>
-                            <span>{filters.maxROCE ? parseFloat(filters.maxROCE).toLocaleString('en-IN') : '50'}%</span>
-                          </div>
-                          <div className="relative h-6 flex items-center">
-                            <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
-                            <div
-                              className="absolute h-1.5 bg-indigo-500 rounded-full"
-                              style={{
-                                left: `${((parseFloat(filters.minROCE || '0') / 50) * 100)}%`,
-                                right: `${100 - ((parseFloat(filters.maxROCE || '50') / 50) * 100)}%`
-                              }}
-                            ></div>
-                            <input
-                              type="range"
-                              min="0"
-                              max="50"
-                              step="0.5"
-                              value={filters.minROCE || 0}
-                              onChange={(e) => setFilters(prev => ({
-                                ...prev,
-                                minROCE: e.target.value,
-                                maxROCE: prev.maxROCE && parseFloat(e.target.value) > parseFloat(prev.maxROCE)
-                                  ? e.target.value
-                                  : prev.maxROCE
-                              }))}
-                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
-                              style={{ height: '1.5rem' }}
-                            />
-                            <input
-                              type="range"
-                              min="0"
-                              max="50"
-                              step="0.5"
-                              value={filters.maxROCE || 50}
-                              onChange={(e) => setFilters(prev => ({
-                                ...prev,
-                                maxROCE: e.target.value,
-                                minROCE: prev.minROCE && parseFloat(e.target.value) < parseFloat(prev.minROCE)
-                                  ? e.target.value
-                                  : prev.minROCE
-                              }))}
-                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
-                              style={{ height: '1.5rem' }}
-                            />
-                          </div>
+                          {(() => {
+                            const roceRange = getDynamicRange(filters.minROCE, filters.maxROCE, 50);
+                            return (
+                              <>
+                                <div className="flex justify-between text-xs text-slate-600 mb-2">
+                                  <span>{filters.minROCE ? parseFloat(filters.minROCE).toLocaleString('en-IN') : '0'}%</span>
+                                  <span>{filters.maxROCE ? parseFloat(filters.maxROCE).toLocaleString('en-IN') : roceRange.max.toString()}%</span>
+                                </div>
+                                <div className="relative h-6 flex items-center">
+                                  <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+                                  <div
+                                    className="absolute h-1.5 bg-indigo-500 rounded-full"
+                                    style={{
+                                      left: `${((parseFloat(filters.minROCE || '0') / roceRange.max) * 100)}%`,
+                                      right: `${100 - ((parseFloat(filters.maxROCE || roceRange.max.toString()) / roceRange.max) * 100)}%`
+                                    }}
+                                  ></div>
+                                  <input
+                                    type="range"
+                                    min={roceRange.min}
+                                    max={roceRange.max}
+                                    step={roceRange.step}
+                                    value={filters.minROCE || 0}
+                                    onChange={(e) => setFilters(prev => ({
+                                      ...prev,
+                                      minROCE: e.target.value,
+                                      maxROCE: prev.maxROCE && parseFloat(e.target.value) > parseFloat(prev.maxROCE)
+                                        ? e.target.value
+                                        : prev.maxROCE
+                                    }))}
+                                    className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                                    style={{ height: '1.5rem' }}
+                                  />
+                                  <input
+                                    type="range"
+                                    min={roceRange.min}
+                                    max={roceRange.max}
+                                    step={roceRange.step}
+                                    value={filters.maxROCE || roceRange.max}
+                                    onChange={(e) => setFilters(prev => ({
+                                      ...prev,
+                                      maxROCE: e.target.value,
+                                      minROCE: prev.minROCE && parseFloat(e.target.value) < parseFloat(prev.minROCE)
+                                        ? e.target.value
+                                        : prev.minROCE
+                                    }))}
+                                    className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                                    style={{ height: '1.5rem' }}
+                                  />
+                                </div>
+                              </>
+                            );
+                          })()}
                         </div>
                         <div className="flex gap-2">
                           <input
@@ -1675,7 +1682,16 @@ export default function ScannerPage() {
                             onChange={(e) => {
                               const value = e.target.value.replace(/,/g, '');
                               if (value === '' || !isNaN(Number(value))) {
-                                setFilters(prev => ({ ...prev, minROCE: value }));
+                                const clamped = clampValue(value, 'roce');
+                                setFilters(prev => ({ ...prev, minROCE: clamped }));
+                              }
+                            }}
+                            onBlur={(e) => {
+                              if (filters.minROCE) {
+                                const clamped = clampValue(filters.minROCE, 'roce');
+                                if (clamped !== filters.minROCE) {
+                                  setFilters(prev => ({ ...prev, minROCE: clamped }));
+                                }
                               }
                             }}
                             className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -1687,7 +1703,16 @@ export default function ScannerPage() {
                             onChange={(e) => {
                               const value = e.target.value.replace(/,/g, '');
                               if (value === '' || !isNaN(Number(value))) {
-                                setFilters(prev => ({ ...prev, maxROCE: value }));
+                                const clamped = clampValue(value, 'roce');
+                                setFilters(prev => ({ ...prev, maxROCE: clamped }));
+                              }
+                            }}
+                            onBlur={(e) => {
+                              if (filters.maxROCE) {
+                                const clamped = clampValue(filters.maxROCE, 'roce');
+                                if (clamped !== filters.maxROCE) {
+                                  setFilters(prev => ({ ...prev, maxROCE: clamped }));
+                                }
                               }
                             }}
                             className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
