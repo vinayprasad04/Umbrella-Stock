@@ -1972,52 +1972,59 @@ export default function ScannerPage() {
                     {expandedFilters.debtToEquity && (
                       <div className="pb-3 space-y-3">
                         <div className="px-1">
-                          <div className="flex justify-between text-xs text-slate-600 mb-2">
-                            <span>{filters.minDebtToEquity ? parseFloat(filters.minDebtToEquity).toLocaleString('en-IN') : '0'}</span>
-                            <span>{filters.maxDebtToEquity ? parseFloat(filters.maxDebtToEquity).toLocaleString('en-IN') : '5'}</span>
-                          </div>
-                          <div className="relative h-6 flex items-center">
-                            <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
-                            <div
-                              className="absolute h-1.5 bg-indigo-500 rounded-full"
-                              style={{
-                                left: `${((parseFloat(filters.minDebtToEquity || '0') / 5) * 100)}%`,
-                                right: `${100 - ((parseFloat(filters.maxDebtToEquity || '5') / 5) * 100)}%`
-                              }}
-                            ></div>
-                            <input
-                              type="range"
-                              min="0"
-                              max="5"
-                              step="0.1"
-                              value={filters.minDebtToEquity || 0}
-                              onChange={(e) => setFilters(prev => ({
-                                ...prev,
-                                minDebtToEquity: e.target.value,
-                                maxDebtToEquity: prev.maxDebtToEquity && parseFloat(e.target.value) > parseFloat(prev.maxDebtToEquity)
-                                  ? e.target.value
-                                  : prev.maxDebtToEquity
-                              }))}
-                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
-                              style={{ height: '1.5rem' }}
-                            />
-                            <input
-                              type="range"
-                              min="0"
-                              max="5"
-                              step="0.1"
-                              value={filters.maxDebtToEquity || 5}
-                              onChange={(e) => setFilters(prev => ({
-                                ...prev,
-                                maxDebtToEquity: e.target.value,
-                                minDebtToEquity: prev.minDebtToEquity && parseFloat(e.target.value) < parseFloat(prev.minDebtToEquity)
-                                  ? e.target.value
-                                  : prev.minDebtToEquity
-                              }))}
-                              className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
-                              style={{ height: '1.5rem' }}
-                            />
-                          </div>
+                          {(() => {
+                            const debtRange = getDynamicRange(filters.minDebtToEquity, filters.maxDebtToEquity, 5);
+                            return (
+                              <>
+                                <div className="flex justify-between text-xs text-slate-600 mb-2">
+                                  <span>{filters.minDebtToEquity ? parseFloat(filters.minDebtToEquity).toLocaleString('en-IN') : '0'}</span>
+                                  <span>{filters.maxDebtToEquity ? parseFloat(filters.maxDebtToEquity).toLocaleString('en-IN') : debtRange.max.toString()}</span>
+                                </div>
+                                <div className="relative h-6 flex items-center">
+                                  <div className="absolute w-full h-1.5 bg-slate-200 rounded-full"></div>
+                                  <div
+                                    className="absolute h-1.5 bg-indigo-500 rounded-full"
+                                    style={{
+                                      left: `${((parseFloat(filters.minDebtToEquity || '0') / debtRange.max) * 100)}%`,
+                                      right: `${100 - ((parseFloat(filters.maxDebtToEquity || debtRange.max.toString()) / debtRange.max) * 100)}%`
+                                    }}
+                                  ></div>
+                                  <input
+                                    type="range"
+                                    min={debtRange.min}
+                                    max={debtRange.max}
+                                    step={debtRange.step}
+                                    value={filters.minDebtToEquity || 0}
+                                    onChange={(e) => setFilters(prev => ({
+                                      ...prev,
+                                      minDebtToEquity: e.target.value,
+                                      maxDebtToEquity: prev.maxDebtToEquity && parseFloat(e.target.value) > parseFloat(prev.maxDebtToEquity)
+                                        ? e.target.value
+                                        : prev.maxDebtToEquity
+                                    }))}
+                                    className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                                    style={{ height: '1.5rem' }}
+                                  />
+                                  <input
+                                    type="range"
+                                    min={debtRange.min}
+                                    max={debtRange.max}
+                                    step={debtRange.step}
+                                    value={filters.maxDebtToEquity || debtRange.max}
+                                    onChange={(e) => setFilters(prev => ({
+                                      ...prev,
+                                      maxDebtToEquity: e.target.value,
+                                      minDebtToEquity: prev.minDebtToEquity && parseFloat(e.target.value) < parseFloat(prev.minDebtToEquity)
+                                        ? e.target.value
+                                        : prev.minDebtToEquity
+                                    }))}
+                                    className="absolute w-full appearance-none bg-transparent pointer-events-none z-10"
+                                    style={{ height: '1.5rem' }}
+                                  />
+                                </div>
+                              </>
+                            );
+                          })()}
                         </div>
                         <div className="flex gap-2">
                           <input
@@ -2027,7 +2034,16 @@ export default function ScannerPage() {
                             onChange={(e) => {
                               const value = e.target.value.replace(/,/g, '');
                               if (value === '' || !isNaN(Number(value))) {
-                                setFilters(prev => ({ ...prev, minDebtToEquity: value }));
+                                const clamped = clampValue(value, 'debtToEquity');
+                                setFilters(prev => ({ ...prev, minDebtToEquity: clamped }));
+                              }
+                            }}
+                            onBlur={(e) => {
+                              if (filters.minDebtToEquity) {
+                                const clamped = clampValue(filters.minDebtToEquity, 'debtToEquity');
+                                if (clamped !== filters.minDebtToEquity) {
+                                  setFilters(prev => ({ ...prev, minDebtToEquity: clamped }));
+                                }
                               }
                             }}
                             className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
@@ -2039,7 +2055,16 @@ export default function ScannerPage() {
                             onChange={(e) => {
                               const value = e.target.value.replace(/,/g, '');
                               if (value === '' || !isNaN(Number(value))) {
-                                setFilters(prev => ({ ...prev, maxDebtToEquity: value }));
+                                const clamped = clampValue(value, 'debtToEquity');
+                                setFilters(prev => ({ ...prev, maxDebtToEquity: clamped }));
+                              }
+                            }}
+                            onBlur={(e) => {
+                              if (filters.maxDebtToEquity) {
+                                const clamped = clampValue(filters.maxDebtToEquity, 'debtToEquity');
+                                if (clamped !== filters.maxDebtToEquity) {
+                                  setFilters(prev => ({ ...prev, maxDebtToEquity: clamped }));
+                                }
                               }
                             }}
                             className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
