@@ -420,10 +420,10 @@ export default function ProfilePage() {
           <div className="absolute inset-0 bg-black/10"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -translate-y-48 translate-x-48 blur-3xl"></div>
           <div className="absolute bottom-0 left-0 w-72 h-72 bg-white/10 rounded-full translate-y-36 -translate-x-36 blur-3xl"></div>
-          
-          <div className="relative px-8 py-12">
+
+          <div className="relative px-4 sm:px-6 md:px-8 py-8 sm:py-12">
             <div className="max-w-6xl mx-auto">
-              <div className="flex items-center space-x-8">
+              <div className="flex flex-col sm:flex-row items-center sm:space-x-8 space-y-4 sm:space-y-0">
                 {/* Avatar */}
                 <div className="relative">
                   <div className="w-28 h-28 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-2xl border border-white/20 overflow-hidden">
@@ -472,7 +472,7 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Avatar Upload Info */}
-                <div className="ml-8">
+                <div className="sm:ml-8 w-full sm:w-auto">
                   <div className="bg-blue-500/10 backdrop-blur-sm border border-blue-200/30 rounded-lg px-3 py-2">
                     <p className="text-xs text-blue-100 font-medium mb-1">📸 Photo Requirements:</p>
                     <ul className="text-xs text-blue-100 space-y-0.5">
@@ -484,11 +484,11 @@ export default function ProfilePage() {
                 </div>
 
                 {/* User Info */}
-                <div className="flex-1">
-                  <h1 className="text-4xl font-bold mb-2">{profile.name}</h1>
-                  <div className="flex items-center space-x-3 mb-4">
-                    <span className="text-blue-100">{profile.email}</span>
-                    <span className="w-1 h-1 bg-blue-200 rounded-full"></span>
+                <div className="flex-1 text-center sm:text-left">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">{profile.name}</h1>
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 mb-4">
+                    <span className="text-sm sm:text-base text-blue-100">{profile.email}</span>
+                    <span className="w-1 h-1 bg-blue-200 rounded-full hidden sm:block"></span>
                     <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${
                       profile.role === 'SUBSCRIBER' 
                         ? 'bg-purple-500/20 text-purple-100 border-purple-300/30' 
@@ -567,7 +567,7 @@ export default function ProfilePage() {
         )}
 
         {/* Content Section */}
-        <div className="max-w-6xl mx-auto px-8 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-6 sm:py-8">
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Right Column - Settings */}

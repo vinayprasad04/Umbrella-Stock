@@ -18,7 +18,9 @@ import {
   faSignOutAlt,
   faArrowRightFromBracket,
   faArrowUp,
-  faArrowDown
+  faArrowDown,
+  faBars,
+  faTimes
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -46,13 +48,14 @@ interface UserDashboardLayoutProps {
 export default function UserDashboardLayout({ children, currentPage }: UserDashboardLayoutProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     // Check authentication
     const token = localStorage.getItem('authToken');
     const userStr = localStorage.getItem('user');
-    
+
     if (!token || !userStr) {
       router.push('/login');
       return;
@@ -61,7 +64,7 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
     try {
       const userData = JSON.parse(userStr);
       setUser(userData);
-      
+
       // Redirect admin/data_entry users to admin dashboard
       if (['ADMIN', 'DATA_ENTRY'].includes(userData.role)) {
         router.push('/admin/dashboard');
@@ -74,6 +77,20 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
 
     setLoading(false);
   }, [router]);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [sidebarOpen]);
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
@@ -92,10 +109,28 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
 
   return (
     <div className="h-screen bg-gradient-to-br from-white via-gray-50 to-blue-50/30 flex overflow-hidden">
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity duration-300"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Left Sidebar */}
-      <div className="bg-white/95 backdrop-blur-xl shadow-xl border-r border-gray-200/50 flex flex-col relative" style={{width: '360px'}}>
+      <div className={`bg-white/95 backdrop-blur-xl shadow-xl border-r border-gray-200/50 flex flex-col relative transition-transform duration-300 ease-in-out z-50
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        lg:translate-x-0 lg:relative fixed inset-y-0 left-0 w-80 lg:w-[360px] `}>
         {/* Subtle gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 via-transparent to-indigo-50/20 pointer-events-none"></div>
+
+        {/* Mobile Close Button */}
+        <button
+          onClick={() => setSidebarOpen(false)}
+          className="lg:hidden absolute top-4 right-4 z-10 p-2 rounded-lg bg-white/90 shadow-md hover:bg-gray-100 transition-colors"
+        >
+          <FontAwesomeIcon icon={faTimes} className="w-5 h-5 text-gray-600" />
+        </button>
         
         {/* Sidebar Header */}
         <div className="relative p-8 border-b border-gray-200/50">
@@ -365,32 +400,40 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col relative">
+      <div className="flex-1 flex flex-col relative -ml-[320px] lg:ml-0">
         {/* Background decoration */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-purple-400/10 rounded-full -translate-y-48 translate-x-48 blur-3xl pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-indigo-400/10 to-pink-400/10 rounded-full translate-y-48 -translate-x-48 blur-3xl pointer-events-none"></div>
         
         {/* Top Header */}
         <header className="relative bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-lg shadow-blue-500/5 flex-shrink-0">
-          <div className="px-8 py-6">
+          <div className="px-4 sm:px-8 py-4 sm:py-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-6">
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors mr-3"
+              >
+                <FontAwesomeIcon icon={faBars} className="w-6 h-6 text-gray-600" />
+              </button>
+
+              <div className="flex items-center space-x-3 sm:space-x-6 flex-1">
                 <div>
-                  <div className="flex items-center space-x-3 mb-2">
-                    <h1 className="text-3xl font-black bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent capitalize">
+                  <div className="flex items-center space-x-2 sm:space-x-3 mb-1 sm:mb-2">
+                    <h1 className="text-xl sm:text-3xl font-black bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent capitalize">
                       {currentPage || 'Dashboard'}
                     </h1>
-                    <div className="px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-white text-xs font-bold uppercase tracking-wide">
+                    <div className="px-2 sm:px-3 py-0.5 sm:py-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-white text-xs font-bold uppercase tracking-wide">
                       LIVE
                     </div>
                   </div>
-                  <p className="text-gray-600 font-medium">Welcome back, <span className="text-blue-600 font-semibold">{user?.name}</span></p>
+                  <p className="text-sm sm:text-base text-gray-600 font-medium hidden sm:block">Welcome back, <span className="text-blue-600 font-semibold">{user?.name}</span></p>
                 </div>
               </div>
               
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 sm:space-x-4">
                 {/* Notifications */}
-                <Link href="/notifications">
+                <Link href="/notifications" className="hidden sm:block">
                   <button className="relative p-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200">
                     <FontAwesomeIcon icon={faBell} className="w-6 h-6" />
                   </button>
@@ -399,13 +442,13 @@ export default function UserDashboardLayout({ children, currentPage }: UserDashb
                 {/* User Dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="flex items-center space-x-3 bg-white/50 backdrop-blur-sm rounded-2xl px-4 py-2 border border-gray-200/50 hover:bg-white/70 transition-all duration-200">
-                      <div className="text-right">
+                    <button className="flex items-center space-x-2 sm:space-x-3 bg-white/50 backdrop-blur-sm rounded-2xl px-2 sm:px-4 py-2 border border-gray-200/50 hover:bg-white/70 transition-all duration-200">
+                      <div className="text-right hidden sm:block">
                         <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
                         <p className="text-xs text-gray-500">{user?.role} Account</p>
                       </div>
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-bold text-white">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
+                        <span className="text-xs sm:text-sm font-bold text-white">
                           {user?.name?.charAt(0).toUpperCase()}
                         </span>
                       </div>

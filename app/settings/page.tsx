@@ -336,10 +336,10 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <div className="w-full px-6 py-8">
+        <div className="w-full px-4 sm:px-6 py-6 sm:py-8">
           {/* Success/Error Messages */}
           {success && (
-            <div className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-800 px-6 py-4 rounded-xl shadow-sm">
+            <div className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-800 px-4 sm:px-6 py-3 sm:py-4 rounded-xl shadow-sm">
               <div className="flex items-center">
                 <FontAwesomeIcon icon={faCheck} className="w-5 h-5 text-green-600 mr-3" />
                 {success}
@@ -356,21 +356,21 @@ export default function SettingsPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 sm:gap-8">
             {/* Sidebar */}
             <div className="lg:col-span-1">
-              <nav className="space-y-2">
+              <nav className="flex lg:flex-col space-x-2 lg:space-x-0 lg:space-y-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0">
                 {tabs.map(tab => (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex items-center ${
+                    className={`whitespace-nowrap lg:w-full text-left px-3 sm:px-4 py-2 sm:py-3 rounded-lg transition-colors flex items-center text-sm sm:text-base ${
                       activeTab === tab.id
                         ? 'bg-blue-50 text-blue-700 border border-blue-200'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                     }`}
                   >
-                    <FontAwesomeIcon icon={tab.icon} className="w-5 h-5 mr-3" />
+                    <FontAwesomeIcon icon={tab.icon} className="w-4 h-4 sm:w-5 sm:h-5 mr-2 sm:mr-3" />
                     {tab.label}
                   </button>
                 ))}

@@ -268,7 +268,7 @@ export default function UserDashboard() {
   };
   return (
     <UserDashboardLayout currentPage="dashboard">
-      <div className="p-8 space-y-8">
+      <div className="p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8">
           {/* Hero Welcome Section */}
           <div className="relative overflow-hidden">
             {/* Animated background elements */}
@@ -276,10 +276,10 @@ export default function UserDashboard() {
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50/80 to-indigo-50/60 rounded-3xl"></div>
             <div className="absolute -top-4 -right-4 w-32 h-32 bg-blue-100/30 rounded-full blur-2xl animate-pulse"></div>
             <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-indigo-100/30 rounded-full blur-xl animate-pulse delay-1000"></div>
-            
-            <div className="relative p-8 text-gray-800">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
+
+            <div className="relative p-4 sm:p-6 md:p-8 text-gray-800">
+              <div className="flex flex-col lg:flex-row items-start lg:items-center lg:justify-between gap-6">
+                <div className="flex-1 w-full">
                   <div className="flex items-center space-x-4 mb-4">
                     <div className="flex items-center space-x-2">
                       <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-sm"></div>
@@ -298,16 +298,16 @@ export default function UserDashboard() {
                       </span>
                     </div>
                   </div>
-                  
-                  <h2 className="text-4xl font-black mb-3 leading-tight text-gray-900">
-                    Welcome back,<br/>
+
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-black mb-3 leading-tight text-gray-900">
+                    Welcome back,<br className="hidden sm:block"/>
                     <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
                       {user?.name}! 👋
                     </span>
                   </h2>
-                  
-                  <p className="text-xl text-gray-700 mb-6 max-w-2xl font-medium">
-                    Your personalized financial dashboard is ready. Track your investments, 
+
+                  <p className="text-base sm:text-lg md:text-xl text-gray-700 mb-6 max-w-2xl font-medium">
+                    Your personalized financial dashboard is ready. Track your investments,
                     analyze market trends, and make informed decisions.
                   </p>
                   

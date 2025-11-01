@@ -628,7 +628,7 @@ export default function WatchlistPage() {
 
   return (
     <UserDashboardLayout currentPage="watchlist">
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900">My Watchlist</h1>
             <p className="text-gray-600 mt-1">
@@ -639,7 +639,7 @@ export default function WatchlistPage() {
           {/* Watchlist Tabs */}
           <div className="mb-6">
             <div className="border-b border-gray-200">
-              <nav className="-mb-px flex space-x-8">
+              <nav className="-mb-px flex space-x-2 sm:space-x-4 md:space-x-8 overflow-x-auto">
                 {[1, 2, 3, 4, 5].map((tabId) => (
                   <div key={tabId} className="flex items-center group">
                     <button
