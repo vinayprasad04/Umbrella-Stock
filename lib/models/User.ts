@@ -16,8 +16,13 @@ export interface IUser extends Document {
   location?: string;
   bio?: string;
   avatar?: string;
+  profilePicture?: string;
   isEmailVerified?: boolean;
   lastLoginAt?: Date;
+
+  // OAuth Information
+  oauthProvider?: 'google' | 'microsoft';
+  oauthProviderId?: string;
   
   // User Preferences
   preferences?: {
@@ -118,8 +123,13 @@ const UserSchema: Schema = new Schema({
   location: String,
   bio: { type: String, maxlength: 500 },
   avatar: String,
+  profilePicture: String,
   isEmailVerified: { type: Boolean, default: false },
   lastLoginAt: Date,
+
+  // OAuth Information
+  oauthProvider: { type: String, enum: ['google', 'microsoft'] },
+  oauthProviderId: String,
   
   // User Preferences
   preferences: {

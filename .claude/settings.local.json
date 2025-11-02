@@ -62,7 +62,10 @@
       "Bash(findstr:*)",
       "Bash(cat:*)",
       "Bash(while read file)",
-      "Bash(do sed:*)"
+      "Bash(do sed:*)",
+      "Bash(test:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs:*)"
     ],
     "deny": [],
     "ask": [],
