@@ -91,9 +91,10 @@ async function oauthLoginHandler(
       // Create new user from OAuth
       console.log('[OAuth] Creating new user...');
       // Generate a random password that won't be used (OAuth users don't use password login)
+      // Using 4 rounds for OAuth users since they won't use password login anyway
       const randomPassword = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
       console.log('[OAuth] Hashing password...');
-      const hashedPassword = await bcrypt.hash(randomPassword, 10);
+      const hashedPassword = await bcrypt.hash(randomPassword, 4);
       console.log('[OAuth] Password hashed, creating user in database...');
 
       user = await User.create({
