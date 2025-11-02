@@ -175,6 +175,11 @@ export default function ScannerPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  // Screener limit states
+  const [screenerLimit, setScreenerLimit] = useState<number>(2);
+  const [currentScreenerCount, setCurrentScreenerCount] = useState<number>(0);
+  const [isPremiumUser, setIsPremiumUser] = useState<boolean>(false);
+
   // Pagination states
   const [pagination, setPagination] = useState<PaginationInfo>({
     currentPage: 1,
@@ -528,17 +533,28 @@ export default function ScannerPage() {
     }
 
     // Check login status
-    setIsLoggedIn(authUtils.isLoggedIn());
+    const loggedIn = authUtils.isLoggedIn();
+    setIsLoggedIn(loggedIn);
+
+    // Fetch screener limits if logged in
+    if (loggedIn) {
+      fetchScreenerLimits();
+    }
 
     // Listen for cross-tab login
     const unsubscribeLogin = authUtils.onLogin(() => {
       setIsLoggedIn(true);
+      fetchScreenerLimits();
     });
 
     const unsubscribeLogout = authUtils.onLogout(() => {
       setIsLoggedIn(false);
       setCurrentScreenerId(null);
       setPageTitle('Stock Screener');
+      // Reset limits
+      setScreenerLimit(2);
+      setCurrentScreenerCount(0);
+      setIsPremiumUser(false);
     });
 
     // Listen for screener deleted event
@@ -576,6 +592,10 @@ export default function ScannerPage() {
         fetchStocks(1, selectedLimit);
         // Update URL
         window.history.pushState({}, '', '/scanner');
+      }
+      // Refresh limits after deletion
+      if (loggedIn) {
+        fetchScreenerLimits();
       }
     };
 
@@ -843,6 +863,11 @@ export default function ScannerPage() {
         const data = await response.json();
         const savedScreenerId = data.data._id;
 
+        // Update limit information
+        if (data.limit !== undefined) setScreenerLimit(data.limit);
+        if (data.current !== undefined) setCurrentScreenerCount(data.current);
+        if (data.isPremium !== undefined) setIsPremiumUser(data.isPremium);
+
         setCurrentScreenerId(savedScreenerId);
         setScreenerTitle(newScreenerTitle);
         setScreenerDescription(newScreenerDescription);
@@ -860,6 +885,13 @@ export default function ScannerPage() {
         window.dispatchEvent(new CustomEvent('screener-saved'));
       } else {
         const errorData = await response.json();
+
+        // Update limit information even on error
+        if (errorData.limit !== undefined) setScreenerLimit(errorData.limit);
+        if (errorData.current !== undefined) setCurrentScreenerCount(errorData.current);
+        if (errorData.isPremium !== undefined) setIsPremiumUser(errorData.isPremium);
+
+        // Show detailed error message
         alert(errorData.error || 'Failed to save screener');
       }
     } catch (error) {
@@ -923,8 +955,35 @@ export default function ScannerPage() {
     }
   };
 
+  // Fetch screener limits
+  const fetchScreenerLimits = async () => {
+    try {
+      const token = authUtils.getToken();
+      if (!token) return;
+
+      const response = await fetch('/api/user/screeners', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.limit !== undefined) setScreenerLimit(data.limit);
+        if (data.current !== undefined) setCurrentScreenerCount(data.current);
+        if (data.isPremium !== undefined) setIsPremiumUser(data.isPremium);
+      }
+    } catch (error) {
+      console.error('Error fetching screener limits:', error);
+    }
+  };
+
   // Handle new screener (clear current and open new screener modal)
   const handleNewScreener = () => {
+    // Fetch latest limits before showing modal
+    fetchScreenerLimits();
+
     // Clear new screener fields and open save modal
     setNewScreenerTitle('');
     setNewScreenerDescription('');
@@ -4356,7 +4415,43 @@ export default function ScannerPage() {
       {showSaveModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
           <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full mx-4">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Save New Screener</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Save New Screener</h2>
+
+            {/* Screener Limit Badge */}
+            <div className={`mb-4 p-3 rounded-lg ${
+              currentScreenerCount >= screenerLimit
+                ? 'bg-red-50 border border-red-200'
+                : currentScreenerCount >= screenerLimit - 1
+                ? 'bg-yellow-50 border border-yellow-200'
+                : 'bg-blue-50 border border-blue-200'
+            }`}>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-700">
+                  Scanner Pages: {currentScreenerCount}/{screenerLimit}
+                </span>
+                {!isPremiumUser && (
+                  <span className="text-xs text-indigo-600 font-medium">Free Plan</span>
+                )}
+              </div>
+              {currentScreenerCount >= screenerLimit && !isPremiumUser && (
+                <div className="mt-3 pt-3 border-t border-red-200">
+                  <p className="text-xs text-red-600 mb-2">
+                    You've reached your limit of {screenerLimit} scanner pages.
+                  </p>
+                  <a
+                    href="/pricing"
+                    className="inline-block text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-md hover:bg-indigo-700 transition-colors font-medium"
+                  >
+                    Upgrade to Premium (10 scanners)
+                  </a>
+                </div>
+              )}
+              {currentScreenerCount >= screenerLimit && isPremiumUser && (
+                <p className="text-xs text-red-600 mt-2">
+                  You've reached your limit of {screenerLimit} scanner pages. Please delete an existing scanner to create a new one.
+                </p>
+              )}
+            </div>
 
             <div className="space-y-4 mb-6">
               <div>
@@ -4405,10 +4500,10 @@ export default function ScannerPage() {
               </button>
               <button
                 onClick={handleSaveNewScreener}
-                disabled={saving || !newScreenerTitle.trim() || !newScreenerDescription.trim()}
+                disabled={saving || !newScreenerTitle.trim() || !newScreenerDescription.trim() || currentScreenerCount >= screenerLimit}
                 className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-xs disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {saving ? 'Saving...' : 'Save'}
+                {saving ? 'Saving...' : currentScreenerCount >= screenerLimit ? 'Limit Reached' : 'Save'}
               </button>
             </div>
           </div>
